@@ -12,6 +12,8 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -22,7 +24,7 @@ export default function RegisterPage() {
     setLoading(true);
     setError("");
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
       options: {
@@ -37,7 +39,34 @@ export default function RegisterPage() {
       return;
     }
 
+    // Email already registered but unconfirmed — Supabase returns success silently
+    if (data.user?.identities?.length === 0) {
+      setError(
+        "Email ini sudah terdaftar tapi belum dikonfirmasi. Cek inbox kamu atau kirim ulang email konfirmasi."
+      );
+      setLoading(false);
+      return;
+    }
+
     setSuccess(true);
+  };
+
+  const handleResend = async () => {
+    setResendLoading(true);
+    setResendMessage("");
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: form.email,
+      options: {
+        emailRedirectTo: `${location.origin}/auth/callback?next=/onboarding`,
+      },
+    });
+    setResendLoading(false);
+    if (error) {
+      setResendMessage("Gagal kirim ulang: " + error.message);
+    } else {
+      setResendMessage("Email konfirmasi sudah dikirim ulang. Cek inbox kamu.");
+    }
   };
 
   if (success) {
@@ -62,11 +91,22 @@ export default function RegisterPage() {
           <h2 className="font-display text-2xl font-bold text-white mb-3">
             Cek Email Kamu!
           </h2>
-          <p className="text-dark-400 text-sm leading-relaxed">
+          <p className="text-dark-400 text-sm leading-relaxed mb-6">
             Link konfirmasi sudah dikirim ke{" "}
             <span className="text-barber-400">{form.email}</span>. Klik link
             tersebut untuk melanjutkan setup barbershop.
           </p>
+          {resendMessage ? (
+            <p className="text-sm text-barber-400">{resendMessage}</p>
+          ) : (
+            <button
+              onClick={handleResend}
+              disabled={resendLoading}
+              className="text-sm text-dark-400 hover:text-barber-400 transition-colors disabled:opacity-50"
+            >
+              {resendLoading ? "Mengirim..." : "Tidak menerima email? Kirim ulang"}
+            </button>
+          )}
         </div>
       </div>
     );
@@ -103,8 +143,18 @@ export default function RegisterPage() {
           className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-8 space-y-5"
         >
           {error && (
-            <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-              {error}
+            <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm space-y-2">
+              <p>{error}</p>
+              {error.includes("belum dikonfirmasi") && (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resendLoading}
+                  className="text-barber-400 hover:text-barber-300 transition-colors disabled:opacity-50 font-medium"
+                >
+                  {resendLoading ? "Mengirim..." : resendMessage || "Kirim ulang email konfirmasi →"}
+                </button>
+              )}
             </div>
           )}
 
