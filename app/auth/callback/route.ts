@@ -27,12 +27,15 @@ export async function GET(request: Request) {
     );
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const base = process.env.NEXT_PUBLIC_BASE_URL || origin;
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+      return NextResponse.redirect(`${base}${next}`);
     }
+    return NextResponse.redirect(`${base}/auth/login?error=auth_callback_failed`);
   }
 
+  const base = process.env.NEXT_PUBLIC_BASE_URL || origin;
   return NextResponse.redirect(
-    `${origin}/auth/login?error=auth_callback_failed`
+    `${base}/auth/login?error=auth_callback_failed`
   );
 }
