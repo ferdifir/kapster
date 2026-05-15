@@ -2,11 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-
-const PLAN_AMOUNTS = {
-  pro: 149000,
-  enterprise: 349000,
-} as const;
+import { PLAN_AMOUNTS } from "@/lib/config/plans";
 
 export async function createPayment(plan: "pro" | "enterprise") {
   const supabase = await createClient();

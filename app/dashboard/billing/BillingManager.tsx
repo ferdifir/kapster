@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { createPayment } from "./actions";
+import { PLAN_KEYS, PLAN_META, formatBillingPrice, type PlanKey } from "@/lib/config/plans";
 
-type Plan = "starter" | "pro" | "enterprise";
+type Plan = PlanKey;
 
 type Subscription = {
   plan: Plan;
@@ -29,30 +30,6 @@ interface Props {
   payments: Payment[];
   barberCount: number;
 }
-
-const PLANS = [
-  {
-    key: "starter" as Plan,
-    name: "Starter",
-    price: 0,
-    priceLabel: "Gratis",
-    features: ["1 barber", "30 antrian/hari", "Booking publik", "Antrian walk-in", "TV Display"],
-  },
-  {
-    key: "pro" as Plan,
-    name: "Pro",
-    price: 149000,
-    priceLabel: "Rp149.000/bulan",
-    features: ["5 barber", "100 antrian/hari", "Semua fitur Starter", "Analitik lengkap", "Prioritas support"],
-  },
-  {
-    key: "enterprise" as Plan,
-    name: "Enterprise",
-    price: 349000,
-    priceLabel: "Rp349.000/bulan",
-    features: ["Barber tak terbatas", "Antrian tak terbatas", "Semua fitur Pro", "Multi-cabang (segera)", "API akses (segera)"],
-  },
-];
 
 const STATUS_LABEL: Record<string, string> = {
   pending: "Menunggu",
@@ -154,13 +131,14 @@ export default function BillingManager({ subscription, payments, barberCount }: 
       <div>
         <h2 className="font-semibold text-white mb-4">Pilih Paket</h2>
         <div className="grid gap-4 md:grid-cols-3">
-          {PLANS.map((plan) => {
-            const isCurrent = subscription.plan === plan.key;
-            const isUpgrading = isPending && upgradingPlan === plan.key;
+          {PLAN_KEYS.map((key) => {
+            const meta = PLAN_META[key];
+            const isCurrent = subscription.plan === key;
+            const isUpgrading = isPending && upgradingPlan === key;
 
             return (
               <div
-                key={plan.key}
+                key={key}
                 className={`rounded-2xl p-5 space-y-4 border ${
                   isCurrent
                     ? "bg-barber-400/5 border-barber-400/30"
@@ -169,16 +147,16 @@ export default function BillingManager({ subscription, payments, barberCount }: 
               >
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-white font-semibold">{plan.name}</p>
+                    <p className="text-white font-semibold">{meta.name}</p>
                     {isCurrent && (
                       <span className="text-xs text-barber-400 font-medium">Aktif</span>
                     )}
                   </div>
-                  <p className="text-barber-400 font-bold text-lg">{plan.priceLabel}</p>
+                  <p className="text-barber-400 font-bold text-lg">{formatBillingPrice(key)}</p>
                 </div>
 
                 <ul className="space-y-2">
-                  {plan.features.map((f) => (
+                  {meta.billingFeatures.map((f) => (
                     <li key={f} className="flex items-center gap-2 text-dark-300 text-sm">
                       <svg className="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -188,13 +166,13 @@ export default function BillingManager({ subscription, payments, barberCount }: 
                   ))}
                 </ul>
 
-                {plan.key === "starter" ? (
+                {key === "starter" ? (
                   <div className="py-2 text-center text-dark-500 text-sm">
                     {isCurrent ? "Paket gratis Anda" : "Downgrade tidak tersedia"}
                   </div>
                 ) : (
                   <button
-                    onClick={() => handleUpgrade(plan.key as "pro" | "enterprise")}
+                    onClick={() => handleUpgrade(key as "pro" | "enterprise")}
                     disabled={isCurrent || isPending}
                     className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-50 ${
                       isCurrent
@@ -206,7 +184,7 @@ export default function BillingManager({ subscription, payments, barberCount }: 
                       ? "Memproses..."
                       : isCurrent
                       ? "Paket Aktif"
-                      : `Upgrade ke ${plan.name}`}
+                      : `Upgrade ke ${meta.name}`}
                   </button>
                 )}
               </div>

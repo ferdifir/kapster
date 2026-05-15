@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-
-const PLAN_LIMITS = {
-  starter: { max_barbers: 1, max_queue_per_day: 30 },
-  pro: { max_barbers: 5, max_queue_per_day: 100 },
-  enterprise: { max_barbers: 999, max_queue_per_day: 9999 },
-} as const;
+import { PLAN_LIMITS, type PlanKey } from "@/lib/config/plans";
 
 const PERIOD_DAYS = 30;
 
@@ -60,7 +55,7 @@ export async function POST(request: NextRequest) {
     const periodEnd = new Date(now);
     periodEnd.setDate(periodEnd.getDate() + PERIOD_DAYS);
 
-    const plan = payment.plan as keyof typeof PLAN_LIMITS;
+    const plan = payment.plan as PlanKey;
     const limits = PLAN_LIMITS[plan] ?? PLAN_LIMITS.starter;
 
     await supabase

@@ -1,58 +1,4 @@
-type Plan = {
-  name: string;
-  price: string;
-  desc: string;
-  features: { included: boolean; label: string }[];
-  cta: string;
-  href: string;
-  featured?: boolean;
-};
-
-const plans: Plan[] = [
-  {
-    name: "Starter",
-    price: "Rp0",
-    desc: "Cocok untuk barbershop yang baru mulai.",
-    features: [
-      { included: true, label: "1 Barber" },
-      { included: true, label: "30 Antrian/hari" },
-      { included: true, label: "Dashboard Dasar" },
-      { included: false, label: "Notifikasi WhatsApp" },
-      { included: false, label: "Customer Display" },
-    ],
-    cta: "Mulai Gratis",
-    href: "/auth/register",
-  },
-  {
-    name: "Professional",
-    price: "Rp149K",
-    desc: "Untuk barbershop yang sudah berjalan serius.",
-    features: [
-      { included: true, label: "Hingga 5 Barber" },
-      { included: true, label: "100 Antrian/hari" },
-      { included: true, label: "Dashboard + Laporan Lengkap" },
-      { included: true, label: "Notifikasi WhatsApp" },
-      { included: true, label: "Customer Display (TV)" },
-    ],
-    cta: "Coba Gratis 14 Hari",
-    href: "/auth/register",
-    featured: true,
-  },
-  {
-    name: "Enterprise",
-    price: "Rp349K",
-    desc: "Untuk chain barbershop dengan banyak cabang.",
-    features: [
-      { included: true, label: "Unlimited Barber" },
-      { included: true, label: "Multi-Cabang" },
-      { included: true, label: "Semua Fitur Pro" },
-      { included: true, label: "API Access" },
-      { included: true, label: "Support Priority 24/7" },
-    ],
-    cta: "Hubungi Sales",
-    href: "https://wa.me/6285239110184?text=Halo%2C+saya+tertarik+dengan+paket+Enterprise+QueueBarber",
-  },
-];
+import { PLAN_KEYS, PLAN_META, formatLandingPrice } from "@/lib/config/plans";
 
 const CheckIcon = ({ included, featured }: { included: boolean; featured?: boolean }) =>
   included ? (
@@ -89,16 +35,18 @@ export default function PricingSection() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {plans.map((plan) => (
+          {PLAN_KEYS.map((key) => {
+            const meta = PLAN_META[key];
+            return (
             <div
-              key={plan.name}
+              key={key}
               className={`card-hover relative p-8 rounded-2xl ${
-                plan.featured
+                meta.featured
                   ? "bg-dark-800 border-2 border-barber-400/40 shadow-xl shadow-barber-400/10"
                   : "bg-dark-800/50 border border-dark-700/30"
               }`}
             >
-              {plan.featured && (
+              {meta.featured && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                   <span className="px-4 py-1.5 rounded-full gold-gradient text-dark-900 text-sm font-bold">
                     Paling Populer
@@ -107,25 +55,25 @@ export default function PricingSection() {
               )}
 
               <div className="mb-8">
-                <h3 className="font-semibold text-white text-xl mb-2">{plan.name}</h3>
-                <p className="text-dark-400 text-sm">{plan.desc}</p>
+                <h3 className="font-semibold text-white text-xl mb-2">{meta.name}</h3>
+                <p className="text-dark-400 text-sm">{meta.desc}</p>
               </div>
 
               <div className="mb-8">
                 <span
                   className={`font-display text-5xl font-bold ${
-                    plan.featured ? "text-gold-gradient" : "text-white"
+                    meta.featured ? "text-gold-gradient" : "text-white"
                   }`}
                 >
-                  {plan.price}
+                  {formatLandingPrice(key)}
                 </span>
                 <span className="text-dark-400 text-sm">/bulan</span>
               </div>
 
               <ul className="space-y-4 mb-8">
-                {plan.features.map((f) => (
+                {meta.landingFeatures.map((f) => (
                   <li key={f.label} className="flex items-start gap-3">
-                    <CheckIcon included={f.included} featured={plan.featured} />
+                    <CheckIcon included={f.included} featured={meta.featured} />
                     <span className={`text-sm ${f.included ? "text-dark-300" : "text-dark-500"}`}>
                       {f.label}
                     </span>
@@ -134,17 +82,17 @@ export default function PricingSection() {
               </ul>
 
               <a
-                href={plan.href}
+                href={meta.ctaHref}
                 className={`block w-full py-3 rounded-xl font-semibold text-center transition-all duration-300 ${
-                  plan.featured
+                  meta.featured
                     ? "gold-gradient text-dark-900 font-bold hover:shadow-lg hover:shadow-barber-400/25"
                     : "border border-dark-600 text-dark-200 hover:border-barber-400/50 hover:text-barber-400"
                 }`}
               >
-                {plan.cta}
+                {meta.ctaLabel}
               </a>
             </div>
-          ))}
+          )})}
         </div>
       </div>
     </section>
