@@ -1,26 +1,124 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Barber (gold) palette */
+  --color-barber-50: #fef9ee;
+  --color-barber-100: #fdf1d4;
+  --color-barber-200: #f9de9e;
+  --color-barber-300: #f5c764;
+  --color-barber-400: #f1ab2a;
+  --color-barber-500: #e8950f;
+  --color-barber-600: #c4740b;
+  --color-barber-700: #8a4f0b;
+  --color-barber-800: #5a3510;
+  --color-barber-900: #3a230d;
+
+  /* Dark palette */
+  --color-dark-50: #f5f5f5;
+  --color-dark-100: #e8e8e8;
+  --color-dark-200: #d4d4d4;
+  --color-dark-300: #a3a3a3;
+  --color-dark-400: #737373;
+  --color-dark-500: #525252;
+  --color-dark-600: #404040;
+  --color-dark-700: #2a2a2a;
+  --color-dark-800: #1a1a1a;
+  --color-dark-900: #111111;
+  --color-dark-950: #0a0a0a;
+
+  /* Fonts */
+  --font-display: var(--font-playfair), Georgia, serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+
+  /* Animations */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-delay: float 6s ease-in-out 2s infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-stripe: stripe 3s linear infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes stripe {
+  0% { background-position: 0 0; }
+  100% { background-position: 80px 0; }
+}
+
+/* Custom utilities */
+.barber-pole {
+  background: repeating-linear-gradient(
+    -45deg,
+    #dc2626,
+    #dc2626 10px,
+    #ffffff 10px,
+    #ffffff 20px,
+    #2563eb 20px,
+    #2563eb 30px,
+    #ffffff 30px,
+    #ffffff 40px
+  );
+  background-size: 100% 80px;
+  animation: stripe 3s linear infinite;
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #f5c764, #e8950f, #c4740b);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #f9de9e, #f1ab2a, #c4740b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass {
+  background: rgba(26, 26, 26, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.card-hover {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(241, 171, 42, 0.15);
+}
+
+.line-pattern {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(241, 171, 42, 0.03) 2px,
+    rgba(241, 171, 42, 0.03) 4px
+  );
+}
+
+.noise {
+  position: relative;
+}
+
+.noise::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #0a0a0a;
+  color: white;
+  overflow-x: hidden;
 }

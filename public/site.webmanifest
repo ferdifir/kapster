@@ -1,0 +1,26 @@
+{
+  "name": "QueueBarber",
+  "short_name": "QueueBarber",
+  "description": "Sistem manajemen antrian digital #1 untuk barbershop di Indonesia",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#f1ab2a",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png"
+    }
+  ]
+}
