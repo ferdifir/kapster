@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import Logo from "@/components/Logo";
 
 export default function RegisterPage() {
   const supabase = createClient();
+  const router = useRouter();
 
   const [form, setForm] = useState({ full_name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -40,15 +42,20 @@ export default function RegisterPage() {
       return;
     }
 
-    // Email already registered but unconfirmed — Supabase returns success silently
+    // Email already registered — Supabase returns success silently
     if (data.user?.identities?.length === 0) {
-      setError(
-        "Email ini sudah terdaftar tapi belum dikonfirmasi. Cek inbox kamu atau kirim ulang email konfirmasi."
-      );
+      setError("Email ini sudah terdaftar. Silakan login atau gunakan email lain.");
       setLoading(false);
       return;
     }
 
+    // Email confirmation disabled — session returned immediately
+    if (data.session) {
+      router.push("/onboarding");
+      return;
+    }
+
+    // Email confirmation enabled — show check email screen
     setSuccess(true);
   };
 
