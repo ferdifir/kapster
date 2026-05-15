@@ -86,11 +86,8 @@ export const metadata: Metadata = {
   category: "technology",
   manifest: "/site.webmanifest",
   icons: {
-    icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", sizes: "any" },
-    ],
-    apple: "/apple-icon.png",
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: "/icon.svg",
   },
   verification: {
     google: "your-google-verification-code",
