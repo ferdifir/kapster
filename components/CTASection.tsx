@@ -25,7 +25,7 @@ export default function CTASection() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
-            href="#"
+            href="/auth/register"
             className="group relative inline-flex items-center justify-center gap-2 px-10 py-4 rounded-xl gold-gradient text-dark-900 font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-barber-400/25 hover:-translate-y-0.5"
           >
             Mulai Gratis Sekarang

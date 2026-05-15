@@ -55,7 +55,7 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center gap-4">
             <a
-              href="#"
+              href="/auth/login"
               className="text-dark-300 hover:text-white transition-colors text-sm font-medium"
             >
               Masuk
@@ -99,7 +99,7 @@ export default function Navbar() {
                 </a>
               ))}
               <div className="flex flex-col gap-3 pt-4 border-t border-dark-700/50">
-                <a href="#" className="text-dark-300 hover:text-white transition-colors text-sm font-medium py-2 text-center">
+                <a href="/auth/login" className="text-dark-300 hover:text-white transition-colors text-sm font-medium py-2 text-center">
                   Masuk
                 </a>
                 <a

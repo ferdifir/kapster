@@ -4,6 +4,7 @@ type Plan = {
   desc: string;
   features: { included: boolean; label: string }[];
   cta: string;
+  href: string;
   featured?: boolean;
 };
 
@@ -14,30 +15,32 @@ const plans: Plan[] = [
     desc: "Cocok untuk barbershop yang baru mulai.",
     features: [
       { included: true, label: "1 Barber" },
-      { included: true, label: "20 Antrian/hari" },
+      { included: true, label: "30 Antrian/hari" },
       { included: true, label: "Dashboard Dasar" },
       { included: false, label: "Notifikasi WhatsApp" },
       { included: false, label: "Customer Display" },
     ],
     cta: "Mulai Gratis",
+    href: "/auth/register",
   },
   {
     name: "Professional",
-    price: "Rp99K",
+    price: "Rp149K",
     desc: "Untuk barbershop yang sudah berjalan serius.",
     features: [
       { included: true, label: "Hingga 5 Barber" },
-      { included: true, label: "Antrian Unlimited" },
+      { included: true, label: "100 Antrian/hari" },
       { included: true, label: "Dashboard + Laporan Lengkap" },
       { included: true, label: "Notifikasi WhatsApp" },
       { included: true, label: "Customer Display (TV)" },
     ],
     cta: "Coba Gratis 14 Hari",
+    href: "/auth/register",
     featured: true,
   },
   {
     name: "Enterprise",
-    price: "Rp249K",
+    price: "Rp349K",
     desc: "Untuk chain barbershop dengan banyak cabang.",
     features: [
       { included: true, label: "Unlimited Barber" },
@@ -47,6 +50,7 @@ const plans: Plan[] = [
       { included: true, label: "Support Priority 24/7" },
     ],
     cta: "Hubungi Sales",
+    href: "https://wa.me/6285239110184?text=Halo%2C+saya+tertarik+dengan+paket+Enterprise+QueueBarber",
   },
 ];
 
@@ -130,7 +134,7 @@ export default function PricingSection() {
               </ul>
 
               <a
-                href="#"
+                href={plan.href}
                 className={`block w-full py-3 rounded-xl font-semibold text-center transition-all duration-300 ${
                   plan.featured
                     ? "gold-gradient text-dark-900 font-bold hover:shadow-lg hover:shadow-barber-400/25"
