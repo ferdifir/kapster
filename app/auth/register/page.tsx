@@ -24,12 +24,13 @@ export default function RegisterPage() {
     setLoading(true);
     setError("");
 
+    const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || location.origin;
     const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
       options: {
         data: { full_name: form.full_name },
-        emailRedirectTo: `${location.origin}/auth/callback?next=/onboarding`,
+        emailRedirectTo: `${siteUrl}/auth/callback?next=/onboarding`,
       },
     });
 
@@ -54,11 +55,12 @@ export default function RegisterPage() {
   const handleResend = async () => {
     setResendLoading(true);
     setResendMessage("");
+    const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || location.origin;
     const { error } = await supabase.auth.resend({
       type: "signup",
       email: form.email,
       options: {
-        emailRedirectTo: `${location.origin}/auth/callback?next=/onboarding`,
+        emailRedirectTo: `${siteUrl}/auth/callback?next=/onboarding`,
       },
     });
     setResendLoading(false);
