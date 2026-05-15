@@ -93,7 +93,7 @@ export default function BarbersManager({ barbershop, barbers: initial, maxBarber
 
   const copyInvite = (token: string | null) => {
     if (!token) return;
-    const url = `${window.location.origin}/barber/invite/${token}`;
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL || window.location.origin}/barber/invite/${token}`;
     navigator.clipboard.writeText(url).then(() => {
       setCopied(token);
       setTimeout(() => setCopied(null), 2000);
