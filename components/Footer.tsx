@@ -1,9 +1,19 @@
 import Logo from "./Logo";
 
 const footerLinks = {
-  Produk: ["Fitur", "Harga", "Integrasi", "Changelog"],
-  Perusahaan: ["Tentang Kami", "Blog", "Karir", "Kontak"],
-  Legal: ["Privacy Policy", "Terms of Service", "Cookie Policy"],
+  Produk: [
+    { label: "Fitur", href: "#fitur" },
+    { label: "Harga", href: "#harga" },
+  ],
+  Dukungan: [
+    { label: "Hubungi Sales", href: "https://wa.me/6285239110184?text=Halo%2C+saya+ingin+tahu+lebih+tentang+QueueBarber" },
+    { label: "Masuk Dashboard", href: "/auth/login" },
+  ],
+  Legal: [
+    { label: "Kebijakan Privasi", href: "/privacy-policy" },
+    { label: "Syarat & Ketentuan", href: "/terms-of-service" },
+    { label: "Kebijakan Cookie", href: "/cookie-policy" },
+  ],
 };
 
 export default function Footer() {
@@ -30,9 +40,9 @@ export default function Footer() {
               <h4 className="font-semibold text-white mb-4">{section}</h4>
               <ul className="space-y-3">
                 {links.map((link) => (
-                  <li key={link}>
-                    <a href="#" className="text-dark-400 hover:text-barber-400 transition-colors text-sm">
-                      {link}
+                  <li key={link.label}>
+                    <a href={link.href} className="text-dark-400 hover:text-barber-400 transition-colors text-sm">
+                      {link.label}
                     </a>
                   </li>
                 ))}

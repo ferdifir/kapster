@@ -164,12 +164,12 @@ export default function RegisterPage() {
 
           <p className="text-dark-500 text-xs text-center">
             Dengan mendaftar kamu setuju dengan{" "}
-            <a href="#" className="text-barber-400">
-              Terms of Service
+            <a href="/terms-of-service" className="text-barber-400 hover:text-barber-300">
+              Syarat & Ketentuan
             </a>{" "}
             dan{" "}
-            <a href="#" className="text-barber-400">
-              Privacy Policy
+            <a href="/privacy-policy" className="text-barber-400 hover:text-barber-300">
+              Kebijakan Privasi
             </a>{" "}
             kami.
           </p>

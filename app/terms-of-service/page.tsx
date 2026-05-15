@@ -1,0 +1,175 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import Logo from "@/components/Logo";
+
+export const metadata: Metadata = {
+  title: "Syarat & Ketentuan",
+  description: "Syarat dan Ketentuan penggunaan layanan QueueBarber.",
+};
+
+export default function TermsOfServicePage() {
+  return (
+    <div className="min-h-screen bg-dark-950">
+      <header className="border-b border-dark-800/50 px-4 py-5">
+        <div className="max-w-3xl mx-auto">
+          <Link href="/" className="inline-flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg gold-gradient flex items-center justify-center">
+              <Logo className="w-4 h-4 text-dark-900" />
+            </div>
+            <span className="font-display text-lg font-bold text-white">
+              Queue<span className="text-barber-400">Barber</span>
+            </span>
+          </Link>
+        </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto px-4 py-16">
+        <h1 className="font-display text-3xl font-bold text-white mb-2">Syarat & Ketentuan</h1>
+        <p className="text-dark-400 text-sm mb-12">Terakhir diperbarui: 15 Mei 2026</p>
+
+        <div className="prose prose-invert prose-sm max-w-none space-y-10">
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-white mb-4">1. Penerimaan Syarat</h2>
+            <p className="text-dark-300 leading-relaxed">
+              Dengan mendaftar atau menggunakan QueueBarber, Anda menyatakan telah membaca, memahami, dan setuju terikat oleh syarat dan ketentuan ini. Jika tidak setuju, jangan gunakan layanan kami.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-white mb-4">2. Deskripsi Layanan</h2>
+            <p className="text-dark-300 leading-relaxed">
+              QueueBarber adalah platform manajemen antrian digital untuk barbershop yang mencakup: manajemen antrian real-time, dashboard operasional, manajemen barber dan layanan, serta halaman antrian publik untuk pelanggan.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-white mb-4">3. Akun Pengguna</h2>
+            <ul className="list-disc list-inside space-y-2 text-dark-300 leading-relaxed">
+              <li>Anda bertanggung jawab menjaga kerahasiaan kredensial akun Anda</li>
+              <li>Satu akun untuk satu entitas bisnis. Berbagi akun antar bisnis berbeda tidak diizinkan</li>
+              <li>Anda wajib memberikan informasi yang akurat dan terkini saat mendaftar</li>
+              <li>Segera beri tahu kami jika mendeteksi akses tidak sah ke akun Anda</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-white mb-4">4. Paket Langganan & Pembayaran</h2>
+            <div className="space-y-4 text-dark-300 leading-relaxed">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b border-dark-700">
+                      <th className="text-left py-2 pr-4 text-white font-semibold">Paket</th>
+                      <th className="text-left py-2 pr-4 text-white font-semibold">Harga</th>
+                      <th className="text-left py-2 pr-4 text-white font-semibold">Barber</th>
+                      <th className="text-left py-2 text-white font-semibold">Antrian/hari</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-dark-800">
+                    <tr>
+                      <td className="py-2 pr-4">Starter</td>
+                      <td className="py-2 pr-4">Gratis</td>
+                      <td className="py-2 pr-4">1</td>
+                      <td className="py-2">30</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-4">Professional</td>
+                      <td className="py-2 pr-4">Rp149.000/bulan</td>
+                      <td className="py-2 pr-4">5</td>
+                      <td className="py-2">100</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-4">Enterprise</td>
+                      <td className="py-2 pr-4">Rp349.000/bulan</td>
+                      <td className="py-2 pr-4">Unlimited</td>
+                      <td className="py-2">Unlimited</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>Pembayaran diproses melalui <strong className="text-white">Pakasir</strong>. Langganan berlaku 30 hari sejak pembayaran dikonfirmasi.</p>
+              <p>Kami tidak menawarkan refund setelah pembayaran berhasil. Jika ada masalah teknis dari pihak kami, kami akan memperpanjang masa langganan Anda.</p>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-white mb-4">5. Penggunaan yang Diizinkan</h2>
+            <p className="text-dark-300 leading-relaxed mb-3">Layanan hanya boleh digunakan untuk:</p>
+            <ul className="list-disc list-inside space-y-2 text-dark-300 leading-relaxed">
+              <li>Manajemen antrian barbershop atau usaha perawatan rambut yang sah</li>
+              <li>Tujuan bisnis yang legal berdasarkan hukum Indonesia</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-white mb-4">6. Larangan</h2>
+            <ul className="list-disc list-inside space-y-2 text-dark-300 leading-relaxed">
+              <li>Menyalahgunakan layanan untuk aktivitas ilegal atau penipuan</li>
+              <li>Mencoba meretas, reverse-engineering, atau mengganggu infrastruktur kami</li>
+              <li>Menggunakan bot untuk mengisi antrian secara massal</li>
+              <li>Mendaftarkan akun palsu atau identitas fiktif</li>
+              <li>Menjual kembali akses layanan kepada pihak lain</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-white mb-4">7. Ketersediaan Layanan</h2>
+            <p className="text-dark-300 leading-relaxed">
+              Kami berupaya menjaga uptime 99%+, namun tidak menjamin layanan bebas gangguan sepenuhnya. Pemeliharaan terjadwal akan diberitahukan terlebih dahulu. Kami tidak bertanggung jawab atas kerugian akibat downtime di luar kendali kami.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-white mb-4">8. Penangguhan & Penghentian Akun</h2>
+            <p className="text-dark-300 leading-relaxed">
+              Kami berhak menangguhkan atau menghapus akun yang melanggar syarat ini tanpa pemberitahuan sebelumnya. Untuk pelanggaran ringan, kami akan mengirimkan peringatan terlebih dahulu. Anda dapat menghapus akun kapan saja melalui dashboard atau dengan menghubungi kami.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-white mb-4">9. Batasan Tanggung Jawab</h2>
+            <p className="text-dark-300 leading-relaxed">
+              Layanan disediakan &ldquo;sebagaimana adanya&rdquo;. Kami tidak bertanggung jawab atas kerugian tidak langsung, kehilangan pendapatan, atau kerugian data akibat penggunaan atau ketidakmampuan menggunakan layanan. Tanggung jawab maksimal kami dibatasi pada jumlah yang Anda bayarkan dalam 30 hari terakhir.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-white mb-4">10. Hukum yang Berlaku</h2>
+            <p className="text-dark-300 leading-relaxed">
+              Syarat ini tunduk pada hukum Republik Indonesia. Sengketa diselesaikan secara musyawarah terlebih dahulu, dan jika tidak tercapai kesepakatan, melalui Pengadilan Negeri yang berwenang.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-white mb-4">11. Perubahan Syarat</h2>
+            <p className="text-dark-300 leading-relaxed">
+              Kami dapat memperbarui syarat ini kapan saja. Perubahan signifikan akan diberitahukan via email 7 hari sebelum berlaku. Penggunaan layanan setelah tanggal efektif berarti Anda menerima perubahan tersebut.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-white mb-4">12. Kontak</h2>
+            <p className="text-dark-300 leading-relaxed">
+              Pertanyaan mengenai syarat ini:{" "}
+              <a href="mailto:hi@queuebarber.my.id" className="text-barber-400 hover:text-barber-300">
+                hi@queuebarber.my.id
+              </a>
+              {" "}atau WhatsApp{" "}
+              <a href="https://wa.me/6285239110184" className="text-barber-400 hover:text-barber-300">
+                085239110184
+              </a>
+            </p>
+          </section>
+
+        </div>
+
+        <div className="mt-16 pt-8 border-t border-dark-800/50 flex gap-6 text-sm">
+          <Link href="/privacy-policy" className="text-dark-400 hover:text-barber-400 transition-colors">Kebijakan Privasi</Link>
+          <Link href="/cookie-policy" className="text-dark-400 hover:text-barber-400 transition-colors">Kebijakan Cookie</Link>
+          <Link href="/" className="text-dark-400 hover:text-barber-400 transition-colors">Beranda</Link>
+        </div>
+      </main>
+    </div>
+  );
+}
