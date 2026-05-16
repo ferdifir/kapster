@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { MapCNMap, MapCNMarker } from '@/types/mapcn';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 interface MapPickerProps {
   latitude: number | null;
@@ -10,33 +11,11 @@ interface MapPickerProps {
 }
 
 const DEFAULT_CENTER: [number, number] = [106.8456, -6.2088];
-const MAPCN_SCRIPT_URL = 'https://api.mapcn.dev/mapcn.js';
-
-function loadMapCNScript(): Promise<void> {
-  if (window.mapcn) return Promise.resolve();
-  if (document.querySelector(`script[src="${MAPCN_SCRIPT_URL}"]`)) {
-    return new Promise((resolve) => {
-      const check = () => {
-        if (window.mapcn) resolve();
-        else setTimeout(check, 50);
-      };
-      check();
-    });
-  }
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = MAPCN_SCRIPT_URL;
-    script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('Gagal memuat peta'));
-    document.head.appendChild(script);
-  });
-}
 
 export default function MapPicker({ latitude, longitude, onLocationChange }: MapPickerProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<MapCNMap | null>(null);
-  const markerRef = useRef<MapCNMarker | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const markerRef = useRef<maplibregl.Marker | null>(null);
   const onLocationChangeRef = useRef(onLocationChange);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,33 +27,59 @@ export default function MapPicker({ latitude, longitude, onLocationChange }: Map
 
     let cancelled = false;
 
-    const initMap = async () => {
+    const initMap = () => {
       try {
-        await loadMapCNScript();
-
-        if (cancelled || !window.mapcn) return;
-
         const center: [number, number] =
           longitude != null && latitude != null ? [longitude, latitude] : DEFAULT_CENTER;
 
-        const map = new window.mapcn.Map(mapContainer.current!, {
+        const map = new maplibregl.Map({
+          container: mapContainer.current!,
+          style: {
+            version: 8,
+            name: 'Dark',
+            sources: {
+              osm: {
+                type: 'raster',
+                tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                tileSize: 256,
+                attribution: '© OpenStreetMap contributors',
+              },
+            },
+            layers: [
+              {
+                id: 'osm-tiles',
+                type: 'raster',
+                source: 'osm',
+              },
+            ],
+          },
           center,
           zoom: 13,
-          mapStyle: 'dark',
-          map: 'osm',
+        });
+
+        map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+        map.on('load', () => {
+          if (cancelled) return;
+          setLoading(false);
+        });
+
+        map.on('error', () => {
+          if (cancelled) return;
+          setError('Gagal memuat peta');
+          setLoading(false);
         });
 
         mapRef.current = map;
 
-        map.on('click', (e: unknown) => {
-          const event = e as { lnglat: { lat: number; lng: number } };
-          const { lat, lng } = event.lnglat;
+        map.on('click', (e) => {
+          const { lat, lng } = e.lngLat;
           onLocationChangeRef.current({ latitude: lat, longitude: lng });
 
           if (markerRef.current) {
             markerRef.current.setLngLat([lng, lat]);
           } else {
-            const marker = new window.mapcn!.Marker({ draggable: true });
+            const marker = new maplibregl.Marker({ draggable: true });
             marker.setLngLat([lng, lat]);
             marker.addTo(map);
             markerRef.current = marker;
@@ -82,13 +87,11 @@ export default function MapPicker({ latitude, longitude, onLocationChange }: Map
         });
 
         if (latitude != null && longitude != null) {
-          const marker = new window.mapcn.Marker({ draggable: true });
+          const marker = new maplibregl.Marker({ draggable: true });
           marker.setLngLat([longitude, latitude]);
           marker.addTo(map);
           markerRef.current = marker;
         }
-
-        if (!cancelled) setLoading(false);
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : 'Terjadi kesalahan');
@@ -125,7 +128,7 @@ export default function MapPicker({ latitude, longitude, onLocationChange }: Map
         <div
           ref={mapContainer}
           data-testid="map-container"
-          className="w-full h-64 rounded-2xl border border-dark-700/30 bg-dark-800/50"
+          className="w-full h-64 rounded-2xl border border-dark-700/30 overflow-hidden"
         />
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-dark-800/80">

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { MapCNMap, MapCNMarker, MapCNPopup } from '@/types/mapcn';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 interface BarbershopMarker {
   id: string;
@@ -18,38 +19,7 @@ interface MapViewProps {
   onMarkerClick?: (slug: string) => void;
 }
 
-interface MapCNLib {
-  Map: new (el: HTMLElement, options?: object) => MapCNMap;
-  Marker: new (options?: { element?: HTMLElement }) => MapCNMarker;
-  Popup: new (options?: object) => MapCNPopup;
-}
-
 const DEFAULT_CENTER: [number, number] = [106.8456, -6.2088];
-const MAPCN_SCRIPT_URL = 'https://api.mapcn.dev/mapcn.js';
-const SCRIPT_LOAD_TIMEOUT = 10000;
-
-function loadMapCNScript(): Promise<void> {
-  if (window.mapcn) return Promise.resolve();
-  if (document.querySelector(`script[src="${MAPCN_SCRIPT_URL}"]`)) {
-    return new Promise((resolve, reject) => {
-      const start = Date.now();
-      const check = () => {
-        if (window.mapcn) resolve();
-        else if (Date.now() - start > SCRIPT_LOAD_TIMEOUT) reject(new Error('Timeout memuat peta'));
-        else setTimeout(check, 50);
-      };
-      check();
-    });
-  }
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = MAPCN_SCRIPT_URL;
-    script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('Gagal memuat peta'));
-    document.head.appendChild(script);
-  });
-}
 
 function escapeHtml(str: string): string {
   return str
@@ -80,9 +50,9 @@ function createMarkerElement(name: string): HTMLElement {
 
 export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<MapCNMap | null>(null);
-  const markersRef = useRef<MapCNMarker[]>([]);
-  const popupsRef = useRef<MapCNPopup[]>([]);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const markersRef = useRef<maplibregl.Marker[]>([]);
+  const popupsRef = useRef<maplibregl.Popup[]>([]);
   const onMarkerClickRef = useRef(onMarkerClick);
   const isInitializedRef = useRef(false);
   const prevBarbershopIdsRef = useRef<string[]>([]);
@@ -97,30 +67,54 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
 
     let cancelled = false;
 
-    const initMap = async () => {
+    const initMap = () => {
       try {
-        await loadMapCNScript();
-
-        if (cancelled || !window.mapcn) return;
-
         const center = barbershops.length > 0
           ? [barbershops[0].longitude, barbershops[0].latitude] as [number, number]
           : DEFAULT_CENTER;
 
-        const map = new window.mapcn.Map(container, {
+        const map = new maplibregl.Map({
+          container,
+          style: {
+            version: 8,
+            name: 'Dark',
+            sources: {
+              osm: {
+                type: 'raster',
+                tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                tileSize: 256,
+                attribution: '© OpenStreetMap contributors',
+              },
+            },
+            layers: [
+              {
+                id: 'osm-tiles',
+                type: 'raster',
+                source: 'osm',
+              },
+            ],
+          },
           center,
           zoom: 12,
-          mapStyle: 'dark',
-          map: 'osm',
+        });
+
+        map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+        map.on('load', () => {
+          if (cancelled) return;
+          addMarkers(barbershops, map);
+          isInitializedRef.current = true;
+          prevBarbershopIdsRef.current = barbershops.map((b) => b.id);
+          setLoading(false);
+        });
+
+        map.on('error', () => {
+          if (cancelled) return;
+          setError('Gagal memuat peta');
+          setLoading(false);
         });
 
         mapRef.current = map;
-
-        addMarkers(barbershops, window.mapcn, map);
-        isInitializedRef.current = true;
-        prevBarbershopIdsRef.current = barbershops.map((b) => b.id);
-
-        if (!cancelled) setLoading(false);
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : 'Terjadi kesalahan');
@@ -141,23 +135,22 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
     };
   }, []);
 
-  // Update markers when barbershops prop changes (after map is initialized)
   useEffect(() => {
-    if (!isInitializedRef.current || !mapRef.current || !window.mapcn) return;
+    if (!isInitializedRef.current || !mapRef.current) return;
     const currentIds = barbershops.map((b) => b.id);
     if (JSON.stringify(currentIds) === JSON.stringify(prevBarbershopIdsRef.current)) return;
     prevBarbershopIdsRef.current = currentIds;
     clearMarkers();
-    addMarkers(barbershops, window.mapcn, mapRef.current);
+    addMarkers(barbershops, mapRef.current);
   }, [barbershops]);
 
-  function addMarkers(shops: BarbershopMarker[], mapcn: MapCNLib, map: MapCNMap) {
+  function addMarkers(shops: BarbershopMarker[], map: maplibregl.Map) {
     const validBarbershops = shops.filter(
       (shop) => shop.latitude != null && shop.longitude != null
     );
 
     validBarbershops.forEach((shop) => {
-      const marker = new mapcn.Marker({
+      const marker = new maplibregl.Marker({
         element: createMarkerElement(shop.name),
       });
 
@@ -165,9 +158,10 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
       marker.addTo(map);
       markersRef.current.push(marker);
 
-      const popup = new mapcn.Popup({
+      const popup = new maplibregl.Popup({
         closeButton: true,
         closeOnClick: true,
+        maxWidth: '300px',
       });
 
       popup.setHTML(`
@@ -183,7 +177,7 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
         </div>
       `);
 
-      marker.on('click', () => {
+      marker.getElement().addEventListener('click', () => {
         popup.setLngLat([shop.longitude, shop.latitude]);
         popup.addTo(map);
         if (onMarkerClickRef.current) {
@@ -207,7 +201,7 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
       <div
         ref={mapContainer}
         data-testid="map-view-container"
-        className="w-full h-full min-h-[500px] rounded-2xl border border-dark-700/30 bg-dark-800/50"
+        className="w-full h-full min-h-[500px] rounded-2xl border border-dark-700/30 overflow-hidden"
       />
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-dark-800/80">
