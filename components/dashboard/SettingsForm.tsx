@@ -29,6 +29,7 @@ export default function SettingsForm({ barbershop }: { barbershop: Barbershop })
   const [error, setError] = useState("");
   const [locationSaved, setLocationSaved] = useState(false);
   const [locationSaving, setLocationSaving] = useState(false);
+  const [locationError, setLocationError] = useState("");
 
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -140,20 +141,28 @@ export default function SettingsForm({ barbershop }: { barbershop: Barbershop })
       <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6 space-y-4">
         <h2 className="font-semibold text-white">Lokasi Barbershop</h2>
         <MapPicker
-          latitude={barbershop.latitude ?? null}
-          longitude={barbershop.longitude ?? null}
-          onLocationChange={async (coords) => {
-            setLocationSaving(true);
+          latitude={barbershop.latitude}
+          longitude={barbershop.longitude}
+          onLocationChange={(coords) => {
+            setLocationError("");
             setLocationSaved(false);
-            const result = await updateBarbershopLocation(barbershop.id, coords.latitude, coords.longitude);
-            setLocationSaving(false);
-            if (!result.error) {
-              setLocationSaved(true);
-            }
+            setLocationSaving(true);
+            updateBarbershopLocation(barbershop.id, coords.latitude, coords.longitude).then((result) => {
+              setLocationSaving(false);
+              if (result.error) {
+                setLocationError(result.error);
+              } else {
+                setLocationSaved(true);
+                setTimeout(() => setLocationSaved(false), 3000);
+              }
+            });
           }}
         />
         {locationSaving && (
           <p className="text-sm text-dark-400">Menyimpan lokasi...</p>
+        )}
+        {locationError && (
+          <p className="text-sm text-red-400">{locationError}</p>
         )}
         {locationSaved && (
           <p className="text-sm text-green-400">Lokasi berhasil disimpan</p>
