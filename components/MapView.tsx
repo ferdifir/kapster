@@ -18,15 +18,24 @@ interface MapViewProps {
   onMarkerClick?: (slug: string) => void;
 }
 
+interface MapCNLib {
+  Map: new (el: HTMLElement, options?: object) => MapCNMap;
+  Marker: new (options?: { element?: HTMLElement }) => MapCNMarker;
+  Popup: new (options?: object) => MapCNPopup;
+}
+
 const DEFAULT_CENTER: [number, number] = [106.8456, -6.2088];
 const MAPCN_SCRIPT_URL = 'https://api.mapcn.dev/mapcn.js';
+const SCRIPT_LOAD_TIMEOUT = 10000;
 
 function loadMapCNScript(): Promise<void> {
   if (window.mapcn) return Promise.resolve();
   if (document.querySelector(`script[src="${MAPCN_SCRIPT_URL}"]`)) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+      const start = Date.now();
       const check = () => {
         if (window.mapcn) resolve();
+        else if (Date.now() - start > SCRIPT_LOAD_TIMEOUT) reject(new Error('Timeout memuat peta'));
         else setTimeout(check, 50);
       };
       check();
@@ -104,7 +113,7 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
 
         mapRef.current = map;
 
-        addMarkers(barbershops, map);
+        addMarkers(barbershops, window.mapcn, map);
 
         if (!cancelled) setLoading(false);
       } catch (err) {
@@ -127,13 +136,20 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
     };
   }, []);
 
-  function addMarkers(shops: BarbershopMarker[], map: MapCNMap) {
+  // Update markers when barbershops prop changes
+  useEffect(() => {
+    if (!mapRef.current || !window.mapcn) return;
+    clearMarkers();
+    addMarkers(barbershops, window.mapcn, mapRef.current);
+  }, [barbershops]);
+
+  function addMarkers(shops: BarbershopMarker[], mapcn: MapCNLib, map: MapCNMap) {
     const validBarbershops = shops.filter(
       (shop) => shop.latitude != null && shop.longitude != null
     );
 
     validBarbershops.forEach((shop) => {
-      const marker = new window.mapcn!.Marker({
+      const marker = new mapcn.Marker({
         element: createMarkerElement(shop.name),
       });
 
@@ -141,7 +157,7 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
       marker.addTo(map);
       markersRef.current.push(marker);
 
-      const popup = new window.mapcn!.Popup({
+      const popup = new mapcn.Popup({
         closeButton: true,
         closeOnClick: true,
       });
