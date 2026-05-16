@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import MapView from "@/components/MapView";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default async function PublicMapPage() {
   const supabase = await createClient();
@@ -12,16 +14,20 @@ export default async function PublicMapPage() {
     .not("longitude", "is", null);
 
   return (
-    <main className="min-h-screen p-4">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4">Peta Barbershop</h1>
-        <p className="text-dark-400 mb-4">
-          Temukan barbershop terdekat di sekitar Anda
-        </p>
-        <div className="h-[600px] rounded-2xl overflow-hidden border border-dark-700/30">
-          <MapView barbershops={barbershops ?? []} />
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-dark-950 p-4">
+        <div className="max-w-4xl mx-auto pt-8">
+          <h1 className="text-2xl font-bold mb-4">Peta Barbershop</h1>
+          <p className="text-dark-400 mb-4">
+            Temukan barbershop terdekat di sekitar Anda
+          </p>
+          <div className="h-[600px] rounded-2xl overflow-hidden border border-dark-700/30">
+            <MapView barbershops={barbershops ?? []} />
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+      <Footer />
+    </>
   );
 }
