@@ -1,35 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import type { MapCNMap, MapCNMarker } from '@/types/mapcn';
 
 interface MapPickerProps {
   latitude: number | null;
   longitude: number | null;
   onLocationChange: (coords: { latitude: number; longitude: number }) => void;
-}
-
-interface MapCNMap {
-  on: (event: string, callback: (e: { lnglat: { lat: number; lng: number } }) => void) => void;
-  setCenter: (center: [number, number]) => void;
-  setZoom: (zoom: number) => void;
-  addControl: (control: unknown) => void;
-  remove: () => void;
-}
-
-interface MapCNMarker {
-  addTo: (map: unknown) => void;
-  setLngLat: (lnglat: [number, number]) => void;
-  on: (event: string, callback: () => void) => void;
-  remove: () => void;
-}
-
-declare global {
-  interface Window {
-    mapcn?: {
-      Map: new (el: HTMLElement, options?: object) => MapCNMap;
-      Marker: new (options?: object) => MapCNMarker;
-    };
-  }
 }
 
 const DEFAULT_CENTER: [number, number] = [106.8456, -6.2088];
@@ -89,8 +66,9 @@ export default function MapPicker({ latitude, longitude, onLocationChange }: Map
 
         mapRef.current = map;
 
-        map.on('click', (e: { lnglat: { lat: number; lng: number } }) => {
-          const { lat, lng } = e.lnglat;
+        map.on('click', (e: unknown) => {
+          const event = e as { lnglat: { lat: number; lng: number } };
+          const { lat, lng } = event.lnglat;
           onLocationChangeRef.current({ latitude: lat, longitude: lng });
 
           if (markerRef.current) {
