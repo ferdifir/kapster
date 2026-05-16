@@ -8,31 +8,63 @@ interface MapPickerProps {
   onLocationChange: (coords: { latitude: number; longitude: number }) => void;
 }
 
+interface MapCNMap {
+  on: (event: string, callback: (e: { lnglat: { lat: number; lng: number } }) => void) => void;
+  setCenter: (center: [number, number]) => void;
+  setZoom: (zoom: number) => void;
+  addControl: (control: unknown) => void;
+  remove: () => void;
+}
+
+interface MapCNMarker {
+  addTo: (map: unknown) => void;
+  setLngLat: (lnglat: [number, number]) => void;
+  on: (event: string, callback: () => void) => void;
+  remove: () => void;
+}
+
 declare global {
   interface Window {
     mapcn?: {
-      Map: new (el: HTMLElement, options?: object) => {
-        on: (event: string, callback: (e: { lnglat: { lat: number; lng: number } }) => void) => void;
-        setCenter: (center: [number, number]) => void;
-        setZoom: (zoom: number) => void;
-        addControl: (control: unknown) => void;
-      };
-      Marker: new (options?: object) => {
-        addTo: (map: unknown) => void;
-        setLngLat: (lnglat: [number, number]) => void;
-        on: (event: string, callback: () => void) => void;
-        remove: () => void;
-      };
+      Map: new (el: HTMLElement, options?: object) => MapCNMap;
+      Marker: new (options?: object) => MapCNMarker;
     };
   }
 }
 
+const DEFAULT_CENTER: [number, number] = [106.8456, -6.2088];
+const MAPCN_SCRIPT_URL = 'https://api.mapcn.dev/mapcn.js';
+
+function loadMapCNScript(): Promise<void> {
+  if (window.mapcn) return Promise.resolve();
+  if (document.querySelector(`script[src="${MAPCN_SCRIPT_URL}"]`)) {
+    return new Promise((resolve) => {
+      const check = () => {
+        if (window.mapcn) resolve();
+        else setTimeout(check, 50);
+      };
+      check();
+    });
+  }
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = MAPCN_SCRIPT_URL;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Gagal memuat peta'));
+    document.head.appendChild(script);
+  });
+}
+
 export default function MapPicker({ latitude, longitude, onLocationChange }: MapPickerProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<unknown>(null);
-  const markerRef = useRef<unknown>(null);
+  const mapRef = useRef<MapCNMap | null>(null);
+  const markerRef = useRef<MapCNMarker | null>(null);
+  const onLocationChangeRef = useRef(onLocationChange);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  onLocationChangeRef.current = onLocationChange;
 
   useEffect(() => {
     if (!mapContainer.current || typeof window === 'undefined') return;
@@ -41,21 +73,12 @@ export default function MapPicker({ latitude, longitude, onLocationChange }: Map
 
     const initMap = async () => {
       try {
-        if (!window.mapcn) {
-          const script = document.createElement('script');
-          script.src = 'https://api.mapcn.dev/mapcn.js';
-          script.async = true;
-          document.head.appendChild(script);
-          await new Promise<void>((resolve, reject) => {
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Gagal memuat peta'));
-          });
-        }
+        await loadMapCNScript();
 
         if (cancelled || !window.mapcn) return;
 
         const center: [number, number] =
-          longitude != null && latitude != null ? [longitude, latitude] : [106.8456, -6.2088];
+          longitude != null && latitude != null ? [longitude, latitude] : DEFAULT_CENTER;
 
         const map = new window.mapcn.Map(mapContainer.current!, {
           center,
@@ -68,10 +91,10 @@ export default function MapPicker({ latitude, longitude, onLocationChange }: Map
 
         map.on('click', (e: { lnglat: { lat: number; lng: number } }) => {
           const { lat, lng } = e.lnglat;
-          onLocationChange({ latitude: lat, longitude: lng });
+          onLocationChangeRef.current({ latitude: lat, longitude: lng });
 
           if (markerRef.current) {
-            (markerRef.current as { setLngLat: (lnglat: [number, number]) => void }).setLngLat([lng, lat]);
+            markerRef.current.setLngLat([lng, lat]);
           } else {
             const marker = new window.mapcn!.Marker({ draggable: true });
             marker.setLngLat([lng, lat]);
@@ -100,14 +123,21 @@ export default function MapPicker({ latitude, longitude, onLocationChange }: Map
 
     return () => {
       cancelled = true;
+      if (markerRef.current) {
+        markerRef.current.remove();
+        markerRef.current = null;
+      }
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
     };
   }, []);
 
-  // Sync marker position when props change
   useEffect(() => {
-    if (!mapRef.current || !markerRef.current) return;
+    if (!markerRef.current) return;
     if (latitude != null && longitude != null) {
-      (markerRef.current as { setLngLat: (lnglat: [number, number]) => void }).setLngLat([longitude, latitude]);
+      markerRef.current.setLngLat([longitude, latitude]);
     }
   }, [latitude, longitude]);
 
