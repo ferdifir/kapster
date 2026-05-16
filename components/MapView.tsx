@@ -85,6 +85,7 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
   const popupsRef = useRef<MapCNPopup[]>([]);
   const onMarkerClickRef = useRef(onMarkerClick);
   const isInitializedRef = useRef(false);
+  const prevBarbershopIdsRef = useRef<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -117,6 +118,7 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
 
         addMarkers(barbershops, window.mapcn, map);
         isInitializedRef.current = true;
+        prevBarbershopIdsRef.current = barbershops.map((b) => b.id);
 
         if (!cancelled) setLoading(false);
       } catch (err) {
@@ -142,6 +144,9 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
   // Update markers when barbershops prop changes (after map is initialized)
   useEffect(() => {
     if (!isInitializedRef.current || !mapRef.current || !window.mapcn) return;
+    const currentIds = barbershops.map((b) => b.id);
+    if (JSON.stringify(currentIds) === JSON.stringify(prevBarbershopIdsRef.current)) return;
+    prevBarbershopIdsRef.current = currentIds;
     clearMarkers();
     addMarkers(barbershops, window.mapcn, mapRef.current);
   }, [barbershops]);
