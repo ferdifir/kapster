@@ -30,3 +30,20 @@ export async function updateBarbershopSettings(
   revalidatePath("/dashboard");
   return {};
 }
+
+export async function updateBarbershopLocation(
+  barbershopId: string,
+  latitude: number,
+  longitude: number
+) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("barbershops")
+    .update({ latitude, longitude })
+    .eq("id", barbershopId);
+
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/settings");
+  return { success: true };
+}

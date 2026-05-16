@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateBarbershopSettings } from "@/app/dashboard/settings/actions";
+import { updateBarbershopSettings, updateBarbershopLocation } from "@/app/dashboard/settings/actions";
+import MapPicker from "@/components/MapPicker";
 
 type Barbershop = {
   id: string;
@@ -11,6 +12,8 @@ type Barbershop = {
   city: string | null;
   phone: string | null;
   wa_number: string | null;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 export default function SettingsForm({ barbershop }: { barbershop: Barbershop }) {
@@ -24,6 +27,8 @@ export default function SettingsForm({ barbershop }: { barbershop: Barbershop })
   const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [locationSaved, setLocationSaved] = useState(false);
+  const [locationSaving, setLocationSaving] = useState(false);
 
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -130,6 +135,29 @@ export default function SettingsForm({ barbershop }: { barbershop: Barbershop })
             <p className="text-dark-600 text-xs mt-1">Digunakan untuk notifikasi WhatsApp ke pelanggan</p>
           </div>
         </div>
+      </div>
+
+      <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6 space-y-4">
+        <h2 className="font-semibold text-white">Lokasi Barbershop</h2>
+        <MapPicker
+          latitude={barbershop.latitude ?? null}
+          longitude={barbershop.longitude ?? null}
+          onLocationChange={async (coords) => {
+            setLocationSaving(true);
+            setLocationSaved(false);
+            const result = await updateBarbershopLocation(barbershop.id, coords.latitude, coords.longitude);
+            setLocationSaving(false);
+            if (!result.error) {
+              setLocationSaved(true);
+            }
+          }}
+        />
+        {locationSaving && (
+          <p className="text-sm text-dark-400">Menyimpan lokasi...</p>
+        )}
+        {locationSaved && (
+          <p className="text-sm text-green-400">Lokasi berhasil disimpan</p>
+        )}
       </div>
 
       <button

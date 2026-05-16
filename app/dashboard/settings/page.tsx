@@ -13,7 +13,7 @@ export default async function SettingsPage() {
 
   const { data: barbershop } = await supabase
     .from("barbershops")
-    .select("id, name, slug, address, city, phone, wa_number")
+    .select("id, name, slug, address, city, phone, wa_number, latitude, longitude")
     .eq("owner_id", user.id)
     .single();
 
