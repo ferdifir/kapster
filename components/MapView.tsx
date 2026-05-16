@@ -84,13 +84,15 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
   const markersRef = useRef<MapCNMarker[]>([]);
   const popupsRef = useRef<MapCNPopup[]>([]);
   const onMarkerClickRef = useRef(onMarkerClick);
+  const isInitializedRef = useRef(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   onMarkerClickRef.current = onMarkerClick;
 
   useEffect(() => {
-    if (!mapContainer.current || typeof window === 'undefined') return;
+    const container = mapContainer.current;
+    if (!container || typeof window === 'undefined') return;
 
     let cancelled = false;
 
@@ -104,7 +106,7 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
           ? [barbershops[0].longitude, barbershops[0].latitude] as [number, number]
           : DEFAULT_CENTER;
 
-        const map = new window.mapcn.Map(mapContainer.current!, {
+        const map = new window.mapcn.Map(container, {
           center,
           zoom: 12,
           mapStyle: 'dark',
@@ -114,6 +116,7 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
         mapRef.current = map;
 
         addMarkers(barbershops, window.mapcn, map);
+        isInitializedRef.current = true;
 
         if (!cancelled) setLoading(false);
       } catch (err) {
@@ -136,9 +139,9 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
     };
   }, []);
 
-  // Update markers when barbershops prop changes
+  // Update markers when barbershops prop changes (after map is initialized)
   useEffect(() => {
-    if (!mapRef.current || !window.mapcn) return;
+    if (!isInitializedRef.current || !mapRef.current || !window.mapcn) return;
     clearMarkers();
     addMarkers(barbershops, window.mapcn, mapRef.current);
   }, [barbershops]);
