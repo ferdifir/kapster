@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { createPayment } from "./actions";
 import { PLAN_KEYS, PLAN_META, formatBillingPrice, type PlanKey } from "@/lib/config/plans";
 
-type Plan = PlanKey;
+type Plan = PlanKey | "enterprise";
 
 type Subscription = {
   plan: Plan;
@@ -54,7 +54,7 @@ export default function BillingManager({ subscription, payments, barberCount }: 
   const [upgradingPlan, setUpgradingPlan] = useState<Plan | null>(null);
   const [error, setError] = useState("");
 
-  const handleUpgrade = (plan: "pro" | "enterprise") => {
+  const handleUpgrade = (plan: PlanKey) => {
     setError("");
     setUpgradingPlan(plan);
     startTransition(async () => {
@@ -172,7 +172,7 @@ export default function BillingManager({ subscription, payments, barberCount }: 
                   </div>
                 ) : (
                   <button
-                    onClick={() => handleUpgrade(key as "pro" | "enterprise")}
+                    onClick={() => handleUpgrade(key as PlanKey)}
                     disabled={isCurrent || isPending}
                     className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-50 ${
                       isCurrent

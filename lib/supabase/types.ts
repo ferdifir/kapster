@@ -544,7 +544,7 @@ export type Database = {
     }
     Enums: {
       booking_status: "pending" | "confirmed" | "cancelled" | "done"
-      plan_type: "starter" | "pro" | "enterprise"
+      plan_type: "starter" | "basic" | "pro" | "enterprise"
       queue_entry_status: "waiting" | "called" | "serving" | "done" | "skip"
       subscription_status:
         | "active"
@@ -681,7 +681,7 @@ export const Constants = {
   public: {
     Enums: {
       booking_status: ["pending", "confirmed", "cancelled", "done"],
-      plan_type: ["starter", "pro", "enterprise"],
+      plan_type: ["starter", "basic", "pro", "enterprise"],
       queue_entry_status: ["waiting", "called", "serving", "done", "skip"],
       subscription_status: [
         "active",
