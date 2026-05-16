@@ -1,4 +1,4 @@
-import { PLAN_KEYS, PLAN_META, formatLandingPrice } from "@/lib/config/plans";
+import { PLAN_KEYS, PLAN_META, formatLandingPrice, PLAN_AMOUNTS, PLAN_ANNUAL_AMOUNTS, getYearlySavings } from "@/lib/config/plans";
 
 const CheckIcon = ({ included, featured }: { included: boolean; featured?: boolean }) =>
   included ? (
@@ -16,6 +16,12 @@ const CheckIcon = ({ included, featured }: { included: boolean; featured?: boole
     </svg>
   );
 
+const CrossIcon = () => (
+  <svg className="w-5 h-5 mt-0.5 shrink-0 text-dark-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
 export default function PricingSection() {
   return (
     <section id="harga" className="py-24 relative">
@@ -26,11 +32,11 @@ export default function PricingSection() {
             Harga
           </span>
           <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-            Investasi Kecil,
-            <span className="text-gold-gradient"> Hasil Besar</span>
+           Harga Terjangkau untuk
+            <span className="text-gold-gradient"> Barbershop Kecil</span>
           </h2>
           <p className="text-dark-300 text-lg max-w-2xl mx-auto">
-            Mulai gratis, upgrade kapan saja. Nggak ada kontrak jangka panjang.
+            Mulai gratis. Upgrade ketika butuh lebih banyak fitur.
           </p>
         </div>
 
