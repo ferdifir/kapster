@@ -17,7 +17,7 @@ export default async function PublicMapPage() {
     <>
       <Navbar />
       <main className="min-h-screen bg-dark-950 p-4">
-        <div className="max-w-4xl mx-auto pt-8">
+        <div className="max-w-4xl mx-auto pt-28">
           <h1 className="text-2xl font-bold mb-4">Peta Barbershop</h1>
           <p className="text-dark-400 mb-4">
             Temukan barbershop terdekat di sekitar Anda
