@@ -152,6 +152,7 @@ export default function MapView({ barbershops, onMarkerClick }: MapViewProps) {
   return (
     <div
       ref={mapContainer}
+      data-testid="map-view-container"
       className="w-full h-full min-h-[500px] rounded-2xl border border-dark-700/30 bg-dark-800/50"
     />
   );
