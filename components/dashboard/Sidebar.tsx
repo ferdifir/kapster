@@ -63,7 +63,7 @@ export default function DashboardSidebar({
             <Logo className="w-5 h-5 text-dark-900" />
           </div>
           <span className="font-display text-lg font-bold text-white">
-            Queue<span className="text-barber-400">Barber</span>
+            Kapster
           </span>
         </Link>
       </div>

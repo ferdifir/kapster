@@ -6,7 +6,7 @@ const footerLinks = {
     { label: "Harga", href: "#harga" },
   ],
   Dukungan: [
-    { label: "Hubungi Sales", href: "https://wa.me/6285239110184?text=Halo%2C+saya+ingin+tahu+lebih+tentang+QueueBarber" },
+    { label: "Hubungi Sales", href: "https://wa.me/6285239110184?text=Halo%2C+saya+ingin+tahu+lebih+tentang+Kapster" },
     { label: "Masuk Dashboard", href: "/auth/login" },
   ],
   Legal: [
@@ -27,7 +27,7 @@ export default function Footer() {
                 <Logo className="w-6 h-6 text-dark-900" />
               </div>
               <span className="font-display text-xl font-bold text-white">
-                Queue<span className="text-barber-400">Barber</span>
+                Kapster
               </span>
             </a>
             <p className="text-dark-400 text-sm leading-relaxed">
@@ -52,7 +52,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-dark-800/50 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-dark-500 text-sm">© 2026 QueueBarber. All rights reserved.</p>
+          <p className="text-dark-500 text-sm">© 2026 Kapster. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <a href="#" aria-label="Twitter" className="text-dark-400 hover:text-barber-400 transition-colors">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

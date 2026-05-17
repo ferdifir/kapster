@@ -4,7 +4,7 @@ import Logo from "@/components/Logo";
 
 export const metadata: Metadata = {
   title: "Kebijakan Cookie",
-  description: "Kebijakan Cookie QueueBarber — cookie apa yang kami gunakan dan mengapa.",
+  description: "Kebijakan Cookie Kapster — cookie apa yang kami gunakan dan mengapa.",
 };
 
 export default function CookiePolicyPage() {
@@ -17,7 +17,7 @@ export default function CookiePolicyPage() {
               <Logo className="w-4 h-4 text-dark-900" />
             </div>
             <span className="font-display text-lg font-bold text-white">
-              Queue<span className="text-barber-400">Barber</span>
+              Kapster
             </span>
           </Link>
         </div>
@@ -39,7 +39,7 @@ export default function CookiePolicyPage() {
           <section>
             <h2 className="font-display text-xl font-semibold text-white mb-4">2. Cookie yang Kami Gunakan</h2>
             <p className="text-dark-300 leading-relaxed mb-4">
-              QueueBarber hanya menggunakan cookie yang <strong className="text-white">diperlukan untuk operasional layanan</strong>. Kami tidak menggunakan cookie pelacak atau iklan.
+               Kapster hanya menggunakan cookie yang <strong className="text-white">diperlukan untuk operasional layanan</strong>. Kami tidak menggunakan cookie pelacak atau iklan.
             </p>
 
             <div className="overflow-x-auto">
@@ -93,8 +93,8 @@ export default function CookiePolicyPage() {
             <h2 className="font-display text-xl font-semibold text-white mb-4">5. Kontak</h2>
             <p className="text-dark-300 leading-relaxed">
               Pertanyaan mengenai cookie:{" "}
-              <a href="mailto:hi@queuebarber.my.id" className="text-barber-400 hover:text-barber-300">
-                hi@queuebarber.my.id
+               <a href="mailto:hi@kapster.my.id" className="text-barber-400 hover:text-barber-300">
+                hi@kapster.my.id
               </a>
             </p>
           </section>

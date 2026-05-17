@@ -4,7 +4,7 @@ import Logo from "@/components/Logo";
 
 export const metadata: Metadata = {
   title: "Kebijakan Privasi",
-  description: "Kebijakan Privasi QueueBarber — bagaimana kami mengumpulkan, menggunakan, dan melindungi data Anda.",
+  description: "Kebijakan Privasi Kapster — bagaimana kami mengumpulkan, menggunakan, dan melindungi data Anda.",
 };
 
 export default function PrivacyPolicyPage() {
@@ -17,7 +17,7 @@ export default function PrivacyPolicyPage() {
               <Logo className="w-4 h-4 text-dark-900" />
             </div>
             <span className="font-display text-lg font-bold text-white">
-              Queue<span className="text-barber-400">Barber</span>
+              Kapster
             </span>
           </Link>
         </div>
@@ -32,7 +32,7 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="font-display text-xl font-semibold text-white mb-4">1. Pendahuluan</h2>
             <p className="text-dark-300 leading-relaxed">
-              QueueBarber (&ldquo;kami&rdquo;, &ldquo;layanan&rdquo;) berkomitmen melindungi privasi pengguna. Kebijakan ini menjelaskan data apa yang kami kumpulkan, bagaimana kami menggunakannya, dan hak Anda atas data tersebut.
+               Kapster (&ldquo;kami&rdquo;, &ldquo;layanan&rdquo;) berkomitmen melindungi privasi pengguna. Kebijakan ini menjelaskan data apa yang kami kumpulkan, bagaimana kami menggunakannya, dan hak Anda atas data tersebut.
             </p>
           </section>
 
@@ -103,8 +103,8 @@ export default function PrivacyPolicyPage() {
             </ul>
             <p className="text-dark-300 leading-relaxed mt-4">
               Untuk mengajukan permintaan, hubungi kami di{" "}
-              <a href="mailto:hi@queuebarber.my.id" className="text-barber-400 hover:text-barber-300">
-                hi@queuebarber.my.id
+               <a href="mailto:hi@kapster.my.id" className="text-barber-400 hover:text-barber-300">
+                hi@kapster.my.id
               </a>
             </p>
           </section>
@@ -127,8 +127,8 @@ export default function PrivacyPolicyPage() {
             <h2 className="font-display text-xl font-semibold text-white mb-4">9. Kontak</h2>
             <p className="text-dark-300 leading-relaxed">
               Pertanyaan mengenai privasi:{" "}
-              <a href="mailto:hi@queuebarber.my.id" className="text-barber-400 hover:text-barber-300">
-                hi@queuebarber.my.id
+               <a href="mailto:hi@kapster.my.id" className="text-barber-400 hover:text-barber-300">
+                hi@kapster.my.id
               </a>
               {" "}atau WhatsApp{" "}
               <a href="https://wa.me/6285239110184" className="text-barber-400 hover:text-barber-300">

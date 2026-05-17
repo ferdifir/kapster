@@ -35,7 +35,7 @@ export async function createPayment(plan: PlanKey) {
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
   const redirect = encodeURIComponent(`${baseUrl}/dashboard/billing`);
-  const url = `https://app.pakasir.com/pay/queuebarber/${amount}?order_id=${orderId}&redirect=${redirect}`;
+  const url = `https://app.pakasir.com/pay/kapster/${amount}?order_id=${orderId}&redirect=${redirect}`;
 
   return { url };
 }

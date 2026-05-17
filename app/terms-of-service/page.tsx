@@ -4,7 +4,7 @@ import Logo from "@/components/Logo";
 
 export const metadata: Metadata = {
   title: "Syarat & Ketentuan",
-  description: "Syarat dan Ketentuan penggunaan layanan QueueBarber.",
+  description: "Syarat dan Ketentuan penggunaan layanan Kapster.",
 };
 
 export default function TermsOfServicePage() {
@@ -17,7 +17,7 @@ export default function TermsOfServicePage() {
               <Logo className="w-4 h-4 text-dark-900" />
             </div>
             <span className="font-display text-lg font-bold text-white">
-              Queue<span className="text-barber-400">Barber</span>
+              Kapster
             </span>
           </Link>
         </div>
@@ -32,14 +32,14 @@ export default function TermsOfServicePage() {
           <section>
             <h2 className="font-display text-xl font-semibold text-white mb-4">1. Penerimaan Syarat</h2>
             <p className="text-dark-300 leading-relaxed">
-              Dengan mendaftar atau menggunakan QueueBarber, Anda menyatakan telah membaca, memahami, dan setuju terikat oleh syarat dan ketentuan ini. Jika tidak setuju, jangan gunakan layanan kami.
+               Dengan mendaftar atau menggunakan Kapster, Anda menyatakan telah membaca, memahami, dan setuju terikat oleh syarat dan ketentuan ini. Jika tidak setuju, jangan gunakan layanan kami.
             </p>
           </section>
 
           <section>
             <h2 className="font-display text-xl font-semibold text-white mb-4">2. Deskripsi Layanan</h2>
             <p className="text-dark-300 leading-relaxed mb-3">
-              QueueBarber adalah platform manajemen antrian digital untuk barbershop yang mencakup:
+               Kapster adalah platform manajemen antrian digital untuk barbershop yang mencakup:
             </p>
             <ul className="list-disc list-inside space-y-1 text-dark-300 leading-relaxed mb-3">
               <li>Antrian digital real-time dengan tampilan publik</li>
@@ -160,8 +160,8 @@ export default function TermsOfServicePage() {
             <h2 className="font-display text-xl font-semibold text-white mb-4">12. Kontak</h2>
             <p className="text-dark-300 leading-relaxed">
               Pertanyaan mengenai syarat ini:{" "}
-              <a href="mailto:hi@queuebarber.my.id" className="text-barber-400 hover:text-barber-300">
-                hi@queuebarber.my.id
+               <a href="mailto:hi@kapster.my.id" className="text-barber-400 hover:text-barber-300">
+                hi@kapster.my.id
               </a>
               {" "}atau WhatsApp{" "}
               <a href="https://wa.me/6285239110184" className="text-barber-400 hover:text-barber-300">

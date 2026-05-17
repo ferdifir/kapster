@@ -89,7 +89,7 @@ export default function HeroSection() {
                       </svg>
                     </div>
                     <div>
-                      <div className="font-semibold text-white text-sm">QueueBarber Dashboard</div>
+                      <div className="font-semibold text-white text-sm">Kapster Dashboard</div>
                       <div className="text-dark-400 text-xs">Senin, 15 Mei 2026</div>
                     </div>
                   </div>

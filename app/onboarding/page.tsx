@@ -158,7 +158,7 @@ export default function OnboardingPage() {
                 </label>
                 <div className="flex items-center rounded-xl overflow-hidden border border-dark-600/50 focus-within:border-barber-400/50 transition-colors">
                   <span className="px-3 py-3 bg-dark-700/80 text-dark-400 text-sm border-r border-dark-600/50 whitespace-nowrap">
-                    queuebarber.id/q/
+                    kapster.my.id/q/
                   </span>
                   <input
                     type="text"

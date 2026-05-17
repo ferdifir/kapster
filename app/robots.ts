@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/", "/dashboard/", "/admin/"],
     },
-    sitemap: "https://queuebarber.id/sitemap.xml",
+    sitemap: "https://kapster.my.id/sitemap.xml",
   };
 }

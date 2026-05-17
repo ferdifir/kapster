@@ -107,7 +107,7 @@ export default function DisplayPage({
       {/* Header */}
       <div className="bg-dark-900 border-b border-dark-800/50 px-8 py-4 flex items-center justify-between">
         <span className="font-display text-xl font-bold text-white">
-          Queue<span className="text-barber-400">Barber</span>
+          Kapster
         </span>
         <div className="text-right">
           <p className="text-white font-semibold">{barbershopName}</p>

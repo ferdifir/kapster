@@ -132,7 +132,7 @@ export default function StatusPage({
     <div className="min-h-screen bg-dark-950">
       <div className="bg-dark-900/80 border-b border-dark-800/50 px-4 py-4 text-center">
         <span className="font-display text-sm font-bold text-white">
-          Queue<span className="text-barber-400">Barber</span>
+          Kapster
         </span>
       </div>
 

@@ -60,7 +60,7 @@ export default function InviteClaim({
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
           <span className="font-display text-lg font-bold text-white">
-            Queue<span className="text-barber-400">Barber</span>
+            Kapster
           </span>
         </div>
 

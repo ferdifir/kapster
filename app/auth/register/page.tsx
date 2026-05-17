@@ -130,7 +130,7 @@ export default function RegisterPage() {
               <Logo className="w-6 h-6 text-dark-900" />
             </div>
             <span className="font-display text-xl font-bold text-white">
-              Queue<span className="text-barber-400">Barber</span>
+              Kapster
             </span>
           </Link>
           <h1 className="font-display text-2xl font-bold text-white mb-2">

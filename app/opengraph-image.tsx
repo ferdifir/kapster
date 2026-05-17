@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "QueueBarber — Sistem Antrian Barbershop #1 di Indonesia";
+export const alt = "Kapster — Sistem Antrian Barbershop #1 di Indonesia";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -75,17 +75,7 @@ export default async function Image() {
             marginBottom: 20,
           }}
         >
-          <span>Queue</span>
-          <span
-            style={{
-              background: "linear-gradient(135deg, #f9de9e, #f1ab2a, #c4740b)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
-            Barber
-          </span>
+          <span>Kapster</span>
         </div>
 
         {/* Tagline */}

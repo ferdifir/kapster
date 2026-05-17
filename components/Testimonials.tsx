@@ -1,7 +1,7 @@
 const testimonials = [
   {
     quote:
-      "QueueBarber sangat membantu mengatur antrian. Pelanggan jadi lebih sabar karena tahu posisi antrian mereka.",
+      "Kapster sangat membantu mengatur antrian. Pelanggan jadi lebih sabar karena tahu posisi antrian mereka.",
     name: "Pemilik Barbershop",
     role: "Jakarta",
     initial: "A",

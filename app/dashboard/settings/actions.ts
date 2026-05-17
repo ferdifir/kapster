@@ -55,13 +55,20 @@ export async function updateBookingMaxDays(
 ) {
   const supabase = await createClient();
 
-  const { data: current } = await supabase
+  // Verify ownership
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { data: barbershop } = await supabase
     .from("barbershops")
-    .select("settings_json")
+    .select("id, settings_json")
     .eq("id", barbershopId)
+    .eq("owner_id", user.id)
     .single();
 
-  const settings = (current?.settings_json as Record<string, unknown>) ?? {};
+  if (!barbershop) return { error: "Unauthorized" };
+
+  const settings = (barbershop.settings_json as Record<string, unknown>) ?? {};
   settings.booking_max_days = bookingMaxDays;
 
   const { error } = await supabase

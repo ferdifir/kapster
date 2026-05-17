@@ -37,7 +37,7 @@ export default function Navbar() {
               <div className="absolute -inset-1 rounded-lg gold-gradient opacity-0 group-hover:opacity-30 blur transition-opacity duration-300" />
             </div>
             <span className="font-display text-xl font-bold text-white">
-              Queue<span className="text-barber-400">Barber</span>
+              Kapster
             </span>
           </Link>
 

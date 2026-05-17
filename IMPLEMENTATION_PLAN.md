@@ -1,4 +1,4 @@
-# QueueBarber SaaS — Implementation Plan
+# Kapster SaaS — Implementation Plan
 
 ## Architecture Overview
 

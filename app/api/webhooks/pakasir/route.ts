@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { amount, order_id, project, status, payment_method, completed_at } = body;
 
-    if (project !== "queuebarber") {
+    if (project !== "kapster") {
       return NextResponse.json({ error: "Invalid project" }, { status: 400 });
     }
 

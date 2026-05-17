@@ -16,13 +16,13 @@ const inter = Inter({
   display: "swap",
 });
 
-const siteUrl = "https://queuebarber.id";
+const siteUrl = "https://kapster.my.id";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "QueueBarber — Sistem Antrian Barbershop #1 di Indonesia",
-    template: "%s | QueueBarber",
+    default: "Kapster — Sistem Antrian Barbershop #1 di Indonesia",
+    template: "%s | Kapster",
   },
   description:
     "Sistem manajemen antrian digital #1 untuk barbershop di Indonesia. Kelola antrian real-time, booking online, notifikasi WhatsApp, dan laporan bisnis dalam satu platform. Coba gratis 14 hari.",
@@ -35,14 +35,14 @@ export const metadata: Metadata = {
     "booking barbershop online",
     "notifikasi whatsapp barbershop",
     "dashboard barbershop",
-    "QueueBarber",
+    "Kapster",
     "antrian online barbershop",
     "sistem antrian digital",
     "manajemen barbershop",
   ],
-  authors: [{ name: "QueueBarber", url: siteUrl }],
-  creator: "QueueBarber",
-  publisher: "QueueBarber",
+  authors: [{ name: "Kapster", url: siteUrl }],
+  creator: "Kapster",
+  publisher: "Kapster",
   robots: {
     index: true,
     follow: true,
@@ -58,8 +58,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "id_ID",
     url: siteUrl,
-    siteName: "QueueBarber",
-    title: "QueueBarber — Sistem Antrian Barbershop #1 di Indonesia",
+    siteName: "Kapster",
+    title: "Kapster — Sistem Antrian Barbershop #1 di Indonesia",
     description:
       "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp, dan laporan bisnis. 500+ barbershop sudah pakai. Coba gratis 14 hari.",
     images: [
@@ -67,18 +67,18 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "QueueBarber — Sistem Antrian Barbershop #1 di Indonesia",
+        alt: "Kapster — Sistem Antrian Barbershop #1 di Indonesia",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "QueueBarber — Sistem Antrian Barbershop #1 di Indonesia",
+    title: "Kapster — Sistem Antrian Barbershop #1 di Indonesia",
     description:
       "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp. 500+ barbershop sudah pakai.",
     images: ["/og-image.png"],
-    creator: "@queuebarber",
-    site: "@queuebarber",
+    creator: "@kapster",
+    site: "@kapster",
   },
   alternates: {
     canonical: siteUrl,
@@ -97,7 +97,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "QueueBarber",
+  name: "Kapster",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
   url: siteUrl,
@@ -135,7 +135,7 @@ const jsonLd = {
   },
   author: {
     "@type": "Organization",
-    name: "QueueBarber",
+    name: "Kapster",
     url: siteUrl,
   },
 };

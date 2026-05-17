@@ -34,7 +34,7 @@ export default function SettingsForm({ barbershop }: { barbershop: Barbershop })
   const [locationSaving, setLocationSaving] = useState(false);
   const [locationError, setLocationError] = useState("");
   const [bookingMaxDays, setBookingMaxDays] = useState(
-    (barbershop.settings_json as any)?.booking_max_days ?? 7
+    String((barbershop.settings_json as Record<string, unknown>)?.booking_max_days ?? 7)
   );
   const [bookingDaysPending, setBookingDaysPending] = useState(false);
   const [bookingDaysSuccess, setBookingDaysSuccess] = useState(false);
@@ -64,15 +64,20 @@ export default function SettingsForm({ barbershop }: { barbershop: Barbershop })
     if (isNaN(val) || val < 1 || val > 365) return;
     setBookingDaysSuccess(false);
     setBookingDaysPending(true);
-    updateBookingMaxDays(barbershop.id, val).then((result) => {
-      setBookingDaysPending(false);
-      if (result.error) {
-        setError(result.error);
-      } else {
-        setBookingDaysSuccess(true);
-        setTimeout(() => setBookingDaysSuccess(false), 3000);
-      }
-    });
+    updateBookingMaxDays(barbershop.id, val)
+      .then((result) => {
+        setBookingDaysPending(false);
+        if (result.error) {
+          setError(result.error);
+        } else {
+          setBookingDaysSuccess(true);
+          setTimeout(() => setBookingDaysSuccess(false), 3000);
+        }
+      })
+      .catch(() => {
+        setBookingDaysPending(false);
+        setError("Terjadi kesalahan");
+      });
   };
 
   return (

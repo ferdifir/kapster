@@ -32,7 +32,7 @@ export default function DashboardHeader({
     <header className="h-14 border-b border-dark-800/50 bg-dark-900/50 backdrop-blur-sm flex items-center justify-between px-6 shrink-0">
       <div className="lg:hidden">
         <span className="font-display text-lg font-bold text-white">
-          Queue<span className="text-barber-400">Barber</span>
+          Kapster
         </span>
       </div>
 
