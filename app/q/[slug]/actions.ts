@@ -54,9 +54,10 @@ export async function joinQueue(
         { onConflict: "barbershop_id,date" }
       )
       .select("id, is_open")
-      .single();
+      .maybeSingle();
 
     if (queueError) return { error: queueError.message };
+    if (!newQueue) return { error: "Gagal membuat antrian." };
     queueId = newQueue.id;
     isOpen = newQueue.is_open;
   }
@@ -84,6 +85,11 @@ export async function joinQueue(
     }
   }
 
+  const customerName = formData.customer_name.trim();
+  if (!customerName) {
+    return { error: "Nama tidak boleh kosong." };
+  }
+
   const { data: nextNum, error: numError } = await supabase.rpc(
     "next_queue_number",
     { p_queue_id: queueId }
@@ -96,7 +102,7 @@ export async function joinQueue(
     .insert({
       queue_id: queueId,
       number: nextNum,
-      customer_name: formData.customer_name.trim(),
+      customer_name: customerName,
       phone: formData.phone?.trim() || null,
       service_id: formData.service_id || null,
       barber_id: formData.barber_id || null,
