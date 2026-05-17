@@ -51,12 +51,6 @@ export default function Navbar() {
                 {l.label}
               </a>
             ))}
-            <Link
-              href="/map"
-              className="text-dark-300 hover:text-barber-400 transition-colors text-sm font-medium"
-            >
-              Peta
-            </Link>
           </div>
 
           <div className="hidden md:flex items-center gap-4">
@@ -104,13 +98,6 @@ export default function Navbar() {
                   {l.label}
                 </a>
               ))}
-              <Link
-                href="/map"
-                onClick={() => setMobileOpen(false)}
-                className="text-dark-300 hover:text-barber-400 transition-colors text-sm font-medium py-2"
-              >
-                Peta
-              </Link>
               <div className="flex flex-col gap-3 pt-4 border-t border-dark-700/50">
                 <a href="/auth/login" className="text-dark-300 hover:text-white transition-colors text-sm font-medium py-2 text-center">
                   Masuk
