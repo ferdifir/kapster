@@ -2,8 +2,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-const DEFAULT_MAX_DAYS = 7;
-
 export async function joinQueue(
   barbershopId: string,
   date: string,
@@ -22,13 +20,23 @@ export async function joinQueue(
     return { error: "Tidak bisa mendaftar untuk tanggal yang sudah lewat." };
   }
 
+  // Fetch barbershop settings for booking_max_days
+  const { data: barbershop } = await supabase
+    .from("barbershops")
+    .select("settings_json")
+    .eq("id", barbershopId)
+    .single();
+
+  const settings = (barbershop?.settings_json as Record<string, unknown>) ?? {};
+  const maxDays = (settings.booking_max_days as number) ?? 7;
+
   // Validate: date cannot exceed booking window
   const maxDaysDate = new Date();
-  maxDaysDate.setDate(maxDaysDate.getDate() + DEFAULT_MAX_DAYS);
+  maxDaysDate.setDate(maxDaysDate.getDate() + maxDays);
   const maxDaysStr = maxDaysDate.toISOString().split("T")[0];
 
   if (date > maxDaysStr) {
-    return { error: `Maksimal booking ${DEFAULT_MAX_DAYS} hari ke depan.` };
+    return { error: `Maksimal booking ${maxDays} hari ke depan.` };
   }
 
   // Fetch or auto-create queue row for the selected date

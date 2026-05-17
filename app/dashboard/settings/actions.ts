@@ -68,6 +68,10 @@ export async function updateBookingMaxDays(
 
   if (!barbershop) return { error: "Unauthorized" };
 
+  if (bookingMaxDays < 1 || bookingMaxDays > 365) {
+    return { error: "Batas hari booking harus antara 1 dan 365." };
+  }
+
   const settings = (barbershop.settings_json as Record<string, unknown>) ?? {};
   settings.booking_max_days = bookingMaxDays;
 
