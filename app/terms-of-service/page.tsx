@@ -38,9 +38,17 @@ export default function TermsOfServicePage() {
 
           <section>
             <h2 className="font-display text-xl font-semibold text-white mb-4">2. Deskripsi Layanan</h2>
-            <p className="text-dark-300 leading-relaxed">
-              QueueBarber adalah platform manajemen antrian digital untuk barbershop yang mencakup: manajemen antrian real-time, dashboard operasional, manajemen barber dan layanan, serta halaman antrian publik untuk pelanggan.
+            <p className="text-dark-300 leading-relaxed mb-3">
+              QueueBarber adalah platform manajemen antrian digital untuk barbershop yang mencakup:
             </p>
+            <ul className="list-disc list-inside space-y-1 text-dark-300 leading-relaxed mb-3">
+              <li>Antrian digital real-time dengan tampilan publik</li>
+              <li>Sistem booking dan reservasi online</li>
+              <li>Notifikasi otomatis via WhatsApp</li>
+              <li>Dashboard operasional dan laporan statistiques</li>
+              <li>Dukungan multi-barber dengan pembagian antrian yang adil</li>
+              <li>Customer display untuk TV monitor</li>
+            </ul>
           </section>
 
           <section>
@@ -55,7 +63,7 @@ export default function TermsOfServicePage() {
 
           <section>
             <h2 className="font-display text-xl font-semibold text-white mb-4">4. Paket Langganan & Pembayaran</h2>
-            <div className="space-y-4 text-dark-300 leading-relaxed">
+<div className="space-y-4 text-dark-300 leading-relaxed">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm border-collapse">
                   <thead>
@@ -74,16 +82,16 @@ export default function TermsOfServicePage() {
                       <td className="py-2">30</td>
                     </tr>
                     <tr>
-                      <td className="py-2 pr-4">Professional</td>
-                      <td className="py-2 pr-4">Rp149.000/bulan</td>
-                      <td className="py-2 pr-4">5</td>
-                      <td className="py-2">100</td>
+                      <td className="py-2 pr-4">Basic</td>
+                      <td className="py-2 pr-4">Rp29.000/bulan</td>
+                      <td className="py-2 pr-4">3</td>
+                      <td className="py-2">50</td>
                     </tr>
                     <tr>
-                      <td className="py-2 pr-4">Enterprise</td>
-                      <td className="py-2 pr-4">Rp349.000/bulan</td>
-                      <td className="py-2 pr-4">Unlimited</td>
-                      <td className="py-2">Unlimited</td>
+                      <td className="py-2 pr-4">Pro</td>
+                      <td className="py-2 pr-4">Rp79.000/bulan</td>
+                      <td className="py-2 pr-4">5</td>
+                      <td className="py-2">100</td>
                     </tr>
                   </tbody>
                 </table>

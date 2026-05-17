@@ -1,5 +1,5 @@
 const steps = [
-  { num: "1", title: "Daftar Akun", desc: "Buat akun gratis dalam 30 detik. Nggak perlu kartu kredit.", featured: true },
+  { num: "1", title: "Daftar Akun", desc: "Buat akun gratis dengan mudah. Nggak perlu kartu kredit.", featured: true },
   { num: "2", title: "Setup Barbershop", desc: "Tambahkan barber, layanan, dan harga. Sesuaikan kebutuhan.", featured: false },
   { num: "3", title: "Mulai Antrian", desc: "Pelanggan bisa daftar antrian langsung atau via WhatsApp.", featured: false },
   { num: "4", title: "Monitor & Cuan", desc: "Pantau dari dashboard, analisis data, dan tingkatkan pendapatan.", featured: false },
@@ -14,8 +14,8 @@ export default function HowItWorks() {
             Cara Kerja
           </span>
           <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-            Setup dalam
-            <span className="text-gold-gradient"> 5 Menit</span>
+            Mulai dalam
+            <span className="text-gold-gradient"> Hitungan Menit</span>
           </h2>
           <p className="text-dark-300 text-lg max-w-2xl mx-auto">
             Nggak perlu install apapun. Cukup daftar, setup, dan langsung pakai. Semudah membalikkan telapak tangan.

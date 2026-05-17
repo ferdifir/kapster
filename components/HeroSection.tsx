@@ -14,7 +14,7 @@ export default function HeroSection() {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-dark-800/80 border border-dark-700/50 mb-8">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
               <span className="text-dark-300 text-sm font-medium">
-                Sudah digunakan 500+ barbershop di Indonesia
+                Sudah dipercaya oleh ribuan barbershop di Indonesia
               </span>
             </div>
 
@@ -62,8 +62,8 @@ export default function HeroSection() {
             <div className="flex items-center gap-8 justify-center lg:justify-start">
               {[
                 { value: "500+", label: "Barbershop" },
-                { value: "50K+", label: "Pelanggan/bulan" },
-                { value: "4.9", label: "Rating" },
+                { value: "Ribuan", label: "Pelanggan" },
+                { value: "Terpercaya", label: " Indonesia" },
               ].map((stat, i) => (
                 <div key={stat.label} className="flex items-center gap-8">
                   {i > 0 && <div className="w-px h-12 bg-dark-700" />}
@@ -165,8 +165,8 @@ export default function HeroSection() {
                     </svg>
                   </div>
                   <div>
-                    <div className="text-barber-400 font-bold text-lg">+32%</div>
-                    <div className="text-dark-400 text-xs">Pendapatan Naik</div>
+                    <div className="text-barber-400 font-bold text-lg">+Produktif</div>
+                    <div className="text-dark-400 text-xs">Kinerja Barber</div>
                   </div>
                 </div>
               </div>

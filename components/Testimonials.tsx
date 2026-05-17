@@ -1,24 +1,24 @@
 const testimonials = [
   {
     quote:
-      "Sejak pakai QueueBarber, pelanggan kami naik 40%. Nggak ada lagi yang komplain soal nunggu lama. Notifikasi WA-nya sangat membantu!",
-    name: "Rizky Pratama",
-    role: "Owner, The Gentlemen's Cut",
-    initial: "R",
-  },
-  {
-    quote:
-      "Dashboard-nya keren banget! Bisa lihat barber mana yang paling ramai, jam berapa paling sibuk. Jadi bisa atur jadwal dengan lebih efisien.",
-    name: "Dimas Aditya",
-    role: "Manager, Royal Cuts Barber",
-    initial: "D",
-  },
-  {
-    quote:
-      "Kami punya 3 cabang dan QueueBarber bantu kelola semuanya dari satu tempat. Customer display di TV bikin barbershop kelihatan profesional banget!",
-    name: "Andi Wijaya",
-    role: "Owner, KingsMan Barbershop",
+      "QueueBarber sangat membantu mengatur antrian. Pelanggan jadi lebih sabar karena tahu posisi antrian mereka.",
+    name: "Pemilik Barbershop",
+    role: "Jakarta",
     initial: "A",
+  },
+  {
+    quote:
+      "Sekarang semua barber bisa fokus pada layanan tanpa perlu takut ada yang跳过 antrian. Sistemnya benar-benar transparan.",
+    name: "Manajer Barbershop",
+    role: "Bandung",
+    initial: "B",
+  },
+  {
+    quote:
+      "Notifikasi WhatsApp-nya otomatis, pelanggan jadi tidak perlu menunggu di tempat. Sangat membantu operasional kami.",
+    name: "Barber Shop Owner",
+    role: "Surabaya",
+    initial: "C",
   },
 ];
 

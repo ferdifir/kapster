@@ -19,7 +19,7 @@ export default function CTASection() {
           <span className="text-gold-gradient"> Lebih Gacor</span>?
         </h2>
         <p className="text-dark-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10">
-          Bergabung dengan 500+ barbershop yang sudah transformasi sistem antriannya. Gratis 14 hari,
+          Bergabung dengan ribuan barbershop yang sudah meningkatkan sistem antriannya. Gratis 14 hari,
           tanpa kartu kredit.
         </p>
 
