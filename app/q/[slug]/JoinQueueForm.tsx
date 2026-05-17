@@ -10,6 +10,9 @@ interface Props {
   slug: string;
   services: { id: string; name: string; price: number }[];
   barbers: { id: string; display_name: string }[];
+  isOpen: boolean;
+  selectedDate: string;
+  today: string;
 }
 
 export default function JoinQueueForm({
@@ -18,6 +21,9 @@ export default function JoinQueueForm({
   slug,
   services,
   barbers,
+  isOpen,
+  selectedDate,
+  today,
 }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -52,12 +58,16 @@ export default function JoinQueueForm({
     });
   };
 
+  const isFutureDate = selectedDate > today;
+
   return (
     <form
       onSubmit={handleSubmit}
       className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6 space-y-4"
     >
-      <h2 className="font-semibold text-white">Daftar Antrian</h2>
+      <h2 className="font-semibold text-white">
+        {isFutureDate ? "Daftar Antrian" : isOpen ? "Daftar Antrian" : "Daftar Antrian"}
+      </h2>
 
       {error && (
         <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
@@ -138,8 +148,14 @@ export default function JoinQueueForm({
         type="submit"
         disabled={isPending || !form.customer_name.trim()}
         className="w-full py-3 rounded-xl gold-gradient text-dark-900 font-bold transition-all hover:shadow-lg hover:shadow-barber-400/25 disabled:opacity-60 disabled:cursor-not-allowed"
-      >
-        {isPending ? "Mendaftar..." : "Daftar Sekarang"}
+        >
+        {isPending
+          ? "Mendaftar..."
+          : isFutureDate
+          ? "Daftar Antrian"
+          : isOpen
+          ? "Daftar Sekarang"
+          : "Daftar Antrian"}
       </button>
     </form>
   );
