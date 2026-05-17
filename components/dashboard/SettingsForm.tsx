@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateBarbershopSettings, updateBarbershopLocation } from "@/app/dashboard/settings/actions";
+import { updateBarbershopSettings, updateBarbershopLocation, updateBookingMaxDays } from "@/app/dashboard/settings/actions";
 import MapPicker from "@/components/MapPicker";
+
+import type { Json } from "@/lib/supabase/types";
 
 type Barbershop = {
   id: string;
@@ -14,6 +16,7 @@ type Barbershop = {
   wa_number: string | null;
   latitude: number | null;
   longitude: number | null;
+  settings_json: Json;
 };
 
 export default function SettingsForm({ barbershop }: { barbershop: Barbershop }) {
@@ -30,6 +33,11 @@ export default function SettingsForm({ barbershop }: { barbershop: Barbershop })
   const [locationSaved, setLocationSaved] = useState(false);
   const [locationSaving, setLocationSaving] = useState(false);
   const [locationError, setLocationError] = useState("");
+  const [bookingMaxDays, setBookingMaxDays] = useState(
+    (barbershop.settings_json as any)?.booking_max_days ?? 7
+  );
+  const [bookingDaysPending, setBookingDaysPending] = useState(false);
+  const [bookingDaysSuccess, setBookingDaysSuccess] = useState(false);
 
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -47,6 +55,22 @@ export default function SettingsForm({ barbershop }: { barbershop: Barbershop })
         setError(result.error);
       } else {
         setSuccess(true);
+      }
+    });
+  };
+
+  const handleBookingMaxDaysSave = () => {
+    const val = parseInt(bookingMaxDays, 10);
+    if (isNaN(val) || val < 1 || val > 365) return;
+    setBookingDaysSuccess(false);
+    setBookingDaysPending(true);
+    updateBookingMaxDays(barbershop.id, val).then((result) => {
+      setBookingDaysPending(false);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setBookingDaysSuccess(true);
+        setTimeout(() => setBookingDaysSuccess(false), 3000);
       }
     });
   };
@@ -167,6 +191,44 @@ export default function SettingsForm({ barbershop }: { barbershop: Barbershop })
         {locationSaved && (
           <p className="text-sm text-green-400">Lokasi berhasil disimpan</p>
         )}
+      </div>
+
+      <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6 space-y-4">
+        <h2 className="font-semibold text-white">Pengaturan Antrian</h2>
+        <div className="space-y-3">
+          <div>
+            <label className="text-dark-400 text-xs mb-1 block">
+              Batas Hari Booking ke Depan
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={365}
+              value={bookingMaxDays}
+              onChange={(e) => {
+                setBookingMaxDays(e.target.value);
+                setBookingDaysSuccess(false);
+              }}
+              className="w-full px-4 py-3 rounded-xl bg-dark-700/50 border border-dark-600/50 text-white placeholder-dark-500 text-sm focus:outline-none focus:border-barber-400/50"
+            />
+            <p className="text-dark-600 text-xs mt-1">
+              Customer bisa booking antrian hingga {bookingMaxDays} hari ke depan. Default: 7 hari.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleBookingMaxDaysSave}
+              disabled={bookingDaysPending}
+              className="px-5 py-2.5 rounded-xl gold-gradient text-dark-900 font-bold text-sm disabled:opacity-50"
+            >
+              {bookingDaysPending ? "Menyimpan..." : "Simpan"}
+            </button>
+            {bookingDaysSuccess && (
+              <span className="text-green-400 text-sm">Berhasil disimpan</span>
+            )}
+          </div>
+        </div>
       </div>
 
       <button
