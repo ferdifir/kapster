@@ -5,14 +5,16 @@ import { useRouter } from "next/navigation";
 import { joinQueue } from "./actions";
 
 interface Props {
-  queueId: string;
+  barbershopId: string;
+  date: string;
   slug: string;
   services: { id: string; name: string; price: number }[];
   barbers: { id: string; display_name: string }[];
 }
 
 export default function JoinQueueForm({
-  queueId,
+  barbershopId,
+  date,
   slug,
   services,
   barbers,
@@ -33,7 +35,7 @@ export default function JoinQueueForm({
     setError("");
 
     startTransition(async () => {
-      const result = await joinQueue(queueId, {
+      const result = await joinQueue(barbershopId, date, {
         customer_name: form.customer_name,
         phone: form.phone || undefined,
         service_id: form.service_id || undefined,

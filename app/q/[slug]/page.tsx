@@ -119,7 +119,8 @@ export default async function PublicQueuePage({
             </div>
 
             <JoinQueueForm
-              queueId={queue!.id}
+              barbershopId={barbershop.id}
+              date={today}
               slug={slug}
               services={services ?? []}
               barbers={barbers ?? []}

@@ -2,8 +2,11 @@
 
 import { createClient } from "@/lib/supabase/server";
 
+const DEFAULT_MAX_DAYS = 7;
+
 export async function joinQueue(
-  queueId: string,
+  barbershopId: string,
+  date: string,
   formData: {
     customer_name: string;
     phone?: string;
@@ -12,30 +15,72 @@ export async function joinQueue(
   }
 ) {
   const supabase = await createClient();
+  const today = new Date().toISOString().split("T")[0];
 
-  // Enforce daily queue limit from subscription
-  const { data: queueRow } = await supabase
+  // Validate: date cannot be in the past
+  if (date < today) {
+    return { error: "Tidak bisa mendaftar untuk tanggal yang sudah lewat." };
+  }
+
+  // Validate: date cannot exceed booking window
+  const maxDaysDate = new Date();
+  maxDaysDate.setDate(maxDaysDate.getDate() + DEFAULT_MAX_DAYS);
+  const maxDaysStr = maxDaysDate.toISOString().split("T")[0];
+
+  if (date > maxDaysStr) {
+    return { error: `Maksimal booking ${DEFAULT_MAX_DAYS} hari ke depan.` };
+  }
+
+  // Fetch or auto-create queue row for the selected date
+  const { data: existingQueue } = await supabase
     .from("queues")
-    .select("barbershop_id")
-    .eq("id", queueId)
-    .single();
+    .select("id, is_open")
+    .eq("barbershop_id", barbershopId)
+    .eq("date", date)
+    .maybeSingle();
 
-  if (queueRow) {
-    const { data: sub } = await supabase
-      .from("subscriptions")
-      .select("max_queue_per_day")
-      .eq("barbershop_id", queueRow.barbershop_id)
+  let queueId: string;
+  let isOpen: boolean;
+
+  if (existingQueue) {
+    queueId = existingQueue.id;
+    isOpen = existingQueue.is_open;
+  } else {
+    // Auto-create queue with is_open: false
+    const { data: newQueue, error: queueError } = await supabase
+      .from("queues")
+      .upsert(
+        { barbershop_id: barbershopId, date, is_open: false },
+        { onConflict: "barbershop_id,date" }
+      )
+      .select("id, is_open")
       .single();
 
-    if (sub) {
-      const { count } = await supabase
-        .from("queue_entries")
-        .select("id", { count: "exact", head: true })
-        .eq("queue_id", queueId);
+    if (queueError) return { error: queueError.message };
+    queueId = newQueue.id;
+    isOpen = newQueue.is_open;
+  }
 
-      if (count !== null && count >= sub.max_queue_per_day) {
-        return { error: "Antrian hari ini sudah penuh. Coba lagi besok." };
-      }
+  // Check is_open + date logic
+  if (!isOpen && date === today) {
+    return { error: "Antrian belum dibuka." };
+  }
+
+  // Enforce daily queue limit from subscription
+  const { data: sub } = await supabase
+    .from("subscriptions")
+    .select("max_queue_per_day")
+    .eq("barbershop_id", barbershopId)
+    .single();
+
+  if (sub) {
+    const { count } = await supabase
+      .from("queue_entries")
+      .select("id", { count: "exact", head: true })
+      .eq("queue_id", queueId);
+
+    if (count !== null && count >= sub.max_queue_per_day) {
+      return { error: "Antrian hari ini sudah penuh. Coba lagi besok." };
     }
   }
 
