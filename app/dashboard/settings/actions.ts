@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { Json } from "@/lib/supabase/types";
 
@@ -83,5 +84,54 @@ export async function updateBookingMaxDays(
   if (error) return { error: error.message };
   revalidatePath("/dashboard/settings");
   revalidatePath("/q");
+  return {};
+}
+
+export async function updateBarbershopLogo(
+  barbershopId: string,
+  logoUrl: string
+) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { data: barbershop } = await supabase
+    .from("barbershops")
+    .select("id, logo_url, owner_id")
+    .eq("id", barbershopId)
+    .eq("owner_id", user.id)
+    .single();
+
+  if (!barbershop) return { error: "Unauthorized" };
+
+  // Delete old logo from storage if it exists and is different
+  if (barbershop.logo_url && barbershop.logo_url !== logoUrl) {
+    try {
+      const oldUrl = new URL(barbershop.logo_url);
+      const pathParts = oldUrl.pathname.split("/storage/v1/object/public/logos/");
+      if (pathParts.length === 2) {
+        const oldPath = decodeURIComponent(pathParts[1]);
+        const admin = createAdminClient();
+        await admin.storage.from("logos").remove([oldPath]);
+      }
+    } catch {
+      // Silently ignore cleanup errors — old logo will remain orphaned
+    }
+  }
+
+  const { error } = await supabase
+    .from("barbershops")
+    .update({ logo_url: logoUrl })
+    .eq("id", barbershopId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/settings");
+  revalidatePath("/display/[slug]");
+  revalidatePath("/q/[slug]");
+
   return {};
 }

@@ -16,7 +16,7 @@ export default async function PublicQueuePage({
 
   const { data: barbershop } = await supabase
     .from("barbershops")
-    .select("id, name, city, address, settings_json")
+    .select("id, name, city, address, settings_json, logo_url")
     .eq("slug", slug)
     .eq("is_active", true)
     .single();
@@ -77,11 +77,19 @@ export default async function PublicQueuePage({
 
       <div className="max-w-md mx-auto px-4 py-8 space-y-6">
         <div className="text-center">
-          <div className="w-16 h-16 rounded-2xl gold-gradient flex items-center justify-center mx-auto mb-4">
-            <span className="font-display text-xl font-bold text-dark-900">
-              {barbershop.name[0]}
-            </span>
-          </div>
+          {barbershop.logo_url ? (
+            <img
+              src={barbershop.logo_url}
+              alt={`Logo ${barbershop.name}`}
+              className="w-20 h-20 rounded-2xl object-cover mx-auto mb-4"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-2xl gold-gradient flex items-center justify-center mx-auto mb-4">
+              <span className="font-display text-xl font-bold text-dark-900">
+                {barbershop.name[0]}
+              </span>
+            </div>
+          )}
           <h1 className="font-display text-2xl font-bold text-white">
             {barbershop.name}
           </h1>

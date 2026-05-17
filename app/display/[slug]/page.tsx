@@ -14,7 +14,7 @@ type Queue = {
   id: string;
   is_open: boolean;
   total_served: number;
-  barbershops: { name: string } | null;
+  barbershops: { name: string; logo_url: string | null } | null;
 };
 
 export default function DisplayPage({
@@ -41,7 +41,7 @@ export default function DisplayPage({
 
       const { data: barbershop } = await supabase
         .from("barbershops")
-        .select("id, name")
+        .select("id, name, logo_url")
         .eq("slug", slug)
         .eq("is_active", true)
         .single();
@@ -59,7 +59,7 @@ export default function DisplayPage({
         .maybeSingle();
 
       const queueWithName = q
-        ? { ...q, barbershops: { name: barbershop.name } }
+        ? { ...q, barbershops: { name: barbershop.name, logo_url: barbershop.logo_url } }
         : null;
       setQueue(queueWithName);
 
@@ -106,9 +106,24 @@ export default function DisplayPage({
     <div className="min-h-screen bg-dark-950 flex flex-col">
       {/* Header */}
       <div className="bg-dark-900 border-b border-dark-800/50 px-8 py-4 flex items-center justify-between">
-        <span className="font-display text-xl font-bold text-white">
-          Kapster
-        </span>
+        <div className="flex items-center gap-3">
+          {queue?.barbershops?.logo_url ? (
+            <img
+              src={queue.barbershops.logo_url}
+              alt="Logo"
+              className="w-10 h-10 rounded-lg object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-lg gold-gradient flex items-center justify-center">
+              <span className="font-display text-sm font-bold text-dark-900">
+                {barbershopName[0]}
+              </span>
+            </div>
+          )}
+          <span className="font-display text-xl font-bold text-white">
+            {barbershopName}
+          </span>
+        </div>
         <div className="text-right">
           <p className="text-white font-semibold">{barbershopName}</p>
           <p className="text-dark-400 text-sm">

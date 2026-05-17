@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { updateBarbershopSettings, updateBarbershopLocation, updateBookingMaxDays } from "@/app/dashboard/settings/actions";
 import MapPicker from "@/components/MapPicker";
+import LogoUploader from "@/components/dashboard/LogoUploader";
 
 import type { Json } from "@/lib/supabase/types";
 
@@ -17,6 +18,7 @@ type Barbershop = {
   latitude: number | null;
   longitude: number | null;
   settings_json: Json;
+  logo_url: string | null;
 };
 
 export default function SettingsForm({ barbershop }: { barbershop: Barbershop }) {
@@ -92,6 +94,14 @@ export default function SettingsForm({ barbershop }: { barbershop: Barbershop })
           Pengaturan berhasil disimpan
         </div>
       )}
+
+      <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6 space-y-4">
+        <h2 className="font-semibold text-white">Branding</h2>
+        <LogoUploader
+          barbershopId={barbershop.id}
+          currentLogoUrl={barbershop.logo_url}
+        />
+      </div>
 
       <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6 space-y-4">
         <h2 className="font-semibold text-white">Informasi Barbershop</h2>
