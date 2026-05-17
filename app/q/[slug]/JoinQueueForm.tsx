@@ -65,9 +65,7 @@ export default function JoinQueueForm({
       onSubmit={handleSubmit}
       className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6 space-y-4"
     >
-      <h2 className="font-semibold text-white">
-        {isFutureDate ? "Daftar Antrian" : isOpen ? "Daftar Antrian" : "Daftar Antrian"}
-      </h2>
+      <h2 className="font-semibold text-white">Daftar Antrian</h2>
 
       {error && (
         <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">

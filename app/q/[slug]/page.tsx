@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import JoinQueueForm from "./JoinQueueForm";
+import QueueDatePicker from "./QueueDatePicker";
 
 export default async function PublicQueuePage({
   params,
@@ -93,18 +94,7 @@ export default async function PublicQueuePage({
           <label className="block text-dark-400 text-sm mb-2">
             Pilih Tanggal Antrian
           </label>
-          <input
-            type="date"
-            min={today}
-            max={maxDateStr}
-            value={validDate}
-            onChange={(e) => {
-              const url = new URL(window.location.href);
-              url.searchParams.set("date", e.target.value);
-              window.location.href = url.toString();
-            }}
-            className="w-full px-4 py-3 rounded-xl bg-dark-700/50 border border-dark-600/50 text-white text-sm focus:outline-none focus:border-barber-400/50 transition-colors"
-          />
+          <QueueDatePicker today={today} maxDate={maxDateStr} value={validDate} />
           {validDate !== today && (
             <p className="text-barber-400 text-xs mt-2">
               Antrian untuk tanggal{" "}
@@ -130,12 +120,12 @@ export default async function PublicQueuePage({
               <p className="font-display text-3xl font-bold text-white">
                 {queue?.total_served ?? 0}
               </p>
-              <p className="text-dark-400 text-sm mt-1">Selesai Hari Ini</p>
+              <p className="text-dark-400 text-sm mt-1">Selesai</p>
             </div>
           </div>
         )}
 
-        {!isOpen && validDate === today ? (
+        {!isOpen && validDate === today && (
           <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6 text-center">
             <div className="w-12 h-12 rounded-xl bg-dark-700/50 flex items-center justify-center mx-auto mb-4">
               <svg
@@ -157,7 +147,7 @@ export default async function PublicQueuePage({
               Silakan pilih tanggal lain atau tunggu hingga barbershop buka
             </p>
           </div>
-        ) : null}
+        )}
 
         <JoinQueueForm
           barbershopId={barbershop.id}
