@@ -32,7 +32,7 @@ export default async function QueuePage({
   maxDate.setDate(maxDate.getDate() + maxDays);
   const maxDateStr = maxDate.toISOString().split("T")[0];
 
-  const validDate = selectedDate >= today ? selectedDate : today;
+  const validDate = selectedDate >= today && selectedDate <= maxDateStr ? selectedDate : today;
 
   const [{ data: queue }, { data: barbers }, { data: services }, { data: subscription }] =
     await Promise.all([
