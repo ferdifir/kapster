@@ -12,6 +12,12 @@ type Entry = {
   queue_id: string;
 };
 
+type Queue = {
+  id: string;
+  date: string;
+  is_open: boolean;
+};
+
 const STATUS_INFO = {
   waiting: {
     label: "Menunggu Giliran",
@@ -47,6 +53,7 @@ export default function StatusPage({
 }) {
   const { slug, id } = use(params);
   const [entry, setEntry] = useState<Entry | null>(null);
+  const [queue, setQueue] = useState<Queue | null>(null);
   const [waitingBefore, setWaitingBefore] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -68,6 +75,16 @@ export default function StatusPage({
 
       setEntry(data as Entry);
 
+      const { data: queueData } = await supabase
+        .from("queues")
+        .select("id, date, is_open")
+        .eq("id", (data as Entry).queue_id)
+        .single();
+
+      if (queueData) {
+        setQueue(queueData as Queue);
+      }
+
       const { count } = await supabase
         .from("queue_entries")
         .select("id", { count: "exact", head: true })
@@ -78,7 +95,6 @@ export default function StatusPage({
       setWaitingBefore(count ?? 0);
       setLoading(false);
 
-      // Subscribe for updates to this queue
       const channel = supabase
         .channel(`status-${id}`)
         .on(
@@ -126,6 +142,8 @@ export default function StatusPage({
     );
   }
 
+  const today = new Date().toISOString().split("T")[0];
+  const isFutureDate = queue ? queue.date > today : false;
   const info = STATUS_INFO[entry.status];
 
   return (
@@ -137,7 +155,6 @@ export default function StatusPage({
       </div>
 
       <div className="max-w-sm mx-auto px-4 py-12 space-y-8 text-center">
-        {/* Number */}
         <div>
           <p className="text-dark-500 text-sm mb-3">Nomor Antrian Anda</p>
           <div className="font-display text-8xl font-bold text-barber-400 leading-none">
@@ -146,37 +163,68 @@ export default function StatusPage({
           <p className="text-dark-300 mt-3 text-sm">{entry.customer_name}</p>
         </div>
 
-        {/* Status */}
-        <div className={`p-6 rounded-2xl border ${info.bg}`}>
-          <p className={`font-display text-xl font-bold ${info.color}`}>
-            {info.label}
-          </p>
-          {entry.status === "waiting" && (
-            <p className="text-dark-400 text-sm mt-2">
-              {waitingBefore > 0
-                ? `${waitingBefore} orang di depan Anda · ~${waitingBefore * 20} menit`
-                : "Anda berikutnya!"}
+        {isFutureDate && queue && (
+          <div className="p-4 rounded-xl bg-barber-400/5 border border-barber-400/20">
+            <p className="text-barber-400 font-semibold text-sm">
+              Antrian untuk{" "}
+              {new Date(queue.date + "T00:00:00").toLocaleDateString("id-ID", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
             </p>
-          )}
-          {entry.status === "called" && (
-            <p className="text-dark-400 text-sm mt-2">
-              Silakan menuju kursi barber
+            <p className="text-dark-400 text-xs mt-1">
+              Menunggu antrean dibuka oleh barbershop
             </p>
-          )}
-          {entry.status === "serving" && (
-            <p className="text-dark-400 text-sm mt-2">Nikmati layanannya!</p>
-          )}
-          {entry.status === "done" && (
-            <p className="text-dark-400 text-sm mt-2">
-              Terima kasih sudah berkunjung!
+          </div>
+        )}
+
+        {isFutureDate ? (
+          <div className="p-6 rounded-2xl border bg-barber-400/5 border-barber-400/20">
+            <p className="font-display text-xl font-bold text-barber-400">
+              Terdaftar
             </p>
-          )}
-          {entry.status === "skip" && (
             <p className="text-dark-400 text-sm mt-2">
-              Nomor antrian Anda telah dilewati
+              Nomor antrian Anda sudah tercatat. Silakan cek kembali saat barbershop membuka antrean.
             </p>
-          )}
-        </div>
+          </div>
+        ) : (
+          <>
+            <div className={`p-6 rounded-2xl border ${info.bg}`}>
+              <p className={`font-display text-xl font-bold ${info.color}`}>
+                {info.label}
+              </p>
+              {entry.status === "waiting" && (
+                <p className="text-dark-400 text-sm mt-2">
+                  {waitingBefore > 0
+                    ? `${waitingBefore} orang di depan Anda · ~${waitingBefore * 20} menit`
+                    : "Anda berikutnya!"}
+                </p>
+              )}
+              {entry.status === "called" && (
+                <p className="text-dark-400 text-sm mt-2">
+                  Silakan menuju kursi barber
+                </p>
+              )}
+              {entry.status === "serving" && (
+                <p className="text-dark-400 text-sm mt-2">
+                  Nikmati layanannya!
+                </p>
+              )}
+              {entry.status === "done" && (
+                <p className="text-dark-400 text-sm mt-2">
+                  Terima kasih sudah berkunjung!
+                </p>
+              )}
+              {entry.status === "skip" && (
+                <p className="text-dark-400 text-sm mt-2">
+                  Nomor antrian Anda telah dilewati
+                </p>
+              )}
+            </div>
+          </>
+        )}
 
         <Link
           href={`/q/${slug}`}
