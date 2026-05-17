@@ -35,6 +35,10 @@ interface Props {
   barbers: Barber[];
   services: Service[];
   maxPerDay: number;
+  selectedDate: string;
+  today: string;
+  maxDate: string;
+  preBookedCount: number;
 }
 
 const STATUS_LABEL: Record<Entry["status"], string> = {
@@ -60,6 +64,10 @@ export default function QueueDashboard({
   barbers,
   services,
   maxPerDay,
+  selectedDate,
+  today,
+  maxDate,
+  preBookedCount,
 }: Props) {
   const [queue, setQueue] = useState<QueueData>(initialQueue);
   const [entries, setEntries] = useState<Entry[]>(initialEntries);
@@ -72,6 +80,8 @@ export default function QueueDashboard({
     barber_id: "",
     service_id: "",
   });
+
+  const isFutureDate = selectedDate > today;
 
   useEffect(() => {
     if (!queue?.id) return;
@@ -186,56 +196,70 @@ export default function QueueDashboard({
     ["done", "skip"].includes(e.status)
   );
 
+  const formattedDate = new Date(selectedDate + "T00:00:00").toLocaleDateString("id-ID", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold text-white">
             Antrian
           </h1>
-          <p className="text-dark-400 text-sm">
-            {new Date().toLocaleDateString("id-ID", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
+          <p className="text-dark-400 text-sm">{formattedDate}</p>
         </div>
 
-        {queue ? (
-          <div className="flex items-center gap-3">
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-medium border ${
-                queue.is_open
-                  ? "bg-green-500/10 text-green-400 border-green-500/20"
-                  : "bg-dark-700/50 text-dark-400 border-dark-700/30"
-              }`}
-            >
-              {queue.is_open ? "Buka" : "Tutup"}
-            </span>
+        <div className="flex items-center gap-3">
+          <input
+            type="date"
+            min={today}
+            max={maxDate}
+            value={selectedDate}
+            onChange={(e) => {
+              const url = new URL(window.location.href);
+              url.searchParams.set("date", e.target.value);
+              window.location.href = url.toString();
+            }}
+            className="px-4 py-2.5 rounded-xl bg-dark-800/50 border border-dark-700/30 text-white text-sm focus:outline-none focus:border-barber-400/50"
+          />
+
+          {queue ? (
+            <>
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-medium border ${
+                  queue.is_open
+                    ? "bg-green-500/10 text-green-400 border-green-500/20"
+                    : "bg-dark-700/50 text-dark-400 border-dark-700/30"
+                }`}
+              >
+                {queue.is_open ? "Buka" : "Tutup"}
+              </span>
+              <button
+                onClick={handleToggleQueue}
+                disabled={isPending}
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50 ${
+                  queue.is_open
+                    ? "bg-dark-700 text-dark-200 hover:bg-dark-600"
+                    : "gold-gradient text-dark-900"
+                }`}
+              >
+                {queue.is_open ? "Tutup Antrian" : "Buka Antrian"}
+              </button>
+            </>
+          ) : (
             <button
-              onClick={handleToggleQueue}
+              onClick={handleOpenQueue}
               disabled={isPending}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50 ${
-                queue.is_open
-                  ? "bg-dark-700 text-dark-200 hover:bg-dark-600"
-                  : "gold-gradient text-dark-900"
-              }`}
+              className="px-5 py-2.5 rounded-xl gold-gradient text-dark-900 font-bold text-sm disabled:opacity-50"
             >
-              {queue.is_open ? "Tutup Antrian" : "Buka Antrian"}
+              {isPending ? "Membuka..." : "Buka Antrian"}
             </button>
-          </div>
-        ) : (
-          <button
-            onClick={handleOpenQueue}
-            disabled={isPending}
-            className="px-5 py-2.5 rounded-xl gold-gradient text-dark-900 font-bold text-sm disabled:opacity-50"
-          >
-            {isPending ? "Membuka..." : "Buka Antrian Hari Ini"}
-          </button>
-        )}
+          )}
+        </div>
       </div>
 
       {error && (
@@ -244,7 +268,12 @@ export default function QueueDashboard({
         </div>
       )}
 
-      {/* Stats */}
+      {isFutureDate && preBookedCount > 0 && (
+        <div className="px-4 py-3 rounded-xl bg-barber-400/10 border border-barber-400/20 text-barber-400 text-sm">
+          <span className="font-semibold">{preBookedCount}</span> pelanggan sudah terdaftar untuk tanggal ini
+        </div>
+      )}
+
       {queue && (
         <div className="grid grid-cols-4 gap-3">
           {[
@@ -278,7 +307,6 @@ export default function QueueDashboard({
         </div>
       )}
 
-      {/* Add Customer */}
       {queue?.is_open && (
         <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
@@ -378,7 +406,6 @@ export default function QueueDashboard({
         </div>
       )}
 
-      {/* Queue list */}
       {queue && (
         <div className="space-y-4">
           {activeEntries.length > 0 ? (
@@ -409,6 +436,11 @@ export default function QueueDashboard({
                   Tambahkan pelanggan di atas
                 </p>
               )}
+              {isFutureDate && (
+                <p className="text-dark-600 text-xs mt-1">
+                  Belum ada pelanggan yang mendaftar untuk tanggal ini
+                </p>
+              )}
             </div>
           )}
 
@@ -416,7 +448,7 @@ export default function QueueDashboard({
             <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl overflow-hidden">
               <div className="px-5 py-4 border-b border-dark-700/30">
                 <h2 className="font-semibold text-dark-400 text-sm">
-                  Selesai Hari Ini
+                  Selesai
                 </h2>
               </div>
               <div className="divide-y divide-dark-700/30">
