@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { enqueueWANotification } from "@/lib/wa-queue";
 
 export async function joinQueue(
   barbershopId: string,
@@ -120,5 +121,17 @@ export async function joinQueue(
     .single();
 
   if (error) return { error: error.message };
+
+  // Fire-and-forget WA notification
+  if (formData.phone) {
+    await enqueueWANotification(
+      barbershopId,
+      formData.phone.trim(),
+      customerName,
+      "join_queue",
+      { number: nextNum, date }
+    );
+  }
+
   return { data };
 }

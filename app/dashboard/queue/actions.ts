@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { TablesUpdate } from "@/lib/supabase/types";
+import { enqueueWANotification } from "@/lib/wa-queue";
 
 export async function openTodayQueue(barbershopId: string) {
   const supabase = await createClient();
@@ -88,6 +89,13 @@ export async function setEntryStatus(
 ) {
   const supabase = await createClient();
 
+  // Fetch entry data before updating
+  const { data: entry } = await supabase
+    .from("queue_entries")
+    .select("phone, customer_name, number, queue_id")
+    .eq("id", entryId)
+    .single();
+
   const now = new Date().toISOString();
   const updates: TablesUpdate<"queue_entries"> = { status };
   if (status === "called") updates.called_at = now;
@@ -105,6 +113,35 @@ export async function setEntryStatus(
     await supabase.rpc("increment_queue_served", { p_queue_id: queueId });
   }
 
+  // Fire-and-forget WA notification
+  if (entry?.phone && entry.phone.trim()) {
+    const eventTypeMap: Record<string, "queue_called" | "queue_serving" | "queue_done"> = {
+      called: "queue_called",
+      serving: "queue_serving",
+      done: "queue_done",
+    };
+    const eventType = eventTypeMap[status];
+    if (eventType) {
+      await enqueueWANotification(
+        await barbershopIdFromQueue(queueId || entry.queue_id),
+        entry.phone,
+        entry.customer_name,
+        eventType,
+        { number: entry.number }
+      );
+    }
+  }
+
   revalidatePath("/dashboard/queue");
   return {};
+}
+
+async function barbershopIdFromQueue(queueId: string): Promise<string> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("queues")
+    .select("barbershop_id")
+    .eq("id", queueId)
+    .single();
+  return data?.barbershop_id || "";
 }
