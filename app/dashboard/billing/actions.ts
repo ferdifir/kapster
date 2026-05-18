@@ -31,7 +31,10 @@ export async function createPayment(plan: PlanKey) {
     status: "pending",
   });
 
-  if (error) return { error: "Gagal membuat transaksi" };
+  if (error) {
+    console.error("[billing] Payment insert failed:", JSON.stringify(error));
+    return { error: "Gagal membuat transaksi. Silakan coba lagi." };
+  }
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
   const redirect = encodeURIComponent(`${baseUrl}/dashboard/billing`);

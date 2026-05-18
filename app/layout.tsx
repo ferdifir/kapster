@@ -113,17 +113,17 @@ const jsonLd = {
     },
     {
       "@type": "Offer",
-      name: "Professional",
-      price: "99000",
+      name: "Basic",
+      price: "29000",
       priceCurrency: "IDR",
-      description: "Untuk barbershop yang sudah berjalan serius",
+      description: "Untuk barbershop kecil yang serius",
     },
     {
       "@type": "Offer",
-      name: "Enterprise",
-      price: "249000",
+      name: "Pro",
+      price: "79000",
       priceCurrency: "IDR",
-      description: "Untuk chain barbershop dengan banyak cabang",
+      description: "Untuk barbershop yang butuh analytics lengkap",
     },
   ],
   aggregateRating: {

@@ -19,8 +19,23 @@ export default function MapPicker({ latitude, longitude, onLocationChange }: Map
   const onLocationChangeRef = useRef(onLocationChange);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [locationName, setLocationName] = useState<string | null>(null);
 
   onLocationChangeRef.current = onLocationChange;
+
+  async function reverseGeocode(lat: number, lng: number) {
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=id`
+      );
+      const data = await res.json();
+      if (data.display_name) {
+        setLocationName(data.display_name);
+      }
+    } catch {
+      // fallback: tetap tampilkan koordinat
+    }
+  }
 
   useEffect(() => {
     if (!mapContainer.current || typeof window === 'undefined') return;
@@ -72,9 +87,10 @@ export default function MapPicker({ latitude, longitude, onLocationChange }: Map
 
         mapRef.current = map;
 
-        map.on('click', (e) => {
+        map.on('click', async (e) => {
           const { lat, lng } = e.lngLat;
           onLocationChangeRef.current({ latitude: lat, longitude: lng });
+          await reverseGeocode(lat, lng);
 
           if (markerRef.current) {
             markerRef.current.setLngLat([lng, lat]);
@@ -91,6 +107,7 @@ export default function MapPicker({ latitude, longitude, onLocationChange }: Map
           marker.setLngLat([longitude, latitude]);
           marker.addTo(map);
           markerRef.current = marker;
+          reverseGeocode(latitude, longitude);
         }
       } catch (err) {
         if (!cancelled) {
@@ -148,7 +165,7 @@ export default function MapPicker({ latitude, longitude, onLocationChange }: Map
       </p>
       {latitude != null && longitude != null && (
         <p className="text-sm text-green-400">
-          Lokasi terpasang: {latitude.toFixed(6)}, {longitude.toFixed(6)}
+          Lokasi terpasang: {locationName ?? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`}
         </p>
       )}
     </div>
