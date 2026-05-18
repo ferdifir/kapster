@@ -60,7 +60,7 @@ export default function BookingsManager({ bookings: initial, barbers, services }
   );
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6">
       <div>
         <h1 className="font-display text-2xl font-bold text-white mb-1">Booking</h1>
         <p className="text-dark-400 text-sm">{bookings.length} reservasi total</p>

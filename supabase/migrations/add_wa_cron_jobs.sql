@@ -7,9 +7,9 @@ SELECT cron.schedule(
   '* * * * *',
   $$
     SELECT net.http_post(
-      url := current_setting('app.settings.supabase_url') || '/functions/v1/wa-sender',
+      url := 'https://arlpgnxtdbtvuxqvcytg.supabase.co/functions/v1/wa-sender',
       headers := jsonb_build_object(
-        'Authorization', 'Bearer ' || current_setting('app.settings.supabase_service_role_key')
+        'Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFybHBnbnh0ZGJ0dnV4cXZjeXRnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODgxMzE4NiwiZXhwIjoyMDk0Mzg5MTg2fQ.s5qIakRwfLHRw2Ebh4G-IfTpkCc3kXRqip9KwLIyUyE'
       ),
       body := '{}'
     );
@@ -43,10 +43,5 @@ SELECT cron.schedule(
   $$
 );
 
--- NOTE: The cron jobs above require these database-level GUC settings to be configured
--- in Supabase Dashboard → Database → Settings → Custom GUC (or via SQL):
---
---   ALTER DATABASE postgres SET app.settings.supabase_url TO 'https://<your-project>.supabase.co';
---   ALTER DATABASE postgres SET app.settings.supabase_service_role_key TO '<your_service_role_key>';
---
--- Without these settings, the wa-send-job will fail with "unrecognized configuration parameter".
+-- NOTE: The service_role key is hardcoded in this migration. For production,
+-- consider using a dedicated database role with limited permissions instead.

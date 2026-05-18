@@ -20,7 +20,7 @@ export default async function SettingsPage() {
   if (!barbershop) redirect("/onboarding");
 
   return (
-    <div className="max-w-2xl space-y-8">
+    <div className="max-w-2xl mx-auto space-y-8">
       <div>
         <h1 className="font-display text-2xl font-bold text-white mb-1">Pengaturan</h1>
         <p className="text-dark-400 text-sm">Profil dan konfigurasi barbershop Anda</p>

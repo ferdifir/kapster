@@ -30,7 +30,7 @@ export default async function DashboardLayout({
     .single();
 
   return (
-    <div className="min-h-screen bg-dark-950 flex">
+    <div className="h-screen bg-dark-950 flex">
       <DashboardSidebar barbershop={barbershop} />
       <div className="flex-1 flex flex-col min-w-0">
         <DashboardHeader

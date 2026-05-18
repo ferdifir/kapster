@@ -74,7 +74,7 @@ export default async function AnalyticsPage() {
   const maxCustomers = Math.max(...chartData.map((r) => r.total_customers ?? 0), 1);
 
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8">
       <div>
         <h1 className="font-display text-2xl font-bold text-white mb-1">Analitik</h1>
         <p className="text-dark-400 text-sm">30 hari terakhir</p>
