@@ -520,6 +520,59 @@ export type Database = {
           },
         ]
       }
+      wa_notifications: {
+        Row: {
+          id: string
+          barbershop_id: string | null
+          customer_phone: string
+          customer_name: string | null
+          event_type: string
+          message_body: string
+          status: string
+          wuzapi_message_id: string | null
+          error_message: string | null
+          retry_count: number | null
+          created_at: string | null
+          sent_at: string | null
+        }
+        Insert: {
+          id?: string
+          barbershop_id?: string | null
+          customer_phone: string
+          customer_name?: string | null
+          event_type: string
+          message_body: string
+          status?: string
+          wuzapi_message_id?: string | null
+          error_message?: string | null
+          retry_count?: number | null
+          created_at?: string | null
+          sent_at?: string | null
+        }
+        Update: {
+          id?: string
+          barbershop_id?: string | null
+          customer_phone?: string
+          customer_name?: string | null
+          event_type?: string
+          message_body?: string
+          status?: string
+          wuzapi_message_id?: string | null
+          error_message?: string | null
+          retry_count?: number | null
+          created_at?: string | null
+          sent_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wa_notifications_barbershop_id_fkey"
+            columns: ["barbershop_id"]
+            isOneToOne: false
+            referencedRelation: "barbershops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
