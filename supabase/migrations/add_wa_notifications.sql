@@ -1,6 +1,6 @@
 -- Add WhatsApp connection columns to barbershops
 ALTER TABLE barbershops
-ADD COLUMN IF NOT EXISTS wuzapi_user_id INT,
+ADD COLUMN IF NOT EXISTS wuzapi_user_id BIGINT,
 ADD COLUMN IF NOT EXISTS wuzapi_token TEXT,
 ADD COLUMN IF NOT EXISTS wa_connected BOOLEAN DEFAULT false,
 ADD COLUMN IF NOT EXISTS wa_phone_number TEXT,
@@ -27,6 +27,10 @@ CREATE INDEX IF NOT EXISTS idx_wa_notifications_pending
   ON wa_notifications(status, retry_count, created_at)
   WHERE status IN ('pending', 'retrying');
 
+-- Index for filtering by barbershop
+CREATE INDEX IF NOT EXISTS idx_wa_notifications_barbershop
+  ON wa_notifications(barbershop_id);
+
 -- Enable RLS
 ALTER TABLE wa_notifications ENABLE ROW LEVEL SECURITY;
 
@@ -37,7 +41,5 @@ CREATE POLICY "Barbershop owners can view their notifications"
     SELECT id FROM barbershops WHERE owner_id = auth.uid()
   ));
 
--- RLS: service role can manage all notifications
-CREATE POLICY "Service role can manage notifications"
-  ON wa_notifications FOR ALL
-  USING (true) WITH CHECK (true);
+-- Note: Service role key bypasses RLS entirely, so no policy is needed
+-- for server-side code (Edge Functions, server actions using service_role key).
