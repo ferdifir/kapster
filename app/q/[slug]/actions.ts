@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { enqueueWANotification } from "@/lib/wa-queue";
+import { normalizePhone } from "@/lib/phone";
 
 export async function joinQueue(
   barbershopId: string,
@@ -106,13 +107,15 @@ export async function joinQueue(
 
   if (numError) return { error: numError.message };
 
+  const normalizedPhone = formData.phone ? normalizePhone(formData.phone) : null;
+
   const { data, error } = await supabase
     .from("queue_entries")
     .insert({
       queue_id: queueId,
       number: nextNum,
       customer_name: customerName,
-      phone: formData.phone?.trim() || null,
+      phone: normalizedPhone,
       service_id: formData.service_id || null,
       barber_id: formData.barber_id || null,
       status: "waiting",
@@ -123,10 +126,10 @@ export async function joinQueue(
   if (error) return { error: error.message };
 
   // Fire-and-forget WA notification
-  if (formData.phone) {
+  if (normalizedPhone) {
     await enqueueWANotification(
       barbershopId,
-      formData.phone.trim(),
+      normalizedPhone,
       customerName,
       "join_queue",
       { number: nextNum, date }

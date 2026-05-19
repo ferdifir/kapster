@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { enqueueWANotification } from "@/lib/wa-queue";
+import { normalizePhone } from "@/lib/phone";
 
 export async function createBooking(
   barbershopId: string,
@@ -28,12 +29,14 @@ export async function createBooking(
         : Promise.resolve({ data: null }),
     ]);
 
+  const normalizedPhone = normalizePhone(form.phone);
+
   const { data, error } = await supabase
     .from("bookings")
     .insert({
       barbershop_id: barbershopId,
       customer_name: form.customer_name.trim(),
-      phone: form.phone.trim(),
+      phone: normalizedPhone,
       barber_id: form.barber_id || null,
       service_id: form.service_id || null,
       scheduled_at: form.scheduled_at,
@@ -48,7 +51,7 @@ export async function createBooking(
   const scheduledDate = new Date(form.scheduled_at);
   await enqueueWANotification(
     barbershopId,
-    form.phone.trim(),
+    normalizedPhone,
     form.customer_name.trim(),
     "booking_confirmed",
     {

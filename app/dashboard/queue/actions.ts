@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { TablesUpdate } from "@/lib/supabase/types";
 import { enqueueWANotification } from "@/lib/wa-queue";
+import { normalizePhone } from "@/lib/phone";
 
 export async function openTodayQueue(barbershopId: string) {
   const supabase = await createClient();
@@ -63,13 +64,15 @@ export async function addQueueCustomer(
 
   if (numError) return { error: numError.message };
 
+  const normalizedPhone = formData.phone ? normalizePhone(formData.phone) : null;
+
   const { data, error } = await supabase
     .from("queue_entries")
     .insert({
       queue_id: queueId,
       number: nextNum,
       customer_name: formData.customer_name.trim(),
-      phone: formData.phone?.trim() || null,
+      phone: normalizedPhone,
       barber_id: formData.barber_id || null,
       service_id: formData.service_id || null,
       status: "waiting",
@@ -130,6 +133,71 @@ export async function setEntryStatus(
         { number: entry.number }
       );
     }
+  }
+
+  revalidatePath("/dashboard/queue");
+  return {};
+}
+
+export async function updateQueueEntryNumber(
+  entryId: string,
+  newNumber: number,
+  queueId?: string
+) {
+  const supabase = await createClient();
+
+  const { data: entry } = await supabase
+    .from("queue_entries")
+    .select("phone, customer_name, number, queue_id")
+    .eq("id", entryId)
+    .single();
+
+  if (!entry) return { error: "Entry tidak ditemukan" };
+
+  const { error } = await supabase
+    .from("queue_entries")
+    .update({ number: newNumber })
+    .eq("id", entryId);
+
+  if (error) return { error: error.message };
+
+  if (entry?.phone && entry.phone.trim()) {
+    const targetQueueId = queueId || entry.queue_id;
+    const barbershopId = await barbershopIdFromQueue(targetQueueId);
+
+    const { count: positionCount } = await supabase
+      .from("queue_entries")
+      .select("id", { count: "exact", head: true })
+      .eq("queue_id", targetQueueId)
+      .lt("number", newNumber)
+      .in("status", ["waiting", "called"]);
+
+    const { data: services } = await supabase
+      .from("services")
+      .select("duration_min")
+      .eq("barbershop_id", barbershopId)
+      .eq("is_active", true);
+
+    const avgDuration = services?.length
+      ? services.reduce((sum, s) => sum + s.duration_min, 0) / services.length
+      : 15;
+
+    const estimatedMinutes = Math.round((positionCount ?? 0) * avgDuration);
+    const estimated = estimatedMinutes > 0
+      ? `~${estimatedMinutes} menit`
+      : "Segera";
+
+    await enqueueWANotification(
+      barbershopId,
+      entry.phone,
+      entry.customer_name,
+      "queue_number_update",
+      {
+        number: newNumber,
+        estimated,
+        position: positionCount ?? 0,
+      }
+    );
   }
 
   revalidatePath("/dashboard/queue");

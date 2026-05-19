@@ -2,6 +2,14 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.105.4";
 
 const WUZAPI_URL = Deno.env.get("WUZAPI_URL") || "https://wa.linkjo.my.id";
 
+function normalizePhone(phone: string): string {
+  const cleaned = phone.replace(/[\s\-\(\)]/g, "");
+  if (cleaned.startsWith("08")) return "62" + cleaned.slice(1);
+  if (cleaned.startsWith("+62")) return cleaned.slice(1);
+  if (cleaned.startsWith("62")) return cleaned;
+  return cleaned;
+}
+
 interface Notification {
   id: string;
   barbershop_id: string;
@@ -100,11 +108,11 @@ Deno.serve(async (req: Request) => {
       const res = await fetch(`${WUZAPI_URL}/chat/send/text`, {
         method: "POST",
         headers: {
-          Authorization: barbershop.wuzapi_token,
+          Token: barbershop.wuzapi_token,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          Phone: notification.customer_phone,
+          Phone: normalizePhone(notification.customer_phone),
           Body: notification.message_body,
         }),
         signal: controller.signal,
