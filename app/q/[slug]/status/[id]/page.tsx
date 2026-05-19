@@ -59,7 +59,7 @@ export default function StatusPage({
 
   useEffect(() => {
     const supabase = createClient();
-    let channelCleanup: (() => void) | null = null;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
 
     async function fetchData() {
       const { data } = await supabase
@@ -94,30 +94,28 @@ export default function StatusPage({
 
       setWaitingBefore(count ?? 0);
       setLoading(false);
-
-      const channel = supabase
-        .channel(`status-${id}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "queue_entries",
-            filter: `queue_id=eq.${data.queue_id}`,
-          },
-          () => {
-            fetchData();
-          }
-        )
-        .subscribe();
-
-      channelCleanup = () => supabase.removeChannel(channel);
     }
 
     fetchData();
 
+    channel = supabase
+      .channel(`status-${id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "queue_entries",
+          filter: `id=eq.${id}`,
+        },
+        () => {
+          fetchData();
+        }
+      )
+      .subscribe();
+
     return () => {
-      if (channelCleanup) channelCleanup();
+      if (channel) supabase.removeChannel(channel);
     };
   }, [id]);
 
