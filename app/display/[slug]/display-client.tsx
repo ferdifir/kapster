@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Image from "next/image";
 
 type Entry = {
   id: string;
@@ -107,10 +108,13 @@ export default function DisplayClient({
       <div className="bg-dark-900 border-b border-dark-800/50 px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           {queue?.barbershops?.logo_url ? (
-            <img
+            <Image
               src={queue.barbershops.logo_url}
               alt="Logo"
-              className="w-10 h-10 rounded-lg object-cover"
+              width={40}
+              height={40}
+              className="rounded-lg object-cover"
+              priority
             />
           ) : (
             <div className="w-10 h-10 rounded-lg gold-gradient flex items-center justify-center">

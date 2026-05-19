@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
 import { cache } from "react";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import JoinQueueForm from "./JoinQueueForm";
 import QueueDatePicker from "./QueueDatePicker";
 
@@ -157,10 +158,13 @@ export default async function PublicQueuePage({
       <div className="max-w-md mx-auto px-4 py-8 space-y-6">
         <div className="text-center">
           {barbershop.logo_url ? (
-            <img
+            <Image
               src={barbershop.logo_url}
               alt={`Logo ${barbershop.name}`}
-              className="w-20 h-20 rounded-2xl object-cover mx-auto mb-4"
+              width={80}
+              height={80}
+              className="rounded-2xl object-cover mx-auto mb-4"
+              priority
             />
           ) : (
             <div className="w-16 h-16 rounded-2xl gold-gradient flex items-center justify-center mx-auto mb-4">
