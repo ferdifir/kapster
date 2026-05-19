@@ -7,7 +7,9 @@ import {
   setQueueOpen,
   addQueueCustomer,
   setEntryStatus,
+  updateQueueEntryNumber,
 } from "@/app/dashboard/queue/actions";
+import { validatePhone } from "@/lib/phone";
 
 type QueueData = { id: string; is_open: boolean; total_served: number } | null;
 
@@ -151,6 +153,11 @@ export default function QueueDashboard({
 
   const handleAddCustomer = () => {
     if (!queue || !form.customer_name.trim()) return;
+    const phoneCheck = validatePhone(form.phone);
+    if (!phoneCheck.valid) {
+      setError(phoneCheck.error!);
+      return;
+    }
     setError("");
     startTransition(async () => {
       const result = await addQueueCustomer(queue.id, maxPerDay, {
@@ -181,6 +188,26 @@ export default function QueueDashboard({
           q ? { ...q, total_served: q.total_served + 1 } : q
         );
       }
+    });
+  };
+
+  const handleMoveEntry = (entryId: string, direction: "up" | "down") => {
+    const activeList = entries
+      .filter((e) => ["waiting", "called"].includes(e.status))
+      .sort((a, b) => a.number - b.number);
+    const idx = activeList.findIndex((e) => e.id === entryId);
+    if (idx < 0) return;
+
+    const targetIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= activeList.length) return;
+
+    const currentEntry = activeList[idx];
+    const targetEntry = activeList[targetIdx];
+
+    setError("");
+    startTransition(async () => {
+      await updateQueueEntryNumber(currentEntry.id, targetEntry.number, queue?.id);
+      await updateQueueEntryNumber(targetEntry.id, currentEntry.number, queue?.id);
     });
   };
 
@@ -423,7 +450,9 @@ export default function QueueDashboard({
                     barbers={barbers}
                     services={services}
                     onStatusChange={handleStatusChange}
+                    onMoveEntry={handleMoveEntry}
                     isPending={isPending}
+                    activeEntries={activeEntries}
                   />
                 ))}
               </div>
@@ -476,7 +505,9 @@ function EntryRow({
   barbers,
   services,
   onStatusChange,
+  onMoveEntry,
   isPending,
+  activeEntries,
 }: {
   entry: Entry;
   barbers: Barber[];
@@ -485,10 +516,19 @@ function EntryRow({
     id: string,
     status: "called" | "serving" | "done" | "skip"
   ) => void;
+  onMoveEntry?: (id: string, direction: "up" | "down") => void;
   isPending: boolean;
+  activeEntries?: Entry[];
 }) {
   const barber = barbers.find((b) => b.id === entry.barber_id);
   const service = services.find((s) => s.id === entry.service_id);
+
+  const sortedActive = activeEntries
+    ? [...activeEntries].sort((a, b) => a.number - b.number)
+    : [];
+  const activeIdx = sortedActive.findIndex((e) => e.id === entry.id);
+  const canMoveUp = activeIdx > 0;
+  const canMoveDown = activeIdx >= 0 && activeIdx < sortedActive.length - 1;
 
   return (
     <div className="flex items-center gap-4 px-5 py-4">
@@ -520,6 +560,26 @@ function EntryRow({
       </span>
 
       <div className="flex items-center gap-2 shrink-0">
+        {entry.status === "waiting" && onMoveEntry && (
+          <>
+            <button
+              onClick={() => onMoveEntry(entry.id, "up")}
+              disabled={isPending || !canMoveUp}
+              className="px-2 py-1.5 rounded-lg bg-dark-700/50 text-dark-300 text-xs hover:bg-dark-600 transition-colors disabled:opacity-30 disabled:hover:bg-dark-700/50"
+              title="Naik"
+            >
+              ▲
+            </button>
+            <button
+              onClick={() => onMoveEntry(entry.id, "down")}
+              disabled={isPending || !canMoveDown}
+              className="px-2 py-1.5 rounded-lg bg-dark-700/50 text-dark-300 text-xs hover:bg-dark-600 transition-colors disabled:opacity-30 disabled:hover:bg-dark-700/50"
+              title="Turun"
+            >
+              ▼
+            </button>
+          </>
+        )}
         {entry.status === "waiting" && (
           <>
             <button

@@ -27,15 +27,35 @@ export async function connectWhatsApp(barbershopId: string) {
 
   if (!barbershop) return { error: "Barbershop not found" };
 
-  // Check if WuzAPI is configured
-  if (!process.env.WUZAPI_ADMIN_TOKEN) {
-    return { error: "WhatsApp belum dikonfigurasi. Hubungi admin untuk setup WUZAPI_ADMIN_TOKEN." };
-  }
-
-  // If already has credentials, just try to connect
+  // If already has credentials, try to connect. If it fails, recreate user automatically.
   if (barbershop.wuzapi_user_id && barbershop.wuzapi_token) {
     const result = await connectSession(barbershop.wuzapi_token);
-    if (!result) return { error: "Gagal connect ke WhatsApp. Pastikan WuzAPI server berjalan." };
+    if ("error" in result) {
+      // Existing credentials failed, recreate user automatically
+      await deleteWuzApiUser(barbershop.wuzapi_user_id);
+
+      const newUser = await createWuzApiUser(barbershopId);
+      if (!newUser) return { error: "Gagal membuat akun WhatsApp" };
+
+      const { error: updateError } = await supabase
+        .from("barbershops")
+        .update({
+          wuzapi_user_id: newUser.userId,
+          wuzapi_token: newUser.token,
+          wa_connected: false,
+        })
+        .eq("id", barbershopId);
+
+      if (updateError) {
+        await deleteWuzApiUser(newUser.userId);
+        return { error: updateError.message };
+      }
+
+      const connectResult = await connectSession(newUser.token);
+      if ("error" in connectResult) return { error: connectResult.error };
+
+      return { success: true, needsQr: !connectResult.loggedIn };
+    }
 
     const { error: updateError } = await supabase
       .from("barbershops")
@@ -43,7 +63,6 @@ export async function connectWhatsApp(barbershopId: string) {
       .eq("id", barbershopId);
 
     if (updateError) return { error: updateError.message };
-    revalidatePath("/dashboard/settings");
     return { success: true, needsQr: !result.loggedIn };
   }
 
@@ -67,9 +86,8 @@ export async function connectWhatsApp(barbershopId: string) {
 
   // Connect session
   const result = await connectSession(newUser.token);
-  if (!result) return { error: "Gagal connect session ke WhatsApp." };
+  if ("error" in result) return { error: result.error };
 
-  revalidatePath("/dashboard/settings");
   return { success: true, needsQr: !result.loggedIn };
 }
 
@@ -121,9 +139,10 @@ export async function checkWhatsAppStatus(barbershopId: string) {
       .from("barbershops")
       .update({ wa_connected: true, wa_phone_number: phoneNumber })
       .eq("id", barbershopId);
+
+    revalidatePath("/dashboard/settings");
   }
 
-  revalidatePath("/dashboard/settings");
   return { connected: status.connected, loggedIn: status.loggedIn, jid: status.jid };
 }
 

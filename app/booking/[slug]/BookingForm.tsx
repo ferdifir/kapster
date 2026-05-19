@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createBooking } from "./actions";
+import { validatePhone } from "@/lib/phone";
 
 interface Props {
   barbershopId: string;
@@ -43,6 +44,11 @@ export default function BookingForm({ barbershopId, slug, barbers, services }: P
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.customer_name.trim() || !form.phone.trim() || !form.scheduled_at) return;
+    const phoneCheck = validatePhone(form.phone);
+    if (!phoneCheck.valid) {
+      setError(phoneCheck.error!);
+      return;
+    }
     setError("");
     startTransition(async () => {
       const result = await createBooking(barbershopId, {

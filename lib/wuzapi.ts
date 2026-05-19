@@ -80,45 +80,48 @@ export async function connectSession(userToken: string): Promise<{
   connected: boolean;
   loggedIn: boolean;
   jid: string;
-} | null> {
-  try {
-    const res = await fetch(`${WUZAPI_URL}/session/connect`, {
-      method: "POST",
-      headers: {
-        Authorization: userToken,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        Subscribe: ["Message", "ReadReceipt"],
-        Immediate: false,
-      }),
-    });
+} | { error: string; status: number }> {
+  const res = await fetch(`${WUZAPI_URL}/session/connect`, {
+    method: "POST",
+    headers: {
+      Token: userToken,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      Subscribe: ["Message", "ReadReceipt"],
+      Immediate: false,
+    }),
+  });
 
-    if (!res.ok) {
-      const errorText = await res.text().catch(() => "");
-      console.error(`[WuzAPI] connectSession failed: ${res.status} ${errorText}`);
-      return null;
+  if (!res.ok) {
+    const errorText = await res.text().catch(() => "");
+    let errorMessage = `WuzAPI error ${res.status}`;
+    try {
+      const errorData = JSON.parse(errorText);
+      if (errorData.error) errorMessage += `: ${errorData.error}`;
+    } catch {
+      if (errorText) errorMessage += `: ${errorText}`;
     }
-    const data = await res.json();
-    return {
-      connected: true,
-      loggedIn: !!data.jid,
-      jid: data.jid || "",
-    };
-  } catch (err) {
-    console.error(`[WuzAPI] connectSession error: ${err}`);
-    return null;
+    if (res.status === 401) errorMessage = "Token tidak valid. Disconnect dan connect ulang untuk membuat token baru.";
+    return { error: errorMessage, status: res.status };
   }
+  const data = await res.json();
+  return {
+    connected: true,
+    loggedIn: !!data.jid,
+    jid: data.jid || "",
+  };
+}
 }
 
 export async function getQrCode(userToken: string): Promise<string | null> {
-  const res = await fetch(`${WUZAPI_URL}/session/qr`, {
-    headers: { Authorization: userToken },
+  const res = await fetch(`${WUZAPI_URL}/session/status`, {
+    headers: { Token: userToken },
   });
 
   if (!res.ok) return null;
-  const data = await res.json();
-  return data.QRCode || null;
+  const data = (await res.json()) as WuzApiResponse<WuzApiSessionStatus>;
+  return data.data.qrcode || null;
 }
 
 export async function getSessionStatus(userToken: string): Promise<{
@@ -127,7 +130,7 @@ export async function getSessionStatus(userToken: string): Promise<{
   jid: string;
 } | null> {
   const res = await fetch(`${WUZAPI_URL}/session/status`, {
-    headers: { Authorization: userToken },
+    headers: { Token: userToken },
   });
 
   if (!res.ok) return null;
@@ -142,7 +145,7 @@ export async function getSessionStatus(userToken: string): Promise<{
 export async function disconnectSession(userToken: string): Promise<boolean> {
   const res = await fetch(`${WUZAPI_URL}/session/disconnect`, {
     method: "POST",
-    headers: { Authorization: userToken },
+    headers: { Token: userToken },
   });
   return res.ok;
 }
@@ -159,7 +162,7 @@ export async function sendTextMessage(
     const res = await fetch(`${WUZAPI_URL}/chat/send/text`, {
       method: "POST",
       headers: {
-        Authorization: userToken,
+        Token: userToken,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ Phone: phone, Body: body }),
