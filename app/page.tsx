@@ -9,19 +9,21 @@ import Testimonials from "@/components/Testimonials";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
 
+const cvStyle = { contentVisibility: "auto" } as React.CSSProperties;
+
 export default function Home() {
   return (
     <>
       <Navbar />
       <main>
         <HeroSection />
-        <BrandLogos />
-        <ProblemSection />
-        <FeaturesSection />
-        <HowItWorks />
-        <PricingSection />
-        <Testimonials />
-        <CTASection />
+        <div style={cvStyle}><BrandLogos /></div>
+        <div style={cvStyle}><ProblemSection /></div>
+        <div style={cvStyle}><FeaturesSection /></div>
+        <div style={cvStyle}><HowItWorks /></div>
+        <div style={cvStyle}><PricingSection /></div>
+        <div style={cvStyle}><Testimonials /></div>
+        <div style={cvStyle}><CTASection /></div>
       </main>
       <Footer />
     </>
