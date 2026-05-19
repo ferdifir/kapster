@@ -1,36 +1,72 @@
 import { MetadataRoute } from "next";
+import { createClient } from "@/lib/supabase/server";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+const siteUrl = "https://kapster.my.id";
+
+export const revalidate = 86400;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const supabase = await createClient();
+
+  const { data: barbershops, error } = await supabase
+    .from("barbershops")
+    .select("slug, settings_json")
+    .eq("is_active", true);
+
+  if (error) {
+    console.error("[sitemap] Failed to fetch barbershops:", error.message);
+  }
+
+  const barbershopEntries: MetadataRoute.Sitemap = [];
+
+  if (barbershops) {
+    for (const bs of barbershops) {
+      const settings = bs.settings_json as Record<string, unknown> | null;
+      if (settings?.show_in_directory === false) continue;
+
+      const slug = bs.slug;
+      barbershopEntries.push(
+        {
+          url: `${siteUrl}/q/${slug}`,
+          lastModified: new Date(),
+          changeFrequency: "daily",
+          priority: 0.7,
+        },
+        {
+          url: `${siteUrl}/booking/${slug}`,
+          lastModified: new Date(),
+          changeFrequency: "daily",
+          priority: 0.7,
+        },
+      );
+    }
+  }
+
   return [
     {
-      url: "https://kapster.my.id",
+      url: siteUrl,
       lastModified: new Date(),
-      changeFrequency: "monthly",
+      changeFrequency: "daily",
       priority: 1,
     },
     {
-      url: "https://kapster.my.id/#fitur",
+      url: `${siteUrl}/privacy-policy`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
+      changeFrequency: "yearly",
+      priority: 0.3,
     },
     {
-      url: "https://kapster.my.id/#harga",
+      url: `${siteUrl}/terms-of-service`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.9,
+      changeFrequency: "yearly",
+      priority: 0.3,
     },
     {
-      url: "https://kapster.my.id/#cara-kerja",
+      url: `${siteUrl}/cookie-policy`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
+      changeFrequency: "yearly",
+      priority: 0.3,
     },
-    {
-      url: "https://kapster.my.id/#testimoni",
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
+    ...barbershopEntries,
   ];
 }
