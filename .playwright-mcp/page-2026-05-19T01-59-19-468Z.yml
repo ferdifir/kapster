@@ -1,0 +1,25 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e35] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e36]:
+      - img [ref=e37]
+    - generic [ref=e56]:
+      - button "Open issues overlay" [ref=e57]:
+        - generic [ref=e58]:
+          - generic [ref=e59]: "0"
+          - generic [ref=e60]: "1"
+        - generic [ref=e61]: Issue
+      - button "Collapse issues badge" [ref=e62]:
+        - img [ref=e63]
+  - alert [ref=e40]
+  - generic [ref=e65]:
+    - generic [ref=e66]: Kapster
+    - generic [ref=e67]:
+      - generic [ref=e68]:
+        - paragraph [ref=e69]: Nomor Antrian Anda
+        - generic [ref=e70]: "02"
+        - paragraph [ref=e71]: Public Customer
+      - generic [ref=e72]:
+        - paragraph [ref=e73]: Menunggu Giliran
+        - paragraph [ref=e74]: Anda berikutnya!
+      - link "← Halaman Antrian" [ref=e75] [cursor=pointer]:
+        - /url: /q/gentlemens-barbershop

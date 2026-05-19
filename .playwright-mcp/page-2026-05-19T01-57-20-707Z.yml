@@ -1,0 +1,102 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Kapster" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e7]
+        - generic [ref=e9]: Kapster
+      - generic [ref=e10]:
+        - paragraph [ref=e11]: Barbershop
+        - paragraph [ref=e12]: Gentlemen's Barbershop
+        - generic [ref=e13]: Basic
+      - navigation [ref=e14]:
+        - link "Overview" [ref=e15] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e16]
+          - text: Overview
+        - link "Antrian" [ref=e18] [cursor=pointer]:
+          - /url: /dashboard/queue
+          - img [ref=e19]
+          - text: Antrian
+        - link "Booking" [ref=e21] [cursor=pointer]:
+          - /url: /dashboard/bookings
+          - img [ref=e22]
+          - text: Booking
+        - link "Barber" [ref=e24] [cursor=pointer]:
+          - /url: /dashboard/barbers
+          - img [ref=e25]
+          - text: Barber
+        - link "Layanan" [ref=e27] [cursor=pointer]:
+          - /url: /dashboard/services
+          - img [ref=e28]
+          - text: Layanan
+        - link "Analitik" [ref=e30] [cursor=pointer]:
+          - /url: /dashboard/analytics
+          - img [ref=e31]
+          - text: Analitik
+        - link "Pengaturan" [ref=e33] [cursor=pointer]:
+          - /url: /dashboard/settings
+          - img [ref=e34]
+          - text: Pengaturan
+      - link "Lihat Halaman Publik" [ref=e37] [cursor=pointer]:
+        - /url: /q/gentlemens-barbershop
+        - img [ref=e38]
+        - text: Lihat Halaman Publik
+    - generic [ref=e40]:
+      - banner [ref=e41]:
+        - generic [ref=e42]:
+          - button "Toggle menu" [ref=e43]:
+            - img [ref=e44]
+          - generic [ref=e46]: Kapster
+        - generic [ref=e47]:
+          - generic [ref=e48]:
+            - paragraph [ref=e49]: Test User Playwright
+            - paragraph [ref=e50]: test-playwright@example.com
+          - generic [ref=e51]: TU
+          - button "Keluar" [ref=e52]:
+            - img [ref=e53]
+      - main [ref=e55]:
+        - generic [ref=e56]:
+          - generic [ref=e57]:
+            - generic [ref=e58]:
+              - heading "Antrian" [level=1] [ref=e59]
+              - paragraph [ref=e60]: Selasa, 19 Mei 2026
+            - generic [ref=e61]:
+              - textbox [ref=e62]: 2026-05-19
+              - generic [ref=e74]: Buka
+              - button "Tutup Antrian" [disabled] [ref=e75]
+          - generic [ref=e76]:
+            - generic [ref=e77]:
+              - paragraph [ref=e78]: "0"
+              - paragraph [ref=e79]: Menunggu
+            - generic [ref=e80]:
+              - paragraph [ref=e81]: "1"
+              - paragraph [ref=e82]: Dipanggil
+            - generic [ref=e83]:
+              - paragraph [ref=e84]: "0"
+              - paragraph [ref=e85]: Dilayani
+            - generic [ref=e86]:
+              - paragraph [ref=e87]: "0"
+              - paragraph [ref=e88]: Selesai
+          - generic [ref=e90]:
+            - heading "Tambah Pelanggan" [level=2] [ref=e91]
+            - button "+ Tambah" [ref=e122]
+          - generic [ref=e94]:
+            - heading "Antrian Aktif" [level=2] [ref=e124]
+            - generic [ref=e126]:
+              - generic [ref=e128]: "01"
+              - generic [ref=e129]:
+                - paragraph [ref=e130]: Customer Test MCP
+                - paragraph
+              - generic [ref=e131]: Dipanggil
+              - generic [ref=e132]:
+                - button "Layani" [disabled] [ref=e141]
+                - button "Skip" [disabled] [ref=e142]
+  - button "Open Next.js Dev Tools" [ref=e143] [cursor=pointer]:
+    - generic [ref=e146]:
+      - text: Rendering
+      - generic [ref=e147]:
+        - generic [ref=e148]: .
+        - generic [ref=e149]: .
+        - generic [ref=e150]: .
+  - alert [ref=e73]

@@ -1,0 +1,27 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e26] [cursor=pointer]:
+    - img [ref=e27]
+  - alert [ref=e30]
+  - generic [ref=e57]:
+    - generic [ref=e58]:
+      - img [ref=e60]
+      - heading "Setup Barbershop" [level=1] [ref=e62]
+      - paragraph [ref=e63]: Langkah 1 dari 2 — selesai dalam 2 menit
+    - generic [ref=e67]:
+      - heading "Info Barbershop" [level=2] [ref=e68]
+      - generic [ref=e69]:
+        - generic [ref=e70]: Nama Barbershop *
+        - textbox "Gentlemen's Barbershop" [ref=e71]
+      - generic [ref=e72]:
+        - generic [ref=e73]: URL Antrian (slug) *
+        - generic [ref=e74]:
+          - generic [ref=e75]: kapster.my.id/q/
+          - textbox "gentlemens-barbershop" [ref=e76]
+        - paragraph [ref=e77]: Hanya huruf kecil, angka, dan tanda hubung.
+      - generic [ref=e78]:
+        - generic [ref=e79]: Kota
+        - textbox "Jakarta" [ref=e80]
+      - generic [ref=e81]:
+        - generic [ref=e82]: Alamat Lengkap
+        - textbox "Jl. Sudirman No. 10" [ref=e83]
+      - button "Lanjut" [ref=e85]

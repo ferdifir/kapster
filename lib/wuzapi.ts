@@ -56,7 +56,11 @@ export async function createWuzApiUser(barbershopId: string): Promise<{
     }),
   });
 
-  if (!res.ok) return null;
+  if (!res.ok) {
+    const errorText = await res.text().catch(() => "");
+    console.error(`[WuzAPI] createWuzApiUser failed: ${res.status} ${errorText}`);
+    return null;
+  }
 
   const data = (await res.json()) as WuzApiResponse<WuzApiUser>;
   if (!data.success) return null;
@@ -77,25 +81,34 @@ export async function connectSession(userToken: string): Promise<{
   loggedIn: boolean;
   jid: string;
 } | null> {
-  const res = await fetch(`${WUZAPI_URL}/session/connect`, {
-    method: "POST",
-    headers: {
-      Authorization: userToken,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      Subscribe: ["Message", "ReadReceipt"],
-      Immediate: false,
-    }),
-  });
+  try {
+    const res = await fetch(`${WUZAPI_URL}/session/connect`, {
+      method: "POST",
+      headers: {
+        Authorization: userToken,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Subscribe: ["Message", "ReadReceipt"],
+        Immediate: false,
+      }),
+    });
 
-  if (!res.ok) return null;
-  const data = await res.json();
-  return {
-    connected: true,
-    loggedIn: !!data.jid,
-    jid: data.jid || "",
-  };
+    if (!res.ok) {
+      const errorText = await res.text().catch(() => "");
+      console.error(`[WuzAPI] connectSession failed: ${res.status} ${errorText}`);
+      return null;
+    }
+    const data = await res.json();
+    return {
+      connected: true,
+      loggedIn: !!data.jid,
+      jid: data.jid || "",
+    };
+  } catch (err) {
+    console.error(`[WuzAPI] connectSession error: ${err}`);
+    return null;
+  }
 }
 
 export async function getQrCode(userToken: string): Promise<string | null> {

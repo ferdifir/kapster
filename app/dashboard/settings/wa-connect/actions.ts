@@ -27,10 +27,15 @@ export async function connectWhatsApp(barbershopId: string) {
 
   if (!barbershop) return { error: "Barbershop not found" };
 
+  // Check if WuzAPI is configured
+  if (!process.env.WUZAPI_ADMIN_TOKEN) {
+    return { error: "WhatsApp belum dikonfigurasi. Hubungi admin untuk setup WUZAPI_ADMIN_TOKEN." };
+  }
+
   // If already has credentials, just try to connect
   if (barbershop.wuzapi_user_id && barbershop.wuzapi_token) {
     const result = await connectSession(barbershop.wuzapi_token);
-    if (!result) return { error: "Gagal connect ke WhatsApp" };
+    if (!result) return { error: "Gagal connect ke WhatsApp. Pastikan WuzAPI server berjalan." };
 
     const { error: updateError } = await supabase
       .from("barbershops")
@@ -44,7 +49,7 @@ export async function connectWhatsApp(barbershopId: string) {
 
   // Create new WuzAPI user
   const newUser = await createWuzApiUser(barbershopId);
-  if (!newUser) return { error: "Gagal membuat akun WhatsApp" };
+  if (!newUser) return { error: "Gagal membuat akun WhatsApp. Periksa koneksi ke WuzAPI server." };
 
   const { error: updateError } = await supabase
     .from("barbershops")
@@ -62,7 +67,7 @@ export async function connectWhatsApp(barbershopId: string) {
 
   // Connect session
   const result = await connectSession(newUser.token);
-  if (!result) return { error: "Gagal connect session" };
+  if (!result) return { error: "Gagal connect session ke WhatsApp." };
 
   revalidatePath("/dashboard/settings");
   return { success: true, needsQr: !result.loggedIn };

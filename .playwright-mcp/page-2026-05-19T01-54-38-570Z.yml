@@ -1,0 +1,130 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e26] [cursor=pointer]:
+    - img [ref=e27]
+  - alert [ref=e30]
+  - generic [ref=e120]:
+    - complementary [ref=e121]:
+      - link "Kapster" [ref=e123] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e125]
+        - generic [ref=e127]: Kapster
+      - generic [ref=e128]:
+        - paragraph [ref=e129]: Barbershop
+        - paragraph [ref=e130]: Gentlemen's Barbershop
+        - generic [ref=e131]: Basic
+      - navigation [ref=e132]:
+        - link "Overview" [ref=e133] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e134]
+          - text: Overview
+        - link "Antrian" [ref=e136] [cursor=pointer]:
+          - /url: /dashboard/queue
+          - img [ref=e137]
+          - text: Antrian
+        - link "Booking" [ref=e139] [cursor=pointer]:
+          - /url: /dashboard/bookings
+          - img [ref=e140]
+          - text: Booking
+        - link "Barber" [ref=e142] [cursor=pointer]:
+          - /url: /dashboard/barbers
+          - img [ref=e143]
+          - text: Barber
+        - link "Layanan" [ref=e145] [cursor=pointer]:
+          - /url: /dashboard/services
+          - img [ref=e146]
+          - text: Layanan
+        - link "Analitik" [ref=e148] [cursor=pointer]:
+          - /url: /dashboard/analytics
+          - img [ref=e149]
+          - text: Analitik
+        - link "Pengaturan" [ref=e151] [cursor=pointer]:
+          - /url: /dashboard/settings
+          - img [ref=e152]
+          - text: Pengaturan
+      - link "Lihat Halaman Publik" [ref=e155] [cursor=pointer]:
+        - /url: /q/gentlemens-barbershop
+        - img [ref=e156]
+        - text: Lihat Halaman Publik
+    - generic [ref=e158]:
+      - banner [ref=e159]:
+        - generic [ref=e160]:
+          - button "Toggle menu" [ref=e161]:
+            - img [ref=e162]
+          - generic [ref=e164]: Kapster
+        - generic [ref=e165]:
+          - generic [ref=e166]:
+            - paragraph [ref=e167]: Test User Playwright
+            - paragraph [ref=e168]: test-playwright@example.com
+          - generic [ref=e169]: TU
+          - button "Keluar" [ref=e170]:
+            - img [ref=e171]
+      - main [ref=e173]:
+        - generic [ref=e174]:
+          - generic [ref=e175]:
+            - heading "Dashboard" [level=1] [ref=e176]
+            - paragraph [ref=e177]: Selasa, 19 Mei 2026
+          - generic [ref=e178]:
+            - generic [ref=e179]:
+              - img [ref=e182]
+              - paragraph [ref=e184]: Antrian Menunggu
+              - paragraph [ref=e185]: "0"
+              - paragraph [ref=e186]: Antrian tutup
+            - generic [ref=e187]:
+              - img [ref=e190]
+              - paragraph [ref=e192]: Dilayani Hari Ini
+              - paragraph [ref=e193]: "0"
+              - paragraph [ref=e194]: pelanggan selesai
+            - generic [ref=e195]:
+              - img [ref=e198]
+              - paragraph [ref=e200]: Barber Aktif
+              - paragraph [ref=e201]: "0"
+              - paragraph [ref=e202]: maks. 1 barber
+            - generic [ref=e203]:
+              - img [ref=e206]
+              - paragraph [ref=e208]: Plan Aktif
+              - paragraph [ref=e209]: Basic
+              - paragraph [ref=e210]: Gratis — Semua fitur tersedia
+          - generic [ref=e211]:
+            - generic [ref=e212]:
+              - heading "Akses Cepat" [level=2] [ref=e214]
+              - generic [ref=e215]:
+                - link "Kelola Antrian" [ref=e216] [cursor=pointer]:
+                  - /url: /dashboard/queue
+                  - img [ref=e217]
+                  - generic [ref=e219]: Kelola Antrian
+                - link "Tambah Barber" [ref=e220] [cursor=pointer]:
+                  - /url: /dashboard/barbers
+                  - img [ref=e221]
+                  - generic [ref=e223]: Tambah Barber
+                - link "Layanan & Harga" [ref=e224] [cursor=pointer]:
+                  - /url: /dashboard/services
+                  - img [ref=e225]
+                  - generic [ref=e227]: Layanan & Harga
+                - link "Lihat Laporan" [ref=e228] [cursor=pointer]:
+                  - /url: /dashboard/analytics
+                  - img [ref=e229]
+                  - generic [ref=e231]: Lihat Laporan
+            - generic [ref=e232]:
+              - heading "Link Publik" [level=2] [ref=e233]
+              - generic [ref=e234]:
+                - generic [ref=e235]:
+                  - generic [ref=e236]:
+                    - paragraph [ref=e237]: Halaman Antrian Customer
+                    - paragraph [ref=e238]: Bagikan ke pelanggan untuk daftar antrian
+                  - link [ref=e239] [cursor=pointer]:
+                    - /url: /q/gentlemens-barbershop
+                    - img [ref=e240]
+                - generic [ref=e242]:
+                  - generic [ref=e243]:
+                    - paragraph [ref=e244]: Halaman Booking
+                    - paragraph [ref=e245]: Untuk reservasi jadwal
+                  - link [ref=e246] [cursor=pointer]:
+                    - /url: /booking/gentlemens-barbershop
+                    - img [ref=e247]
+                - generic [ref=e249]:
+                  - generic [ref=e250]:
+                    - paragraph [ref=e251]: TV Display
+                    - paragraph [ref=e252]: Tampilkan nomor antrian di TV
+                  - link [ref=e253] [cursor=pointer]:
+                    - /url: /display/gentlemens-barbershop
+                    - img [ref=e254]

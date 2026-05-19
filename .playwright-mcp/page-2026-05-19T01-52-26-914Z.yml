@@ -1,0 +1,34 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e26] [cursor=pointer]:
+    - img [ref=e27]
+  - alert [ref=e30]
+  - generic [ref=e32]:
+    - generic [ref=e33]:
+      - link "Kapster" [ref=e34] [cursor=pointer]:
+        - /url: /
+        - img [ref=e36]
+        - generic [ref=e38]: Kapster
+      - heading "Daftar Gratis" [level=1] [ref=e39]
+      - paragraph [ref=e40]:
+        - text: Sudah punya akun?
+        - link "Masuk" [ref=e41] [cursor=pointer]:
+          - /url: /auth/login
+    - generic [ref=e42]:
+      - generic [ref=e43]:
+        - generic [ref=e44]: Nama Lengkap
+        - textbox "Budi Santoso" [ref=e45]
+      - generic [ref=e46]:
+        - generic [ref=e47]: Email
+        - textbox "nama@barbershop.com" [ref=e48]
+      - generic [ref=e49]:
+        - generic [ref=e50]: Password
+        - textbox "Min. 8 karakter" [ref=e51]
+      - button "Daftar Sekarang" [ref=e52]
+      - paragraph [ref=e53]:
+        - text: Dengan mendaftar kamu setuju dengan
+        - link "Syarat & Ketentuan" [ref=e54] [cursor=pointer]:
+          - /url: /terms-of-service
+        - text: dan
+        - link "Kebijakan Privasi" [ref=e55] [cursor=pointer]:
+          - /url: /privacy-policy
+        - text: kami.

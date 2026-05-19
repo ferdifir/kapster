@@ -1,0 +1,110 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Kapster" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e7]
+        - generic [ref=e9]: Kapster
+      - generic [ref=e10]:
+        - paragraph [ref=e11]: Barbershop
+        - paragraph [ref=e12]: Gentlemen's Barbershop
+        - generic [ref=e13]: Basic
+      - navigation [ref=e14]:
+        - link "Overview" [ref=e15] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e16]
+          - text: Overview
+        - link "Antrian" [ref=e18] [cursor=pointer]:
+          - /url: /dashboard/queue
+          - img [ref=e19]
+          - text: Antrian
+        - link "Booking" [ref=e21] [cursor=pointer]:
+          - /url: /dashboard/bookings
+          - img [ref=e22]
+          - text: Booking
+        - link "Barber" [ref=e24] [cursor=pointer]:
+          - /url: /dashboard/barbers
+          - img [ref=e25]
+          - text: Barber
+        - link "Layanan" [ref=e27] [cursor=pointer]:
+          - /url: /dashboard/services
+          - img [ref=e28]
+          - text: Layanan
+        - link "Analitik" [ref=e30] [cursor=pointer]:
+          - /url: /dashboard/analytics
+          - img [ref=e31]
+          - text: Analitik
+        - link "Pengaturan" [ref=e33] [cursor=pointer]:
+          - /url: /dashboard/settings
+          - img [ref=e34]
+          - text: Pengaturan
+      - link "Lihat Halaman Publik" [ref=e37] [cursor=pointer]:
+        - /url: /q/gentlemens-barbershop
+        - img [ref=e38]
+        - text: Lihat Halaman Publik
+    - generic [ref=e40]:
+      - banner [ref=e41]:
+        - generic [ref=e42]:
+          - button "Toggle menu" [ref=e43]:
+            - img [ref=e44]
+          - generic [ref=e46]: Kapster
+        - generic [ref=e47]:
+          - generic [ref=e48]:
+            - paragraph [ref=e49]: Test User Playwright
+            - paragraph [ref=e50]: test-playwright@example.com
+          - generic [ref=e51]: TU
+          - button "Keluar" [ref=e52]:
+            - img [ref=e53]
+      - main [ref=e55]:
+        - generic [ref=e56]:
+          - generic [ref=e57]:
+            - generic [ref=e58]:
+              - heading "Antrian" [level=1] [ref=e59]
+              - paragraph [ref=e60]: Selasa, 19 Mei 2026
+            - generic [ref=e61]:
+              - textbox [ref=e62]: 2026-05-19
+              - generic [ref=e74]: Buka
+              - button "Tutup Antrian" [ref=e75]
+          - generic [ref=e76]:
+            - generic [ref=e77]:
+              - paragraph [ref=e78]: "0"
+              - paragraph [ref=e79]: Menunggu
+            - generic [ref=e80]:
+              - paragraph [ref=e81]: "0"
+              - paragraph [ref=e82]: Dipanggil
+            - generic [ref=e83]:
+              - paragraph [ref=e84]: "0"
+              - paragraph [ref=e85]: Dilayani
+            - generic [ref=e86]:
+              - paragraph [ref=e87]: "0"
+              - paragraph [ref=e88]: Selesai
+          - generic [ref=e89]:
+            - generic [ref=e90]:
+              - heading "Tambah Pelanggan" [level=2] [ref=e91]
+              - button "Tutup" [active] [ref=e97]
+            - generic [ref=e98]:
+              - generic [ref=e99]:
+                - generic [ref=e100]:
+                  - generic [ref=e101]: Nama Pelanggan *
+                  - textbox "John Doe" [ref=e102]
+                - generic [ref=e103]:
+                  - generic [ref=e104]: No. HP
+                  - textbox "08xxxxxxxxxx" [ref=e105]
+                - generic [ref=e106]:
+                  - generic [ref=e107]: Layanan
+                  - combobox [ref=e108]:
+                    - option "Pilih layanan..." [selected]
+                    - option "Potong Rambut — Rp30.000"
+                    - option "Cukur Jenggot — Rp20.000"
+                    - option "Potong + Jenggot — Rp45.000"
+                - generic [ref=e109]:
+                  - generic [ref=e110]: Barber
+                  - combobox [ref=e111]:
+                    - option "Barber manapun" [selected]
+              - button "Tambah ke Antrian" [disabled] [ref=e112]
+          - generic [ref=e94]:
+            - paragraph [ref=e95]: Antrian kosong
+            - paragraph [ref=e96]: Tambahkan pelanggan di atas
+  - button "Open Next.js Dev Tools" [ref=e69] [cursor=pointer]:
+    - img [ref=e70]
+  - alert [ref=e73]

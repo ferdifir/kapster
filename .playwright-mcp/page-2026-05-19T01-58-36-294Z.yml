@@ -1,0 +1,35 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]: Kapster
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e7]: G
+        - heading "Gentlemen's Barbershop" [level=1] [ref=e8]
+      - generic [ref=e9]:
+        - generic [ref=e10]: Pilih Tanggal Antrian
+        - textbox [ref=e11]: 2026-05-19
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - paragraph [ref=e14]: "0"
+          - paragraph [ref=e15]: Sedang Menunggu
+        - generic [ref=e16]:
+          - paragraph [ref=e17]: "1"
+          - paragraph [ref=e18]: Selesai
+      - generic [ref=e19]:
+        - heading "Daftar Antrian" [level=2] [ref=e20]
+        - generic [ref=e21]:
+          - generic [ref=e22]: Nama *
+          - textbox "Nama lengkap" [ref=e23]
+        - generic [ref=e24]:
+          - generic [ref=e25]: No. HP
+          - textbox "08xxxxxxxxxx" [ref=e26]
+        - generic [ref=e27]:
+          - generic [ref=e28]: Layanan
+          - combobox [ref=e29]:
+            - option "Pilih layanan..." [selected]
+            - option "Potong Rambut — Rp30.000"
+            - option "Cukur Jenggot — Rp20.000"
+            - option "Potong + Jenggot — Rp45.000"
+        - button "Daftar Sekarang" [disabled] [ref=e30]
+  - button "Open Next.js Dev Tools" [ref=e36] [cursor=pointer]:
+    - img [ref=e37]
