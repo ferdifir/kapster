@@ -1,7 +1,59 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Metadata } from "next";
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import JoinQueueForm from "./JoinQueueForm";
 import QueueDatePicker from "./QueueDatePicker";
+
+const siteUrl = "https://kapster.my.id";
+
+const getBarbershop = cache(async (slug: string) => {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("barbershops")
+    .select("id, name, slug, city, address, settings_json, logo_url")
+    .eq("slug", slug)
+    .eq("is_active", true)
+    .single();
+  return data;
+});
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const barbershop = await getBarbershop(slug);
+
+  if (!barbershop) return { title: "Not Found" };
+
+  const settings = (barbershop.settings_json as Record<string, unknown>) ?? {};
+  const showInDirectory = settings.show_in_directory !== false;
+
+  return {
+    title: `Antrian Real-time - ${barbershop.name}`,
+    description: `Cek antrian ${barbershop.name} secara real-time. Lihat berapa orang yang mengantri dan ambil nomor antrian online.`,
+    alternates: {
+      canonical: `${siteUrl}/q/${slug}`,
+    },
+    robots: {
+      index: showInDirectory,
+      follow: showInDirectory,
+    },
+    openGraph: {
+      title: `Antrian Real-time - ${barbershop.name} | Kapster`,
+      description: `Cek antrian ${barbershop.name} secara real-time. Lihat berapa orang yang mengantri dan ambil nomor antrian online.`,
+      url: `${siteUrl}/q/${slug}`,
+      siteName: "Kapster",
+      locale: "id_ID",
+      type: "website",
+      images: barbershop.logo_url
+        ? [{ url: barbershop.logo_url, width: 400, height: 400, alt: `Logo ${barbershop.name}` }]
+        : undefined,
+    },
+  };
+}
 
 export default async function PublicQueuePage({
   params,
@@ -12,14 +64,11 @@ export default async function PublicQueuePage({
 }) {
   const { slug } = await params;
   const resolvedSearchParams = await searchParams;
-  const supabase = await createClient();
+  const barbershop = await getBarbershop(slug);
 
-  const { data: barbershop } = await supabase
-    .from("barbershops")
-    .select("id, name, city, address, settings_json, logo_url")
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .single();
+  if (!barbershop) notFound();
+
+  const supabase = await createClient();
 
   if (!barbershop) notFound();
 
