@@ -36,7 +36,7 @@ export default async function BarbersPage() {
     <BarbersManager
       barbershop={barbershop}
       barbers={barbers ?? []}
-      maxBarbers={subscription?.max_barbers ?? 1}
+      maxBarbers={subscription?.max_barbers ?? 3}
     />
   );
 }

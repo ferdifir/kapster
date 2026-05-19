@@ -1,3 +1,4 @@
+/* PAKASIR WEBHOOK DINONAKTIFKAN — SEMUA GRATIS
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PLAN_LIMITS, type PlanKey } from "@/lib/config/plans";
@@ -13,7 +14,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid project" }, { status: 400 });
     }
 
-    // Only process completed payments
     if (status !== "completed") {
       return NextResponse.json({ ok: true });
     }
@@ -34,12 +34,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Amount mismatch" }, { status: 400 });
     }
 
-    // Idempotency — skip if already processed
     if (payment.status === "completed") {
       return NextResponse.json({ ok: true });
     }
 
-    // Update payment record
     await supabase
       .from("payments")
       .update({
@@ -50,7 +48,6 @@ export async function POST(request: NextRequest) {
       })
       .eq("id", payment.id);
 
-    // Calculate new subscription period
     const now = new Date();
     const periodEnd = new Date(now);
     periodEnd.setDate(periodEnd.getDate() + PERIOD_DAYS);
@@ -81,4 +78,11 @@ export async function POST(request: NextRequest) {
     console.error("Pakasir webhook error:", err);
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
+}
+*/
+
+export const dynamic = "force-dynamic";
+
+export async function POST() {
+  return Response.json({ message: "Webhook dinonaktifkan" });
 }

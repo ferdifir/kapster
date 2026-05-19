@@ -6,9 +6,11 @@ import { createClient } from "@/lib/supabase/client";
 export default function DashboardHeader({
   user,
   barbershop,
+  onMenuToggle,
 }: {
   user: { email: string; full_name: string | null };
   barbershop: { name: string };
+  onMenuToggle?: () => void;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -30,10 +32,21 @@ export default function DashboardHeader({
 
   return (
     <header className="h-14 border-b border-dark-800/50 bg-dark-900/50 backdrop-blur-sm flex items-center justify-between px-6 shrink-0">
-      <div className="lg:hidden">
-        <span className="font-display text-lg font-bold text-white">
-          Kapster
-        </span>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onMenuToggle}
+          className="lg:hidden text-dark-300 hover:text-white p-2 -ml-2"
+          aria-label="Toggle menu"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <div className="lg:hidden">
+          <span className="font-display text-lg font-bold text-white">
+            Kapster
+          </span>
+        </div>
       </div>
 
       <div className="hidden lg:block">

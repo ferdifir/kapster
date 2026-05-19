@@ -40,25 +40,29 @@ const navItems = [
     label: "Pengaturan",
     icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z",
   },
-  {
-    href: "/dashboard/billing",
-    label: "Billing",
-    icon: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
-  },
+  // {
+  //   href: "/dashboard/billing",
+  //   label: "Billing",
+  //   icon: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
+  // },
 ];
 
 export default function DashboardSidebar({
   barbershop,
+  mobileOpen,
+  onClose,
 }: {
   barbershop: { name: string; slug: string; plan: string };
+  mobileOpen?: boolean;
+  onClose?: () => void;
 }) {
   const pathname = usePathname();
 
-  return (
-    <aside className="w-64 shrink-0 bg-dark-900 border-r border-dark-800/50 flex flex-col hidden lg:flex">
+  const navContent = (
+    <>
       {/* Logo */}
       <div className="px-6 py-5 border-b border-dark-800/50">
-        <Link href="/dashboard" className="flex items-center gap-3">
+        <Link href="/dashboard" className="flex items-center gap-3" onClick={onClose}>
           <div className="w-8 h-8 rounded-lg gold-gradient flex items-center justify-center">
             <Logo className="w-5 h-5 text-dark-900" />
           </div>
@@ -73,11 +77,7 @@ export default function DashboardSidebar({
         <p className="text-dark-500 text-xs mb-1">Barbershop</p>
         <p className="text-white text-sm font-medium truncate">{barbershop.name}</p>
         <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-barber-400/10 text-barber-400 text-xs">
-          {barbershop.plan === "starter"
-            ? "Starter"
-            : barbershop.plan === "pro"
-              ? "Pro"
-              : "Enterprise"}
+          Basic
         </span>
       </div>
 
@@ -92,6 +92,7 @@ export default function DashboardSidebar({
             <Link
               key={item.href}
               href={item.href}
+              onClick={onClose}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all ${
                 isActive
                   ? "bg-barber-400/10 text-barber-400 border border-barber-400/20"
@@ -141,6 +142,32 @@ export default function DashboardSidebar({
           Lihat Halaman Publik
         </a>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Mobile drawer */}
+      <aside
+        className={`fixed left-0 top-0 h-full w-64 bg-dark-900 border-r border-dark-800/50 flex flex-col z-50 transform transition-transform duration-200 lg:hidden ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {navContent}
+      </aside>
+
+      {/* Desktop sidebar */}
+      <aside className="w-64 shrink-0 bg-dark-900 border-r border-dark-800/50 flex flex-col hidden lg:flex">
+        {navContent}
+      </aside>
+    </>
   );
 }

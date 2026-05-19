@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { createPayment } from "./actions";
-import { PLAN_KEYS, PLAN_META, formatBillingPrice, type PlanKey } from "@/lib/config/plans";
+// import { useState, useTransition } from "react";
+// import { createPayment } from "./actions";
+// import { PLAN_KEYS, PLAN_META, formatBillingPrice, type PlanKey } from "@/lib/config/plans";
 
-type Plan = PlanKey | "enterprise";
+type Plan = "starter" | "basic" | "pro" | "enterprise";
 
 type Subscription = {
   plan: Plan;
@@ -14,189 +14,143 @@ type Subscription = {
   max_queue_per_day: number;
 };
 
-type Payment = {
-  id: string;
-  order_id: string;
-  amount: number;
-  plan: Plan;
-  status: string;
-  payment_method: string | null;
-  created_at: string;
-  completed_at: string | null;
-};
+// type Payment = {
+//   id: string;
+//   order_id: string;
+//   amount: number;
+//   plan: Plan;
+//   status: string;
+//   payment_method: string | null;
+//   created_at: string;
+//   completed_at: string | null;
+// };
 
 interface Props {
   subscription: Subscription;
-  payments: Payment[];
+  // payments: Payment[];
   barberCount: number;
 }
 
-const STATUS_LABEL: Record<string, string> = {
-  pending: "Menunggu",
-  completed: "Berhasil",
-  expired: "Kadaluarsa",
-  cancelled: "Dibatalkan",
-};
+const FEATURES = [
+  { label: "3 Barber", desc: "Kelola hingga 3 tukang cukur" },
+  { label: "50 Antrian/hari", desc: "Cukup untuk barbershop ramai" },
+  { label: "Queue Digital", desc: "Antrian online real-time" },
+  { label: "Public Booking Page", desc: "Halaman booking untuk pelanggan" },
+  { label: "TV Display", desc: "Tampilkan nomor antrian di TV" },
+  // { label: "WhatsApp Notification", desc: "Notifikasi otomatis ke pelanggan" },
+  // { label: "Basic Reports", desc: "Laporan harian dan mingguan" },
+  // { label: "Custom Logo", desc: "Upload logo barbershop" },
+  // { label: "Analytics Lengkap", desc: "Dashboard analytics mendalam" },
+  // { label: "Priority Support", desc: "Dukungan prioritas" },
+  // { label: "API Access", desc: "Akses API untuk integrasi" },
+];
 
-const STATUS_COLOR: Record<string, string> = {
-  pending: "bg-barber-400/10 text-barber-400 border-barber-400/20",
-  completed: "bg-green-500/10 text-green-400 border-green-500/20",
-  expired: "bg-dark-700/50 text-dark-500 border-dark-700/30",
-  cancelled: "bg-red-500/10 text-red-400 border-red-500/20",
-};
+// const STATUS_LABEL: Record<string, string> = {
+//   pending: "Menunggu",
+//   completed: "Berhasil",
+//   expired: "Kadaluarsa",
+//   cancelled: "Dibatalkan",
+// };
 
-function fmt(price: number) {
-  return `Rp${price.toLocaleString("id-ID")}`;
-}
+// const STATUS_COLOR: Record<string, string> = {
+//   pending: "bg-barber-400/10 text-barber-400 border-barber-400/20",
+//   completed: "bg-green-500/10 text-green-400 border-green-500/20",
+//   expired: "bg-dark-700/50 text-dark-500 border-dark-700/30",
+//   cancelled: "bg-red-500/10 text-red-400 border-red-500/20",
+// };
 
-export default function BillingManager({ subscription, payments, barberCount }: Props) {
-  const [isPending, startTransition] = useTransition();
-  const [upgradingPlan, setUpgradingPlan] = useState<Plan | null>(null);
-  const [error, setError] = useState("");
+// function fmt(price: number) {
+//   return `Rp${price.toLocaleString("id-ID")}`;
+// }
 
-  const handleUpgrade = (plan: PlanKey) => {
-    setError("");
-    setUpgradingPlan(plan);
-    startTransition(async () => {
-      const result = await createPayment(plan);
-      if (result.error) {
-        setError(result.error);
-        setUpgradingPlan(null);
-        return;
-      }
-      if (result.url) {
-        window.location.href = result.url;
-      }
-    });
-  };
+export default function BillingManager({ subscription, barberCount }: Props) {
+  // const [isPending, startTransition] = useTransition();
+  // const [upgradingPlan, setUpgradingPlan] = useState<Plan | null>(null);
+  // const [error, setError] = useState("");
 
-  const periodEnd = subscription.period_end
-    ? new Date(subscription.period_end).toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    : null;
+  // const handleUpgrade = (plan: PlanKey) => {
+  //   setError("");
+  //   setUpgradingPlan(plan);
+  //   startTransition(async () => {
+  //     const result = await createPayment(plan);
+  //     if (result.error) {
+  //       setError(result.error);
+  //       setUpgradingPlan(null);
+  //       return;
+  //     }
+  //     if (result.url) {
+  //       window.location.href = result.url;
+  //     }
+  //   });
+  // };
+
+  // const periodEnd = subscription.period_end
+  //   ? new Date(subscription.period_end).toLocaleDateString("id-ID", {
+  //       day: "numeric",
+  //       month: "long",
+  //       year: "numeric",
+  //     })
+  //   : null;
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
-        <h1 className="font-display text-2xl font-bold text-white mb-1">Billing</h1>
-        <p className="text-dark-400 text-sm">Kelola langganan dan riwayat pembayaran</p>
+        <h1 className="font-display text-2xl font-bold text-white mb-1">Paket & Fitur</h1>
+        <p className="text-dark-400 text-sm">Semua fitur tersedia gratis</p>
       </div>
-
-      {error && (
-        <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-          {error}
-        </div>
-      )}
 
       {/* Current Plan */}
       <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6 space-y-4">
         <h2 className="font-semibold text-white">Paket Saat Ini</h2>
         <div className="flex items-center gap-3 flex-wrap">
           <span className="px-3 py-1 rounded-lg bg-barber-400/10 text-barber-400 border border-barber-400/20 text-sm font-semibold capitalize">
-            {subscription.plan}
+            Basic
           </span>
-          <span className={`px-2 py-0.5 rounded-lg text-xs border capitalize ${
-            subscription.status === "active"
-              ? "bg-green-500/10 text-green-400 border-green-500/20"
-              : subscription.status === "trial"
-              ? "bg-barber-400/10 text-barber-400 border-barber-400/20"
-              : "bg-dark-700/50 text-dark-500 border-dark-700/30"
-          }`}>
-            {subscription.status === "active" ? "Aktif" : subscription.status === "trial" ? "Trial" : subscription.status}
+          <span className="px-2 py-0.5 rounded-lg text-xs border bg-green-500/10 text-green-400 border-green-500/20">
+            Aktif
           </span>
-          {periodEnd && (
-            <span className="text-dark-400 text-sm">Berlaku hingga {periodEnd}</span>
-          )}
         </div>
         <div className="grid grid-cols-2 gap-4 pt-2">
           <div>
             <p className="text-dark-500 text-xs mb-1">Barber</p>
             <p className="text-white text-sm font-medium">
-              {barberCount} / {subscription.max_barbers === 999 ? "∞" : subscription.max_barbers}
+              {barberCount} / {subscription.max_barbers}
             </p>
           </div>
           <div>
             <p className="text-dark-500 text-xs mb-1">Antrian per hari</p>
             <p className="text-white text-sm font-medium">
-              {subscription.max_queue_per_day === 9999 ? "Tak terbatas" : `${subscription.max_queue_per_day}/hari`}
+              {subscription.max_queue_per_day}/hari
             </p>
           </div>
         </div>
       </div>
 
-      {/* Plan Cards */}
+      {/* Features */}
       <div>
-        <h2 className="font-semibold text-white mb-4">Pilih Paket</h2>
-        <div className="grid gap-4 md:grid-cols-3">
-          {PLAN_KEYS.map((key) => {
-            const meta = PLAN_META[key];
-            const isCurrent = subscription.plan === key;
-            const isUpgrading = isPending && upgradingPlan === key;
-
-            return (
-              <div
-                key={key}
-                className={`rounded-2xl p-5 space-y-4 border ${
-                  isCurrent
-                    ? "bg-barber-400/5 border-barber-400/30"
-                    : "bg-dark-800/50 border-dark-700/30"
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-white font-semibold">{meta.name}</p>
-                    {isCurrent && (
-                      <span className="text-xs text-barber-400 font-medium">Aktif</span>
-                    )}
-                  </div>
-                  <p className="text-barber-400 font-bold text-lg">{formatBillingPrice(key)}</p>
-                </div>
-
-                <ul className="space-y-2">
-                  {meta.billingFeatures.map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-dark-300 text-sm">
-                      <svg className="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                {key === "starter" ? (
-                  <div className="py-2 text-center text-dark-500 text-sm">
-                    {isCurrent ? "Paket gratis Anda" : "Downgrade tidak tersedia"}
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => handleUpgrade(key as PlanKey)}
-                    disabled={isCurrent || isPending}
-                    className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-50 ${
-                      isCurrent
-                        ? "bg-dark-700/50 text-dark-400 cursor-default"
-                        : "gold-gradient text-dark-900 hover:opacity-90"
-                    }`}
-                  >
-                    {isUpgrading
-                      ? "Memproses..."
-                      : isCurrent
-                      ? "Paket Aktif"
-                      : `Upgrade ke ${meta.name}`}
-                  </button>
-                )}
+        <h2 className="font-semibold text-white mb-4">Fitur Tersedia</h2>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {FEATURES.map((f) => (
+            <div
+              key={f.label}
+              className="flex items-start gap-3 p-4 rounded-xl bg-dark-800/50 border border-dark-700/30"
+            >
+              <div className="w-8 h-8 rounded-lg bg-barber-400/10 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-barber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
               </div>
-            );
-          })}
+              <div>
+                <p className="text-white text-sm font-medium">{f.label}</p>
+                <p className="text-dark-400 text-xs">{f.desc}</p>
+              </div>
+            </div>
+          ))}
         </div>
-        <p className="text-dark-600 text-xs mt-3 text-center">
-          Pembayaran diproses via Pakasir · QRIS & Virtual Account tersedia
-        </p>
       </div>
 
-      {/* Payment History */}
+      {/* Payment History - commented out */}
+      {/*
       {payments.length > 0 && (
         <div>
           <h2 className="font-semibold text-white mb-4">Riwayat Pembayaran</h2>
@@ -227,6 +181,7 @@ export default function BillingManager({ subscription, payments, barberCount }: 
           </div>
         </div>
       )}
+      */}
     </div>
   );
 }

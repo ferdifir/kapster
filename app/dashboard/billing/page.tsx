@@ -19,18 +19,12 @@ export default async function BillingPage() {
 
   if (!barbershop) redirect("/onboarding");
 
-  const [subResult, paymentsResult, barbersResult] = await Promise.all([
+  const [subResult, barbersResult] = await Promise.all([
     supabase
       .from("subscriptions")
       .select("plan, status, period_end, max_barbers, max_queue_per_day")
       .eq("barbershop_id", barbershop.id)
       .single(),
-    supabase
-      .from("payments")
-      .select("id, order_id, amount, plan, status, payment_method, created_at, completed_at")
-      .eq("barbershop_id", barbershop.id)
-      .order("created_at", { ascending: false })
-      .limit(20),
     supabase
       .from("barbers")
       .select("id", { count: "exact", head: true })
@@ -38,18 +32,25 @@ export default async function BillingPage() {
       .eq("is_active", true),
   ]);
 
+  // const paymentsResult = await supabase
+  //   .from("payments")
+  //   .select("id, order_id, amount, plan, status, payment_method, created_at, completed_at")
+  //   .eq("barbershop_id", barbershop.id)
+  //   .order("created_at", { ascending: false })
+  //   .limit(20);
+
   const subscription = subResult.data ?? {
-    plan: "starter" as const,
-    status: "trial",
+    plan: "basic" as const,
+    status: "active",
     period_end: null,
-    max_barbers: 1,
-    max_queue_per_day: 30,
+    max_barbers: 3,
+    max_queue_per_day: 50,
   };
 
   return (
     <BillingManager
       subscription={subscription}
-      payments={paymentsResult.data ?? []}
+      // payments={paymentsResult.data ?? []}
       barberCount={barbersResult.count ?? 0}
     />
   );

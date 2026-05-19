@@ -25,7 +25,7 @@ type Barbershop = {
   longitude: number | null;
   settings_json: Json;
   logo_url: string | null;
-  wuzapi_user_id: number | null;
+  wuzapi_user_id: string | null;
   wuzapi_token: string | null;
   wa_connected: boolean;
   wa_phone_number: string | null;

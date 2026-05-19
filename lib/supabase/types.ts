@@ -130,7 +130,7 @@ export type Database = {
           slug: string
           updated_at: string
           wa_number: string | null
-          wuzapi_user_id: number | null
+          wuzapi_user_id: string | null
           wuzapi_token: string | null
           wa_connected: boolean
           wa_phone_number: string | null
@@ -152,7 +152,7 @@ export type Database = {
           slug: string
           updated_at?: string
           wa_number?: string | null
-          wuzapi_user_id?: number | null
+          wuzapi_user_id?: string | null
           wuzapi_token?: string | null
           wa_connected?: boolean
           wa_phone_number?: string | null
@@ -174,7 +174,7 @@ export type Database = {
           slug?: string
           updated_at?: string
           wa_number?: string | null
-          wuzapi_user_id?: number | null
+          wuzapi_user_id?: string | null
           wuzapi_token?: string | null
           wa_connected?: boolean
           wa_phone_number?: string | null

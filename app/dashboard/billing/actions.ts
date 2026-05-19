@@ -1,3 +1,4 @@
+/* PAYMENT ACTIONS DINONAKTIFKAN — SEMUA GRATIS
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
@@ -42,3 +43,4 @@ export async function createPayment(plan: PlanKey) {
 
   return { url };
 }
+*/

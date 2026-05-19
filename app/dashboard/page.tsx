@@ -91,15 +91,16 @@ export default async function DashboardPage() {
       ).count ?? 0
     : 0;
 
-  const trialDaysLeft = subscription?.trial_ends_at
-    ? Math.max(
-        0,
-        Math.ceil(
-          (new Date(subscription.trial_ends_at).getTime() - Date.now()) /
-            86400000
-        )
-      )
-    : null;
+  // TRIAL BANNER DINONAKTIFKAN — SEMUA GRATIS
+  // const trialDaysLeft = subscription?.trial_ends_at
+  //   ? Math.max(
+  //       0,
+  //       Math.ceil(
+  //         (new Date(subscription.trial_ends_at).getTime() - Date.now()) /
+  //           86400000
+  //       )
+  //     )
+  //   : null;
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -117,6 +118,7 @@ export default async function DashboardPage() {
         </p>
       </div>
 
+      {/* TRIAL BANNER DINONAKTIFKAN
       {trialDaysLeft !== null && trialDaysLeft <= 7 && (
         <div className="px-5 py-4 rounded-xl bg-barber-400/10 border border-barber-400/30 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -149,6 +151,7 @@ export default async function DashboardPage() {
           </a>
         </div>
       )}
+      */}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
@@ -217,20 +220,8 @@ export default async function DashboardPage() {
 
         <StatCard
           label="Plan Aktif"
-          value={
-            barbershop.plan === "starter"
-              ? "Starter"
-              : barbershop.plan === "pro"
-                ? "Professional"
-                : "Enterprise"
-          }
-          sub={
-            subscription?.status === "trial"
-              ? `Trial — ${trialDaysLeft ?? 0} hari lagi`
-              : subscription?.status === "active"
-                ? "Aktif"
-                : "Tidak aktif"
-          }
+          value="Basic"
+          sub="Gratis — Semua fitur tersedia"
           icon={
             <svg
               className="w-5 h-5 text-dark-400"

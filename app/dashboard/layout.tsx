@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import DashboardSidebar from "@/components/dashboard/Sidebar";
-import DashboardHeader from "@/components/dashboard/Header";
+import DashboardLayoutClient from "@/components/dashboard/LayoutClient";
 
 export default async function DashboardLayout({
   children,
@@ -30,15 +29,11 @@ export default async function DashboardLayout({
     .single();
 
   return (
-    <div className="h-screen bg-dark-950 flex">
-      <DashboardSidebar barbershop={barbershop} />
-      <div className="flex-1 flex flex-col min-w-0">
-        <DashboardHeader
-          user={{ email: user.email ?? "", full_name: profile?.full_name ?? null }}
-          barbershop={barbershop}
-        />
-        <main className="flex-1 p-6 overflow-auto">{children}</main>
-      </div>
-    </div>
+    <DashboardLayoutClient
+      barbershop={barbershop}
+      user={{ email: user.email ?? "", full_name: profile?.full_name ?? null }}
+    >
+      {children}
+    </DashboardLayoutClient>
   );
 }

@@ -8,7 +8,7 @@ interface WuzApiResponse<T = unknown> {
 }
 
 interface WuzApiUser {
-  id: number;
+  id: string;
   name: string;
   token: string;
   webhook: string;
@@ -40,7 +40,7 @@ function generateToken(): string {
 }
 
 export async function createWuzApiUser(barbershopId: string): Promise<{
-  userId: number;
+  userId: string;
   token: string;
 } | null> {
   const token = generateToken();
@@ -64,7 +64,7 @@ export async function createWuzApiUser(barbershopId: string): Promise<{
   return { userId: data.data.id, token: data.data.token };
 }
 
-export async function deleteWuzApiUser(userId: number): Promise<boolean> {
+export async function deleteWuzApiUser(userId: string): Promise<boolean> {
   const res = await fetch(`${WUZAPI_URL}/admin/users/${userId}`, {
     method: "DELETE",
     headers: { Authorization: WUZAPI_ADMIN_TOKEN },

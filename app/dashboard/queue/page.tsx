@@ -82,7 +82,7 @@ export default async function QueuePage({
       initialEntries={initialEntries ?? []}
       barbers={barbers ?? []}
       services={services ?? []}
-      maxPerDay={subscription?.max_queue_per_day ?? 20}
+      maxPerDay={subscription?.max_queue_per_day ?? 50}
       selectedDate={validDate}
       today={today}
       maxDate={maxDateStr}
