@@ -11,7 +11,7 @@ const getBarbershop = cache(async (slug: string) => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("barbershops")
-    .select("id, name, slug, address, city, settings_json")
+    .select("id, name, slug, address, city, settings_json, latitude, longitude, logo_url")
     .eq("slug", slug)
     .eq("is_active", true)
     .single();
@@ -76,6 +76,31 @@ export default async function BookingPage({
       .eq("is_active", true),
   ]);
 
+  const prices = services?.map((s) => s.price).filter((p): p is number => p != null) ?? [];
+  const localBusinessJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HairSalon",
+    name: barbershop.name,
+    url: `${siteUrl}/booking/${slug}`,
+    image: barbershop.logo_url || undefined,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: barbershop.address || undefined,
+      addressLocality: barbershop.city || undefined,
+      addressCountry: "ID",
+    },
+    geo: barbershop.latitude && barbershop.longitude
+      ? {
+          "@type": "GeoCoordinates",
+          latitude: barbershop.latitude,
+          longitude: barbershop.longitude,
+        }
+      : undefined,
+    priceRange: prices.length > 0
+      ? `Rp${Math.min(...prices)} - Rp${Math.max(...prices)}`
+      : undefined,
+  };
+
   return (
     <div className="min-h-screen bg-dark-950">
       <div className="bg-dark-900/80 border-b border-dark-800/50 px-4 py-4 text-center">
@@ -83,6 +108,11 @@ export default async function BookingPage({
           Kapster
         </span>
       </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+      />
 
       <div className="max-w-md mx-auto px-4 py-8 space-y-6">
         <div>
