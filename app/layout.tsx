@@ -94,51 +94,110 @@ export const metadata: Metadata = {
   },
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "Kapster",
-  applicationCategory: "BusinessApplication",
-  operatingSystem: "Web",
-  url: siteUrl,
-  description:
-    "Sistem manajemen antrian digital #1 untuk barbershop di Indonesia. Kelola antrian real-time, booking online, notifikasi WhatsApp.",
-  offers: [
-    {
-      "@type": "Offer",
-      name: "Starter",
-      price: "0",
-      priceCurrency: "IDR",
-      description: "Cocok untuk barbershop yang baru mulai",
-    },
-    {
-      "@type": "Offer",
-      name: "Basic",
-      price: "29000",
-      priceCurrency: "IDR",
-      description: "Untuk barbershop kecil yang serius",
-    },
-    {
-      "@type": "Offer",
-      name: "Pro",
-      price: "79000",
-      priceCurrency: "IDR",
-      description: "Untuk barbershop yang butuh analytics lengkap",
-    },
-  ],
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.9",
-    reviewCount: "500",
-    bestRating: "5",
-    worstRating: "1",
-  },
-  author: {
-    "@type": "Organization",
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
     name: "Kapster",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
     url: siteUrl,
+    description:
+      "Sistem manajemen antrian digital #1 untuk barbershop di Indonesia. Kelola antrian real-time, booking online, notifikasi WhatsApp.",
+    offers: [
+      {
+        "@type": "Offer",
+        name: "Starter",
+        price: 0,
+        priceCurrency: "IDR",
+        description: "Cocok untuk barbershop yang baru mulai",
+      },
+      {
+        "@type": "Offer",
+        name: "Basic",
+        price: 29000,
+        priceCurrency: "IDR",
+        description: "Untuk barbershop kecil yang serius",
+      },
+      {
+        "@type": "Offer",
+        name: "Pro",
+        price: 79000,
+        priceCurrency: "IDR",
+        description: "Untuk barbershop yang butuh analytics lengkap",
+      },
+    ],
+    author: {
+      "@type": "Organization",
+      name: "Kapster",
+      url: siteUrl,
+    },
   },
-};
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Apa itu Kapster?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Kapster adalah sistem manajemen antrian digital untuk barbershop di Indonesia. Pelanggan bisa cek antrian real-time dan booking online tanpa perlu datang langsung.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Apakah Kapster gratis?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Ya, Kapster menyediakan paket Starter gratis untuk 1 barber dengan batas 30 antrian per hari. Paket berbayar mulai dari Rp29.000/bulan.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Bagaimana cara menggunakan Kapster?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Cukup pilih barbershop tujuan, ambil nomor antrian secara online, lalu datang sesuai giliran. Anda bisa pantau antrian real-time dari HP.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Apakah Kapster mendukung notifikasi WhatsApp?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Ya, Kapster terintegrasi dengan WhatsApp untuk mengirim notifikasi otomatis saat giliran Anda hampir tiba.",
+        },
+      },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "Cara Menggunakan Kapster",
+    description: "Ambil antrian barbershop online dalam 3 langkah mudah",
+    step: [
+      {
+        "@type": "HowToStep",
+        position: 1,
+        name: "Pilih Barbershop",
+        text: "Cari barbershop tujuan Anda di Kapster melalui link, QR code, atau peta barbershop terdekat.",
+      },
+      {
+        "@type": "HowToStep",
+        position: 2,
+        name: "Ambil Nomor Antrian",
+        text: "Masukkan nama dan nomor telepon, lalu pilih layanan yang diinginkan. Anda akan mendapat nomor antrian secara instan.",
+      },
+      {
+        "@type": "HowToStep",
+        position: 3,
+        name: "Datang Sesuai Giliran",
+        text: "Pantau posisi antrian secara real-time dari HP. Datang ke barbershop saat giliran Anda hampir tiba.",
+      },
+    ],
+  },
+];
 
 export default function RootLayout({
   children,
@@ -151,6 +210,8 @@ export default function RootLayout({
       className={`${playfair.variable} ${inter.variable} scroll-smooth`}
     >
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <meta name="theme-color" content="#0a0a0a" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
