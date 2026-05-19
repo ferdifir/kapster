@@ -1,7 +1,56 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { cache } from "react";
 import Link from "next/link";
 import BookingForm from "./BookingForm";
+
+const siteUrl = "https://kapster.my.id";
+
+const getBarbershop = cache(async (slug: string) => {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("barbershops")
+    .select("id, name, slug, address, city, settings_json")
+    .eq("slug", slug)
+    .eq("is_active", true)
+    .single();
+  return data;
+});
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const barbershop = await getBarbershop(slug);
+
+  if (!barbershop) return { title: "Not Found" };
+
+  const settings = (barbershop.settings_json as Record<string, unknown>) ?? {};
+  const showInDirectory = settings.show_in_directory !== false;
+
+  return {
+    title: `Booking Online - ${barbershop.name}`,
+    description: `Reservasi antrian di ${barbershop.name}, ${barbershop.city ?? "Indonesia"}. Pilih barber, layanan, dan jadwal tanpa perlu datang langsung.`,
+    alternates: {
+      canonical: `${siteUrl}/booking/${slug}`,
+    },
+    robots: {
+      index: showInDirectory,
+      follow: showInDirectory,
+    },
+    openGraph: {
+      title: `Booking Online - ${barbershop.name} | Kapster`,
+      description: `Reservasi antrian di ${barbershop.name}. Pilih barber, layanan, dan jadwal tanpa perlu datang langsung.`,
+      url: `${siteUrl}/booking/${slug}`,
+      siteName: "Kapster",
+      locale: "id_ID",
+      type: "website",
+    },
+  };
+}
 
 export default async function BookingPage({
   params,
@@ -9,17 +58,11 @@ export default async function BookingPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const supabase = await createClient();
-
-  const { data: barbershop } = await supabase
-    .from("barbershops")
-    .select("id, name, slug, address, city")
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .single();
+  const barbershop = await getBarbershop(slug);
 
   if (!barbershop) notFound();
 
+  const supabase = await createClient();
   const [{ data: barbers }, { data: services }] = await Promise.all([
     supabase
       .from("barbers")
