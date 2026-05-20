@@ -135,3 +135,214 @@ export async function updateBarbershopLogo(
 
   return {};
 }
+
+export async function updateBarbershopCoverImage(
+  barbershopId: string,
+  coverImageUrl: string
+) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { data: barbershop } = await supabase
+    .from("barbershops")
+    .select("id, cover_image_url, owner_id")
+    .eq("id", barbershopId)
+    .eq("owner_id", user.id)
+    .single();
+
+  if (!barbershop) return { error: "Unauthorized" };
+
+  // Delete old cover image from storage if it exists and is different
+  if (barbershop.cover_image_url && barbershop.cover_image_url !== coverImageUrl) {
+    try {
+      const oldUrl = new URL(barbershop.cover_image_url);
+      const pathParts = oldUrl.pathname.split("/storage/v1/object/public/cover-images/");
+      if (pathParts.length === 2) {
+        const oldPath = decodeURIComponent(pathParts[1]);
+        const admin = createAdminClient();
+        await admin.storage.from("cover-images").remove([oldPath]);
+      }
+    } catch {
+      // Silently ignore cleanup errors
+    }
+  }
+
+  const { error } = await supabase
+    .from("barbershops")
+    .update({ cover_image_url: coverImageUrl })
+    .eq("id", barbershopId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/settings");
+  revalidatePath("/q/[slug]");
+
+  return {};
+}
+
+export async function updateBarbershopAbout(
+  barbershopId: string,
+  about: string
+) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { data: barbershop } = await supabase
+    .from("barbershops")
+    .select("id, owner_id")
+    .eq("id", barbershopId)
+    .eq("owner_id", user.id)
+    .single();
+
+  if (!barbershop) return { error: "Unauthorized" };
+
+  const { error } = await supabase
+    .from("barbershops")
+    .update({ about: about.trim() || null })
+    .eq("id", barbershopId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/settings");
+  revalidatePath("/q/[slug]");
+
+  return {};
+}
+
+export async function updateBarbershopGallery(
+  barbershopId: string,
+  galleryImages: string[]
+) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { data: barbershop } = await supabase
+    .from("barbershops")
+    .select("id, settings_json, owner_id")
+    .eq("id", barbershopId)
+    .eq("owner_id", user.id)
+    .single();
+
+  if (!barbershop) return { error: "Unauthorized" };
+
+  const settings = (barbershop.settings_json as Record<string, unknown>) ?? {};
+  settings.gallery_images = galleryImages.slice(0, 12); // Max 12 images
+
+  const { error } = await supabase
+    .from("barbershops")
+    .update({ settings_json: settings as Json })
+    .eq("id", barbershopId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/settings");
+  revalidatePath("/q/[slug]");
+
+  return {};
+}
+
+export async function addGalleryImage(
+  barbershopId: string,
+  imageUrl: string
+) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { data: barbershop } = await supabase
+    .from("barbershops")
+    .select("id, settings_json, owner_id")
+    .eq("id", barbershopId)
+    .eq("owner_id", user.id)
+    .single();
+
+  if (!barbershop) return { error: "Unauthorized" };
+
+  const settings = (barbershop.settings_json as Record<string, unknown>) ?? {};
+  const currentImages = (settings.gallery_images as string[]) ?? [];
+  
+  if (currentImages.length >= 12) {
+    return { error: "Maksimal 12 gambar galeri." };
+  }
+
+  settings.gallery_images = [...currentImages, imageUrl];
+
+  const { error } = await supabase
+    .from("barbershops")
+    .update({ settings_json: settings as Json })
+    .eq("id", barbershopId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/settings");
+  revalidatePath("/q/[slug]");
+
+  return {};
+}
+
+export async function removeGalleryImage(
+  barbershopId: string,
+  imageUrl: string
+) {
+  const supabase = await createClient();
+  const admin = createAdminClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { data: barbershop } = await supabase
+    .from("barbershops")
+    .select("id, settings_json, owner_id")
+    .eq("id", barbershopId)
+    .eq("owner_id", user.id)
+    .single();
+
+  if (!barbershop) return { error: "Unauthorized" };
+
+  const settings = (barbershop.settings_json as Record<string, unknown>) ?? {};
+  const currentImages = (settings.gallery_images as string[]) ?? [];
+  const updatedImages = currentImages.filter((img: string) => img !== imageUrl);
+
+  settings.gallery_images = updatedImages;
+
+  // Delete from storage
+  try {
+    const url = new URL(imageUrl);
+    const pathParts = url.pathname.split("/storage/v1/object/public/gallery-images/");
+    if (pathParts.length === 2) {
+      const path = decodeURIComponent(pathParts[1]);
+      await admin.storage.from("gallery-images").remove([path]);
+    }
+  } catch {
+    // Silently ignore cleanup errors
+  }
+
+  const { error } = await supabase
+    .from("barbershops")
+    .update({ settings_json: settings as Json })
+    .eq("id", barbershopId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/settings");
+  revalidatePath("/q/[slug]");
+
+  return {};
+}

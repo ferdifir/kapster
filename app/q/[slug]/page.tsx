@@ -3,8 +3,11 @@ import type { Metadata } from "next";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import JoinQueueForm from "./JoinQueueForm";
 import QueueDatePicker from "./QueueDatePicker";
+import ServicesCarousel from "./ServicesCarousel";
+import GalleryGrid from "./GalleryGrid";
+import QueueForm from "./QueueForm";
+import MobileBottomSheet from "./MobileBottomSheet";
 
 const siteUrl = "https://kapster.my.id";
 
@@ -12,7 +15,7 @@ const getBarbershop = cache(async (slug: string) => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("barbershops")
-    .select("id, name, slug, city, address, settings_json, logo_url, latitude, longitude")
+    .select("id, name, slug, city, address, settings_json, logo_url, cover_image_url, about, latitude, longitude")
     .eq("slug", slug)
     .eq("is_active", true)
     .single();
@@ -49,7 +52,9 @@ export async function generateMetadata({
       siteName: "Kapster",
       locale: "id_ID",
       type: "website",
-      images: barbershop.logo_url
+      images: barbershop.cover_image_url
+        ? [{ url: barbershop.cover_image_url, width: 1200, height: 630, alt: `${barbershop.name}` }]
+        : barbershop.logo_url
         ? [{ url: barbershop.logo_url, width: 400, height: 400, alt: `Logo ${barbershop.name}` }]
         : undefined,
     },
@@ -70,8 +75,6 @@ export default async function PublicQueuePage({
   if (!barbershop) notFound();
 
   const supabase = await createClient();
-
-  if (!barbershop) notFound();
 
   const today = new Date().toISOString().split("T")[0];
   const selectedDate = resolvedSearchParams.date ?? today;
@@ -116,14 +119,18 @@ export default async function PublicQueuePage({
       : { count: 0 };
 
   const isOpen = !!queue?.is_open;
+  const isFutureDate = validDate > today;
 
   const prices = services?.map((s) => s.price).filter((p): p is number => p != null) ?? [];
+  const galleryImages = ((settings.gallery_images as string[]) ?? [])
+    .slice(0, 6);
+
   const localBusinessJsonLd = {
     "@context": "https://schema.org",
     "@type": "HairSalon",
     name: barbershop.name,
     url: `${siteUrl}/q/${slug}`,
-    image: barbershop.logo_url || undefined,
+    image: barbershop.cover_image_url || barbershop.logo_url || undefined,
     address: {
       "@type": "PostalAddress",
       streetAddress: barbershop.address || undefined,
@@ -142,115 +149,136 @@ export default async function PublicQueuePage({
       : undefined,
   };
 
-  return (
-    <div className="min-h-screen bg-dark-950">
-      <div className="bg-dark-900/80 border-b border-dark-800/50 px-4 py-4 text-center">
-        <span className="font-display text-sm font-bold text-white">
-          Kapster
-        </span>
+  const formContent = (
+    <>
+      <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="bg-dark-700/50 border border-dark-600/30 p-3 rounded-xl text-center">
+          <span className="block text-2xl font-bold text-barber-400">{waitingCount ?? 0}</span>
+          <span className="text-[10px] text-dark-500 uppercase tracking-wider font-semibold">Sedang Menunggu</span>
+        </div>
+        <div className="bg-dark-700/50 border border-dark-600/30 p-3 rounded-xl text-center">
+          <span className="block text-2xl font-bold text-dark-400">{queue?.total_served ?? 0}</span>
+          <span className="text-[10px] text-dark-500 uppercase tracking-wider font-semibold">Selesai</span>
+        </div>
       </div>
 
+      <QueueDatePicker today={today} maxDate={maxDateStr} value={validDate} />
+
+      <QueueForm
+        barbershopId={barbershop.id}
+        date={validDate}
+        slug={slug}
+        services={services ?? []}
+        barbers={barbers ?? []}
+        isOpen={isOpen}
+        selectedDate={validDate}
+        today={today}
+      />
+    </>
+  );
+
+  return (
+    <div className="min-h-screen bg-dark-950 pb-24 lg:pb-0">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
       />
 
-      <div className="max-w-md mx-auto px-4 py-8 space-y-6">
-        <div className="text-center">
+      {/* Hero Banner */}
+      <div className="relative h-64 md:h-80 bg-cover bg-center" style={{
+        backgroundImage: barbershop.cover_image_url
+          ? `linear-gradient(to bottom, rgba(10,10,10,0.3), #0a0a0a), url('${barbershop.cover_image_url}')`
+          : 'linear-gradient(to bottom, rgba(10,10,10,0.6), #0a0a0a), url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'%3E%3Crect fill=\'%231a1a1a\' width=\'100\' height=\'100\'/%3E%3C/svg%3E")',
+      }}>
+        <div className="absolute inset-0 flex flex-col items-center justify-end pb-4">
           {barbershop.logo_url ? (
-            <Image
-              src={barbershop.logo_url}
-              alt={`Logo ${barbershop.name}`}
-              width={80}
-              height={80}
-              className="rounded-2xl object-cover mx-auto mb-4"
-              priority
-            />
+            <div className="w-20 h-20 bg-dark-800 rounded-full border-2 border-barber-400 flex items-center justify-center p-2 shadow-xl mb-3">
+              <Image
+                src={barbershop.logo_url}
+                alt={`Logo ${barbershop.name}`}
+                width={64}
+                height={64}
+                className="w-full h-full object-contain rounded-full"
+                priority
+              />
+            </div>
           ) : (
-            <div className="w-16 h-16 rounded-2xl gold-gradient flex items-center justify-center mx-auto mb-4">
-              <span className="font-display text-xl font-bold text-dark-900">
+            <div className="w-20 h-20 bg-dark-800 rounded-full border-2 border-barber-400 flex items-center justify-center shadow-xl mb-3">
+              <span className="font-display text-3xl font-bold text-barber-400">
                 {barbershop.name[0]}
               </span>
             </div>
           )}
-          <h1 className="font-display text-2xl font-bold text-white">
-            {barbershop.name}
-          </h1>
+          <h1 className="text-2xl md:text-3xl font-display font-bold text-white tracking-wide">{barbershop.name}</h1>
           {barbershop.city && (
-            <p className="text-dark-400 text-sm mt-1">{barbershop.city}</p>
-          )}
-        </div>
-
-        <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-4">
-          <label className="block text-dark-400 text-sm mb-2">
-            Pilih Tanggal Antrian
-          </label>
-          <QueueDatePicker today={today} maxDate={maxDateStr} value={validDate} />
-          {validDate !== today && (
-            <p className="text-barber-400 text-xs mt-2">
-              Antrian untuk tanggal{" "}
-              {new Date(validDate + "T00:00:00").toLocaleDateString("id-ID", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </p>
-          )}
-        </div>
-
-        {queue && (
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-barber-400/10 border border-barber-400/20 rounded-xl p-4 text-center">
-              <p className="font-display text-3xl font-bold text-barber-400">
-                {waitingCount ?? 0}
-              </p>
-              <p className="text-dark-400 text-sm mt-1">Sedang Menunggu</p>
-            </div>
-            <div className="bg-dark-800/50 border border-dark-700/30 rounded-xl p-4 text-center">
-              <p className="font-display text-3xl font-bold text-white">
-                {queue?.total_served ?? 0}
-              </p>
-              <p className="text-dark-400 text-sm mt-1">Selesai</p>
-            </div>
-          </div>
-        )}
-
-        {!isOpen && validDate === today && (
-          <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6 text-center">
-            <div className="w-12 h-12 rounded-xl bg-dark-700/50 flex items-center justify-center mx-auto mb-4">
-              <svg
-                className="w-6 h-6 text-dark-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+            <p className="text-sm text-dark-400 flex items-center gap-1 mt-1">
+              <svg className="w-4 h-4 text-barber-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
               </svg>
-            </div>
-            <p className="text-dark-300 font-semibold">Antrian Hari Ini Belum Dibuka</p>
-            <p className="text-dark-500 text-sm mt-1">
-              Silakan pilih tanggal lain atau tunggu hingga barbershop buka
+              {barbershop.city}
             </p>
-          </div>
-        )}
-
-        <JoinQueueForm
-          barbershopId={barbershop.id}
-          date={validDate}
-          slug={slug}
-          services={services ?? []}
-          barbers={barbers ?? []}
-          isOpen={isOpen}
-          selectedDate={validDate}
-          today={today}
-        />
+          )}
+          <span className={`mt-2 px-3 py-1 text-xs font-semibold rounded-full border flex items-center gap-1.5 ${
+            isOpen
+              ? 'bg-green-500/10 text-green-400 border-green-500/30'
+              : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+          }`}>
+            <span className={`w-2 h-2 rounded-full ${isOpen ? 'bg-green-400' : 'bg-amber-400 animate-pulse'}`}></span>
+            {isOpen ? 'Antrian Dibuka' : 'Booking Dimuka Dibuka'}
+          </span>
+        </div>
       </div>
+
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-8">
+          {/* About Section */}
+          {barbershop.about && (
+            <section className="bg-dark-900/50 p-6 rounded-2xl border border-dark-800/50">
+              <h3 className="text-lg font-semibold text-barber-400 mb-3">Tentang Kami</h3>
+              <p className="text-dark-400 text-sm leading-relaxed">{barbershop.about}</p>
+            </section>
+          )}
+
+          {/* Services Carousel */}
+          {services && services.length > 0 && (
+            <ServicesCarousel services={services} />
+          )}
+
+          {/* Gallery Section */}
+          {galleryImages.length > 0 && (
+            <GalleryGrid images={galleryImages} barbershopName={barbershop.name} />
+          )}
+
+          {/* Mobile-only: Queue info and form placeholder */}
+          <div className="lg:hidden">
+            {/* This content is shown on mobile via the bottom sheet */}
+          </div>
+        </div>
+
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block lg:col-span-1">
+          <div className="bg-dark-900/50 border border-dark-800/50 p-6 rounded-2xl sticky top-6 shadow-2xl">
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-white mb-1">Daftar Antrean</h3>
+              {isFutureDate && (
+                <p className="text-xs text-amber-400 flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  Jam operasional belum dibuka. Anda akan masuk daftar reservasi dimuka.
+                </p>
+              )}
+            </div>
+            {formContent}
+          </div>
+        </div>
+      </main>
+
+      {/* Mobile Bottom Sheet */}
+      <MobileBottomSheet isFutureDate={isFutureDate}>
+        {formContent}
+      </MobileBottomSheet>
     </div>
   );
 }

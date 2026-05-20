@@ -48,6 +48,9 @@
 }
 
 /* Custom utilities */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 .barber-pole {
   background: repeating-linear-gradient(
     -45deg,

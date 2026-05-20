@@ -115,7 +115,9 @@ export type Database = {
       barbershops: {
         Row: {
           address: string | null
+          about: string | null
           city: string | null
+          cover_image_url: string | null
           created_at: string
           id: string
           is_active: boolean
@@ -137,7 +139,9 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          about?: string | null
           city?: string | null
+          cover_image_url?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
@@ -159,7 +163,9 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          about?: string | null
           city?: string | null
+          cover_image_url?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
