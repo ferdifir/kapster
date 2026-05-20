@@ -158,13 +158,18 @@ export async function sendTextMessage(
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
 
+    // WuzAPI expects phone with @c.us suffix
+    const formattedPhone = phone.includes("@") ? phone : `${phone}@c.us`;
+
+    console.log(`[WuzAPI] Sending message to ${formattedPhone}`);
+
     const res = await fetch(`${WUZAPI_URL}/chat/send/text`, {
       method: "POST",
       headers: {
         Token: userToken,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ Phone: phone, Body: body }),
+      body: JSON.stringify({ Phone: formattedPhone, Body: body }),
       signal: controller.signal,
     });
 
@@ -172,6 +177,7 @@ export async function sendTextMessage(
 
     if (!res.ok) {
       const text = await res.text();
+      console.error(`[WuzAPI] Error ${res.status}: ${text}`);
       return {
         messageId: "",
         success: false,
@@ -180,12 +186,14 @@ export async function sendTextMessage(
     }
 
     const data = (await res.json()) as WuzApiResponse<{ Id: string }>;
+    console.log(`[WuzAPI] Message sent, ID: ${data.data?.Id || "unknown"}`);
     return {
       messageId: data.data?.Id || "",
       success: true,
     };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
+    console.error(`[WuzAPI] Exception: ${message}`);
     return { messageId: "", success: false, error: message };
   }
 }

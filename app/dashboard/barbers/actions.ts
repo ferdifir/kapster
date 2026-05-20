@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "crypto";
 import { sendTextMessage } from "@/lib/wuzapi";
+import { normalizePhone } from "@/lib/phone";
 
 export async function addBarber(barbershopId: string, displayName: string) {
   const supabase = await createClient();
@@ -92,7 +93,8 @@ export async function sendInviteViaWhatsApp(
   const inviteUrl = `${baseUrl}/barber/invite/${barber.invite_token}`;
   const message = `Halo ${barberName}! 👋\n\nAnda diundang untuk bergabung sebagai barber di *${barbershop.name}*.\n\nKlik link berikut untuk mulai mengelola antrian:\n${inviteUrl}\n\n— ${barbershop.name} via Kapster`;
 
-  const result = await sendTextMessage(barbershop.wuzapi_token, phone, message);
+  const normalizedPhone = normalizePhone(phone);
+  const result = await sendTextMessage(barbershop.wuzapi_token, normalizedPhone, message);
 
   if (!result.success) {
     return { error: result.error || "Gagal mengirim pesan WhatsApp." };
