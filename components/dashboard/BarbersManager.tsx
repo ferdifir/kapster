@@ -21,10 +21,9 @@ type Barber = {
 interface Props {
   barbershop: { id: string; name: string; slug: string };
   barbers: Barber[];
-  maxBarbers: number;
 }
 
-export default function BarbersManager({ barbershop, barbers: initial, maxBarbers }: Props) {
+export default function BarbersManager({ barbershop, barbers: initial }: Props) {
   const [barbers, setBarbers] = useState<Barber[]>(initial);
   const [name, setName] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -136,34 +135,24 @@ export default function BarbersManager({ barbershop, barbers: initial, maxBarber
       });
   };
 
-  const atLimit = barbers.length >= maxBarbers;
-
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold text-white mb-1">Barber</h1>
           <p className="text-dark-400 text-sm">
-            {barbers.length} / {maxBarbers} barber
+            {barbers.length} barber
           </p>
         </div>
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            disabled={atLimit}
-            className="px-4 py-2 rounded-xl gold-gradient text-dark-900 text-sm font-bold disabled:opacity-40"
-            title={atLimit ? `Batas plan: ${maxBarbers} barber` : ""}
+            className="px-4 py-2 rounded-xl gold-gradient text-dark-900 text-sm font-bold"
           >
             + Tambah Barber
           </button>
         )}
       </div>
-
-      {atLimit && (
-        <div className="px-4 py-3 rounded-xl bg-barber-400/10 border border-barber-400/20 text-barber-400 text-sm">
-          Batas barber plan Anda ({maxBarbers}) sudah tercapai. Upgrade untuk menambah lebih banyak.
-        </div>
-      )}
 
       {error && (
         <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">

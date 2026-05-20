@@ -34,7 +34,7 @@ export default async function QueuePage({
 
   const validDate = selectedDate >= today && selectedDate <= maxDateStr ? selectedDate : today;
 
-  const [{ data: queue }, { data: barbers }, { data: services }, { data: subscription }] =
+  const [{ data: queue }, { data: barbers }, { data: services }] =
     await Promise.all([
       supabase
         .from("queues")
@@ -52,11 +52,6 @@ export default async function QueuePage({
         .select("id, name, price, duration_min")
         .eq("barbershop_id", barbershop.id)
         .eq("is_active", true),
-      supabase
-        .from("subscriptions")
-        .select("max_queue_per_day, max_barbers")
-        .eq("barbershop_id", barbershop.id)
-        .single(),
     ]);
 
   const { data: initialEntries } = queue
@@ -82,7 +77,6 @@ export default async function QueuePage({
       initialEntries={initialEntries ?? []}
       barbers={barbers ?? []}
       services={services ?? []}
-      maxPerDay={subscription?.max_queue_per_day ?? 50}
       selectedDate={validDate}
       today={today}
       maxDate={maxDateStr}

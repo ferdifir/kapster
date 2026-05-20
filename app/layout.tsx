@@ -104,29 +104,13 @@ const jsonLd = [
     url: siteUrl,
     description:
       "Sistem manajemen antrian digital #1 untuk barbershop di Indonesia. Kelola antrian real-time, booking online, notifikasi WhatsApp.",
-    offers: [
-      {
-        "@type": "Offer",
-        name: "Starter",
-        price: 0,
-        priceCurrency: "IDR",
-        description: "Cocok untuk barbershop yang baru mulai",
-      },
-      {
-        "@type": "Offer",
-        name: "Basic",
-        price: 29000,
-        priceCurrency: "IDR",
-        description: "Untuk barbershop kecil yang serius",
-      },
-      {
-        "@type": "Offer",
-        name: "Pro",
-        price: 79000,
-        priceCurrency: "IDR",
-        description: "Untuk barbershop yang butuh analytics lengkap",
-      },
-    ],
+    offers: {
+      "@type": "Offer",
+      name: "Gratis",
+      price: 0,
+      priceCurrency: "IDR",
+      description: "Semua fitur gratis untuk barbershop",
+    },
     author: {
       "@type": "Organization",
       name: "Kapster",
@@ -150,7 +134,7 @@ const jsonLd = [
         name: "Apakah Kapster gratis?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Ya, Kapster menyediakan paket Starter gratis untuk 1 barber dengan batas 30 antrian per hari. Paket berbayar mulai dari Rp29.000/bulan.",
+          text: "Ya, Kapster 100% gratis. Semua fitur tersedia tanpa biaya bulanan dan tanpa batasan tersembunyi.",
         },
       },
       {

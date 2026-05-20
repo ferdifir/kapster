@@ -53,7 +53,7 @@ export default async function DashboardPage() {
 
   const { data: barbershop } = await supabase
     .from("barbershops")
-    .select("id, name, slug, plan")
+    .select("id, name, slug")
     .eq("owner_id", user.id)
     .single();
 
@@ -61,7 +61,7 @@ export default async function DashboardPage() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const [{ data: todayQueue }, { data: subscription }, { data: barberCount }] =
+  const [{ data: todayQueue }, { data: barberCount }] =
     await Promise.all([
       supabase
         .from("queues")
@@ -69,11 +69,6 @@ export default async function DashboardPage() {
         .eq("barbershop_id", barbershop.id)
         .eq("date", today)
         .maybeSingle(),
-      supabase
-        .from("subscriptions")
-        .select("plan, status, trial_ends_at, max_barbers, max_queue_per_day")
-        .eq("barbershop_id", barbershop.id)
-        .single(),
       supabase
         .from("barbers")
         .select("id", { count: "exact" })
@@ -91,17 +86,6 @@ export default async function DashboardPage() {
       ).count ?? 0
     : 0;
 
-  // TRIAL BANNER DINONAKTIFKAN — SEMUA GRATIS
-  // const trialDaysLeft = subscription?.trial_ends_at
-  //   ? Math.max(
-  //       0,
-  //       Math.ceil(
-  //         (new Date(subscription.trial_ends_at).getTime() - Date.now()) /
-  //           86400000
-  //       )
-  //     )
-  //   : null;
-
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <div>
@@ -118,42 +102,7 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      {/* TRIAL BANNER DINONAKTIFKAN
-      {trialDaysLeft !== null && trialDaysLeft <= 7 && (
-        <div className="px-5 py-4 rounded-xl bg-barber-400/10 border border-barber-400/30 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <svg
-              className="w-5 h-5 text-barber-400 shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <p className="text-dark-200 text-sm">
-              Trial berakhir dalam{" "}
-              <span className="text-barber-400 font-semibold">
-                {trialDaysLeft} hari
-              </span>
-              . Upgrade untuk akses penuh.
-            </p>
-          </div>
-          <a
-            href="/dashboard/billing"
-            className="shrink-0 px-4 py-1.5 rounded-lg gold-gradient text-dark-900 text-sm font-bold whitespace-nowrap"
-          >
-            Upgrade
-          </a>
-        </div>
-      )}
-      */}
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
           label="Antrian Menunggu"
           value={waitingCount}
@@ -200,7 +149,7 @@ export default async function DashboardPage() {
         <StatCard
           label="Barber Aktif"
           value={barberCount?.length ?? 0}
-          sub={`maks. ${subscription?.max_barbers ?? 1} barber`}
+          sub="tanpa batas"
           icon={
             <svg
               className="w-5 h-5 text-dark-400"
@@ -213,27 +162,6 @@ export default async function DashboardPage() {
                 strokeLinejoin="round"
                 strokeWidth={1.5}
                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
-            </svg>
-          }
-        />
-
-        <StatCard
-          label="Plan Aktif"
-          value="Basic"
-          sub="Gratis — Semua fitur tersedia"
-          icon={
-            <svg
-              className="w-5 h-5 text-dark-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
               />
             </svg>
           }

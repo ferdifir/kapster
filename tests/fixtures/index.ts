@@ -62,14 +62,6 @@ const test = base.extend<TestFixtures>({
       if (shopError) throw shopError;
       createdBarbershopId = shop.id;
 
-      await supabase.from("subscriptions").insert({
-        barbershop_id: shop.id,
-        plan: "basic",
-        status: "active",
-        max_barbers: 3,
-        max_queue_per_day: 50,
-      });
-
       await supabase.from("services").insert([
         { barbershop_id: shop.id, name: "Potong Rambut", price: 30000, duration_min: 30 },
         { barbershop_id: shop.id, name: "Cukur Jenggot", price: 20000, duration_min: 20 },
@@ -151,14 +143,6 @@ const test = base.extend<TestFixtures>({
         .single();
       if (shopError) throw shopError;
       barbershopId = shop.id;
-
-      await supabase.from("subscriptions").insert({
-        barbershop_id: shop.id,
-        plan: "basic",
-        status: "active",
-        max_barbers: 3,
-        max_queue_per_day: 50,
-      });
 
       const { data: services } = await supabase
         .from("services")

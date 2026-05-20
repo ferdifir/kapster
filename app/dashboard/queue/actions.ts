@@ -38,7 +38,6 @@ export async function setQueueOpen(queueId: string, isOpen: boolean) {
 
 export async function addQueueCustomer(
   queueId: string,
-  maxPerDay: number,
   formData: {
     customer_name: string;
     phone?: string;
@@ -47,15 +46,6 @@ export async function addQueueCustomer(
   }
 ) {
   const supabase = await createClient();
-
-  const { count } = await supabase
-    .from("queue_entries")
-    .select("id", { count: "exact", head: true })
-    .eq("queue_id", queueId);
-
-  if ((count ?? 0) >= maxPerDay) {
-    return { error: `Batas antrian harian (${maxPerDay}) sudah tercapai.` };
-  }
 
   const { data: nextNum, error: numError } = await supabase.rpc(
     "next_queue_number",

@@ -44,8 +44,8 @@ test.describe("Landing Page", () => {
   });
 
   test("should display pricing section", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: /Harga/i })).toBeVisible();
-    await expect(page.getByText(/Gratis/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Gratis/i })).toBeVisible();
+    await expect(page.getByText(/100% Gratis/i)).toBeVisible();
   });
 
   test("should display testimonials section", async ({ page }) => {

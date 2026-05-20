@@ -31,12 +31,6 @@ test.describe("Middleware & Route Protection", () => {
     await expect(page).toHaveURL(/\/auth\/login/);
   });
 
-  test("should redirect unauthenticated users from /dashboard/billing to /auth/login", async ({ page }) => {
-    await page.goto("/dashboard/billing");
-    await page.waitForURL(/\/auth\/login/);
-    await expect(page).toHaveURL(/\/auth\/login/);
-  });
-
   test("should redirect unauthenticated users from /dashboard/analytics to /auth/login", async ({ page }) => {
     await page.goto("/dashboard/analytics");
     await page.waitForURL(/\/auth\/login/);

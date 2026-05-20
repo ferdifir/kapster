@@ -19,24 +19,16 @@ export default async function BarbersPage() {
 
   if (!barbershop) redirect("/onboarding");
 
-  const [{ data: barbers }, { data: subscription }] = await Promise.all([
-    supabase
-      .from("barbers")
-      .select("id, display_name, is_active, invite_token, profile_id, created_at")
-      .eq("barbershop_id", barbershop.id)
-      .order("created_at"),
-    supabase
-      .from("subscriptions")
-      .select("max_barbers")
-      .eq("barbershop_id", barbershop.id)
-      .single(),
-  ]);
+  const { data: barbers } = await supabase
+    .from("barbers")
+    .select("id, display_name, is_active, invite_token, profile_id, created_at")
+    .eq("barbershop_id", barbershop.id)
+    .order("created_at");
 
   return (
     <BarbersManager
       barbershop={barbershop}
       barbers={barbers ?? []}
-      maxBarbers={subscription?.max_barbers ?? 3}
     />
   );
 }

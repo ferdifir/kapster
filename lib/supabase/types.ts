@@ -125,12 +125,11 @@ export type Database = {
           logo_url: string | null
           longitude: number | null
           name: string
-          owner_id: string
-          phone: string | null
-          plan: Database["public"]["Enums"]["plan_type"]
-          settings_json: Json
-          slug: string
-          updated_at: string
+           owner_id: string
+           phone: string | null
+           settings_json: Json
+           slug: string
+           updated_at: string
           wa_number: string | null
           wuzapi_user_id: string | null
           wuzapi_token: string | null
@@ -148,12 +147,11 @@ export type Database = {
           latitude?: number | null
           logo_url?: string | null
           longitude?: number | null
-          name: string
-          owner_id: string
-          phone?: string | null
-          plan?: Database["public"]["Enums"]["plan_type"]
-          settings_json?: Json
-          slug: string
+           name: string
+           owner_id: string
+           phone?: string | null
+           settings_json?: Json
+           slug: string
           updated_at?: string
           wa_number?: string | null
           wuzapi_user_id?: string | null
@@ -173,19 +171,18 @@ export type Database = {
           logo_url?: string | null
           longitude?: number | null
           name?: string
-          owner_id?: string
-          phone?: string | null
-          plan?: Database["public"]["Enums"]["plan_type"]
-          settings_json?: Json
-          slug?: string
-          updated_at?: string
-          wa_number?: string | null
-          wuzapi_user_id?: string | null
-          wuzapi_token?: string | null
-          wa_connected?: boolean
-          wa_phone_number?: string | null
-        }
-        Relationships: [
+           owner_id?: string
+           phone?: string | null
+           settings_json?: Json
+           slug?: string
+           updated_at?: string
+           wa_number?: string | null
+           wuzapi_user_id?: string | null
+           wuzapi_token?: string | null
+           wa_connected?: boolean
+           wa_phone_number?: string | null
+         }
+         Relationships: [
           {
             foreignKeyName: "barbershops_owner_id_fkey"
             columns: ["owner_id"]
@@ -255,53 +252,6 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      payments: {
-        Row: {
-          id: string
-          barbershop_id: string
-          order_id: string
-          amount: number
-          plan: Database["public"]["Enums"]["plan_type"]
-          status: string
-          payment_method: string | null
-          pakasir_response: Json | null
-          created_at: string
-          completed_at: string | null
-        }
-        Insert: {
-          id?: string
-          barbershop_id: string
-          order_id: string
-          amount: number
-          plan: Database["public"]["Enums"]["plan_type"]
-          status?: string
-          payment_method?: string | null
-          pakasir_response?: Json | null
-          created_at?: string
-          completed_at?: string | null
-        }
-        Update: {
-          id?: string
-          barbershop_id?: string
-          order_id?: string
-          amount?: number
-          plan?: Database["public"]["Enums"]["plan_type"]
-          status?: string
-          payment_method?: string | null
-          pakasir_response?: Json | null
-          created_at?: string
-          completed_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "payments_barbershop_id_fkey"
-            columns: ["barbershop_id"]
-            isOneToOne: false
-            referencedRelation: "barbershops"
             referencedColumns: ["id"]
           },
         ]
@@ -479,65 +429,6 @@ export type Database = {
           },
         ]
       }
-      subscriptions: {
-        Row: {
-          barbershop_id: string
-          created_at: string
-          id: string
-          max_barbers: number
-          max_queue_per_day: number
-          midtrans_order_id: string | null
-          midtrans_transaction_id: string | null
-          pakasir_order_id: string | null
-          period_end: string | null
-          period_start: string | null
-          plan: Database["public"]["Enums"]["plan_type"]
-          status: Database["public"]["Enums"]["subscription_status"]
-          trial_ends_at: string | null
-          updated_at: string
-        }
-        Insert: {
-          barbershop_id: string
-          created_at?: string
-          id?: string
-          max_barbers?: number
-          max_queue_per_day?: number
-          midtrans_order_id?: string | null
-          midtrans_transaction_id?: string | null
-          pakasir_order_id?: string | null
-          period_end?: string | null
-          period_start?: string | null
-          plan?: Database["public"]["Enums"]["plan_type"]
-          status?: Database["public"]["Enums"]["subscription_status"]
-          trial_ends_at?: string | null
-          updated_at?: string
-        }
-        Update: {
-          barbershop_id?: string
-          created_at?: string
-          id?: string
-          max_barbers?: number
-          max_queue_per_day?: number
-          midtrans_order_id?: string | null
-          midtrans_transaction_id?: string | null
-          pakasir_order_id?: string | null
-          period_end?: string | null
-          period_start?: string | null
-          plan?: Database["public"]["Enums"]["plan_type"]
-          status?: Database["public"]["Enums"]["subscription_status"]
-          trial_ends_at?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "subscriptions_barbershop_id_fkey"
-            columns: ["barbershop_id"]
-            isOneToOne: false
-            referencedRelation: "barbershops"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       wa_notifications: {
         Row: {
           id: string
@@ -615,14 +506,7 @@ export type Database = {
     }
     Enums: {
       booking_status: "pending" | "confirmed" | "cancelled" | "done"
-      plan_type: "starter" | "basic" | "pro" | "enterprise"
       queue_entry_status: "waiting" | "called" | "serving" | "done" | "skip"
-      subscription_status:
-        | "active"
-        | "inactive"
-        | "trial"
-        | "cancelled"
-        | "past_due"
       user_role: "owner" | "barber" | "customer" | "superadmin"
     }
     CompositeTypes: {
@@ -752,15 +636,7 @@ export const Constants = {
   public: {
     Enums: {
       booking_status: ["pending", "confirmed", "cancelled", "done"],
-      plan_type: ["starter", "basic", "pro", "enterprise"],
       queue_entry_status: ["waiting", "called", "serving", "done", "skip"],
-      subscription_status: [
-        "active",
-        "inactive",
-        "trial",
-        "cancelled",
-        "past_due",
-      ],
       user_role: ["owner", "barber", "customer", "superadmin"],
     },
   },

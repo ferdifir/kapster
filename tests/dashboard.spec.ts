@@ -9,7 +9,6 @@ test.describe("Dashboard", () => {
     await expect(page.getByText(/Antrian Menunggu/i)).toBeVisible();
     await expect(page.getByText(/Dilayani Hari Ini/i)).toBeVisible();
     await expect(page.getByText(/Barber Aktif/i)).toBeVisible();
-    await expect(page.getByText(/Plan Aktif/i)).toBeVisible();
   });
 
   test("should display current date", async ({ loginAsOwner }) => {
@@ -76,20 +75,6 @@ test.describe("Dashboard", () => {
     await expect(page.getByText(/Halaman Antrian Customer/i)).toBeVisible();
     await expect(page.getByText(/Halaman Booking/i)).toBeVisible();
     await expect(page.getByText(/TV Display/i)).toBeVisible();
-  });
-
-  test("should display plan as Basic/Gratis", async ({ loginAsOwner }) => {
-    await loginAsOwner();
-    await page.goto("/dashboard");
-
-    await expect(page.getByText("Basic")).toBeVisible();
-    await expect(page.getByText(/Gratis/i)).toBeVisible();
-  });
-
-  test("should navigate to billing page", async ({ loginAsOwner }) => {
-    await loginAsOwner();
-    await page.goto("/dashboard/billing");
-    await expect(page).toHaveURL("/dashboard/billing");
   });
 
   test("should navigate to settings page", async ({ loginAsOwner }) => {

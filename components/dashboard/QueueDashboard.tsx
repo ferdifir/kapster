@@ -36,7 +36,6 @@ interface Props {
   initialEntries: Entry[];
   barbers: Barber[];
   services: Service[];
-  maxPerDay: number;
   selectedDate: string;
   today: string;
   maxDate: string;
@@ -65,7 +64,6 @@ export default function QueueDashboard({
   initialEntries,
   barbers,
   services,
-  maxPerDay,
   selectedDate,
   today,
   maxDate,
@@ -160,7 +158,7 @@ export default function QueueDashboard({
     }
     setError("");
     startTransition(async () => {
-      const result = await addQueueCustomer(queue.id, maxPerDay, {
+      const result = await addQueueCustomer(queue.id, {
         customer_name: form.customer_name,
         phone: form.phone || undefined,
         barber_id: form.barber_id || undefined,

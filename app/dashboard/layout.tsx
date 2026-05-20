@@ -16,7 +16,7 @@ export default async function DashboardLayout({
 
   const { data: barbershop } = await supabase
     .from("barbershops")
-    .select("id, name, slug, plan")
+    .select("id, name, slug")
     .eq("owner_id", user.id)
     .single();
 

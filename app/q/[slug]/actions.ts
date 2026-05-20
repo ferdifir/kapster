@@ -78,21 +78,14 @@ export async function joinQueue(
   }
 
   // Enforce daily queue limit from subscription
-  const { data: sub } = await supabase
-    .from("subscriptions")
-    .select("max_queue_per_day")
-    .eq("barbershop_id", barbershopId)
-    .single();
+  const { count } = await supabase
+    .from("queue_entries")
+    .select("id", { count: "exact", head: true })
+    .eq("queue_id", queueId);
 
-  if (sub) {
-    const { count } = await supabase
-      .from("queue_entries")
-      .select("id", { count: "exact", head: true })
-      .eq("queue_id", queueId);
-
-    if (count !== null && count >= sub.max_queue_per_day) {
-      return { error: "Antrian hari ini sudah penuh. Coba lagi besok." };
-    }
+  const MAX_QUEUE_PER_DAY = 50;
+  if (count !== null && count >= MAX_QUEUE_PER_DAY) {
+    return { error: "Antrian hari ini sudah penuh. Coba lagi besok." };
   }
 
   const customerName = formData.customer_name.trim();

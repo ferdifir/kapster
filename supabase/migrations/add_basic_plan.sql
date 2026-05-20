@@ -1,1 +1,0 @@
-ALTER TYPE plan_type ADD VALUE IF NOT EXISTS 'basic';

@@ -10,7 +10,7 @@ export default function DashboardLayoutClient({
   user,
 }: {
   children: React.ReactNode;
-  barbershop: { name: string; slug: string; plan: string };
+  barbershop: { name: string; slug: string };
   user: { email: string; full_name: string | null };
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
