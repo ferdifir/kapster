@@ -2,12 +2,12 @@
 
 import {
   Scissors,
-  Comb,
-  Mustache,
-  Wand2,
+  Brush,
+  ScanFace,
+  Wand,
   Droplets,
   Palette,
-  Sparkles,
+  WandSparkles,
   Baby,
   type LucideIcon,
 } from "lucide-react";
@@ -28,17 +28,17 @@ function ServiceIcon({ name }: { name: string }) {
 
   const iconMap: Record<string, LucideIcon> = {
     potong: Scissors,
-    rambut: Comb,
-    jenggot: Mustache,
-    beard: Mustache,
-    cukur: Wand2,
+    rambut: Brush,
+    jenggot: ScanFace,
+    beard: ScanFace,
+    cukur: Wand,
     creambath: Droplets,
     keramas: Droplets,
     wash: Droplets,
     warna: Palette,
     color: Palette,
-    styling: Sparkles,
-    treatment: Sparkles,
+    styling: WandSparkles,
+    treatment: WandSparkles,
     anak: Baby,
     kids: Baby,
   };
