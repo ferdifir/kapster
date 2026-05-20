@@ -158,18 +158,13 @@ export async function sendTextMessage(
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
 
-    // WuzAPI expects phone with @c.us suffix
-    const formattedPhone = phone.includes("@") ? phone : `${phone}@c.us`;
-
-    console.log(`[WuzAPI] Sending message to ${formattedPhone}`);
-
     const res = await fetch(`${WUZAPI_URL}/chat/send/text`, {
       method: "POST",
       headers: {
         Token: userToken,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ Phone: formattedPhone, Body: body }),
+      body: JSON.stringify({ Phone: phone, Body: body }),
       signal: controller.signal,
     });
 
