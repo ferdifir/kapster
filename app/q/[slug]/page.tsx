@@ -8,6 +8,7 @@ import ServicesCarousel from "./ServicesCarousel";
 import GalleryGrid from "./GalleryGrid";
 import QueueForm from "./QueueForm";
 import MobileBottomSheet from "./MobileBottomSheet";
+import HeroPattern from "./HeroPattern";
 
 const siteUrl = "https://kapster.my.id";
 
@@ -125,6 +126,12 @@ export default async function PublicQueuePage({
   const galleryImages = ((settings.gallery_images as string[]) ?? [])
     .slice(0, 6);
 
+  const aboutText = barbershop.about?.trim() ?? "";
+  const isShortAbout = aboutText.length > 0 && aboutText.length <= 100;
+  const hasLongAbout = aboutText.length > 100;
+
+  const hasContent = hasLongAbout || (services && services.length > 0) || galleryImages.length > 0;
+
   const localBusinessJsonLd = {
     "@context": "https://schema.org",
     "@type": "HairSalon",
@@ -185,12 +192,19 @@ export default async function PublicQueuePage({
       />
 
       {/* Hero Banner */}
-      <div className="relative h-64 md:h-80 bg-cover bg-center" style={{
-        backgroundImage: barbershop.cover_image_url
-          ? `linear-gradient(to bottom, rgba(10,10,10,0.3), #0a0a0a), url('${barbershop.cover_image_url}')`
-          : 'linear-gradient(to bottom, rgba(10,10,10,0.6), #0a0a0a), url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'%3E%3Crect fill=\'%231a1a1a\' width=\'100\' height=\'100\'/%3E%3C/svg%3E")',
-      }}>
-        <div className="absolute inset-0 flex flex-col items-center justify-end pb-4">
+      <div className={`relative ${barbershop.cover_image_url ? 'h-64 md:h-80' : 'h-72 md:h-96'} bg-cover bg-center`}>
+        {barbershop.cover_image_url ? (
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `linear-gradient(to bottom, rgba(10,10,10,0.3), #0a0a0a), url('${barbershop.cover_image_url}')`,
+            }}
+          />
+        ) : (
+          <HeroPattern />
+        )}
+        
+        <div className="absolute inset-0 flex flex-col items-center justify-end pb-6">
           {barbershop.logo_url ? (
             <div className="w-20 h-20 bg-dark-800 rounded-full border-2 border-barber-400 flex items-center justify-center p-2 shadow-xl mb-3">
               <Image
@@ -210,6 +224,7 @@ export default async function PublicQueuePage({
             </div>
           )}
           <h1 className="text-2xl md:text-3xl font-display font-bold text-white tracking-wide">{barbershop.name}</h1>
+          
           {barbershop.city && (
             <p className="text-sm text-dark-400 flex items-center gap-1 mt-1">
               <svg className="w-4 h-4 text-barber-400" fill="currentColor" viewBox="0 0 20 20">
@@ -218,7 +233,15 @@ export default async function PublicQueuePage({
               {barbershop.city}
             </p>
           )}
-          <span className={`mt-2 px-3 py-1 text-xs font-semibold rounded-full border flex items-center gap-1.5 ${
+
+          {/* Short about as tagline */}
+          {isShortAbout && (
+            <p className="text-dark-300 text-sm mt-2 max-w-md text-center italic">
+              &ldquo;{aboutText}&rdquo;
+            </p>
+          )}
+
+          <span className={`mt-3 px-3 py-1 text-xs font-semibold rounded-full border flex items-center gap-1.5 ${
             isOpen
               ? 'bg-green-500/10 text-green-400 border-green-500/30'
               : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
@@ -230,30 +253,25 @@ export default async function PublicQueuePage({
       </div>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className={`max-w-6xl mx-auto px-4 ${hasContent ? 'py-8' : 'py-6'} grid grid-cols-1 lg:grid-cols-3 gap-8`}>
         <div className="lg:col-span-2 space-y-8">
-          {/* About Section */}
-          {barbershop.about && (
+          {/* About Section (only for long text) */}
+          {hasLongAbout && (
             <section className="bg-dark-900/50 p-6 rounded-2xl border border-dark-800/50">
               <h3 className="text-lg font-semibold text-barber-400 mb-3">Tentang Kami</h3>
-              <p className="text-dark-400 text-sm leading-relaxed">{barbershop.about}</p>
+              <p className="text-dark-400 text-sm leading-relaxed">{aboutText}</p>
             </section>
           )}
 
-          {/* Services Carousel */}
+          {/* Services */}
           {services && services.length > 0 && (
             <ServicesCarousel services={services} />
           )}
 
-          {/* Gallery Section */}
+          {/* Gallery */}
           {galleryImages.length > 0 && (
             <GalleryGrid images={galleryImages} barbershopName={barbershop.name} />
           )}
-
-          {/* Mobile-only: Queue info and form placeholder */}
-          <div className="lg:hidden">
-            {/* This content is shown on mobile via the bottom sheet */}
-          </div>
         </div>
 
         {/* Desktop Sidebar */}
