@@ -112,7 +112,6 @@ export async function connectSession(userToken: string): Promise<{
     jid: data.jid || "",
   };
 }
-}
 
 export async function getQrCode(userToken: string): Promise<string | null> {
   const res = await fetch(`${WUZAPI_URL}/session/status`, {
