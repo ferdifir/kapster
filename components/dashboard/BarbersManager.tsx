@@ -334,7 +334,7 @@ export default function BarbersManager({ barbershop, barbers: initial, maxBarber
                   autoFocus
                 />
               </div>
-              <p className="text-dark-600 text-xs mt-1">Format: 8xxxxxxxxxx (tanpa 0 di depan)</p>
+              <p className="text-dark-600 text-xs mt-1">Format: 8xxxxxxxxxx, 08xx, 628xx, atau +628xx</p>
             </div>
 
             <div className="flex gap-2">
