@@ -96,9 +96,11 @@ export default function BarbersManager({ barbershop, barbers: initial, maxBarber
     });
   };
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://kapster.my.id";
+
   const copyInvite = (token: string | null) => {
     if (!token) return;
-    const url = `${process.env.NEXT_PUBLIC_BASE_URL || window.location.origin}/barber/invite/${token}`;
+    const url = `${baseUrl}/barber/invite/${token}`;
     navigator.clipboard.writeText(url).then(() => {
       setCopied(token);
       setTimeout(() => setCopied(null), 2000);
@@ -242,7 +244,7 @@ export default function BarbersManager({ barbershop, barbers: initial, maxBarber
                   {!barber.profile_id && barber.invite_token && (
                     <div className="flex items-center gap-2 mt-2">
                       <p className="text-dark-500 text-xs truncate max-w-[200px]">
-                        {`${window?.location?.origin ?? ""}/barber/invite/${barber.invite_token}`}
+                        {`${baseUrl}/barber/invite/${barber.invite_token}`}
                       </p>
                       <button
                         onClick={() => copyInvite(barber.invite_token)}
