@@ -35,7 +35,7 @@ export default function ProblemSection() {
             <span className="text-red-400"> Manual</span>?
           </h2>
           <p className="text-dark-300 text-lg max-w-2xl mx-auto">
-            Banyak barbershop masih kehilangan pelanggan karena pengelolaan antrian
+            Banyak tempat potong rambut masih kehilangan pelanggan karena pengelolaan antrian
             yang berantakan. Saatnya berubah.
           </p>
         </div>

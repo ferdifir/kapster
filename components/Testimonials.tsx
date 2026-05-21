@@ -2,21 +2,21 @@ const testimonials = [
   {
     quote:
       "Kapster sangat membantu mengatur antrian. Pelanggan jadi lebih sabar karena tahu posisi antrian mereka.",
-    name: "Pemilik Barbershop",
+    name: "Pemilik Salon Pria",
     role: "Jakarta",
     initial: "A",
   },
   {
     quote:
       "Sekarang semua barber bisa fokus pada layanan tanpa perlu takut ada yang跳过 antrian. Sistemnya benar-benar transparan.",
-    name: "Manajer Barbershop",
+    name: "Manajer Tempat Cukur",
     role: "Bandung",
     initial: "B",
   },
   {
     quote:
       "Notifikasi WhatsApp-nya otomatis, pelanggan jadi tidak perlu menunggu di tempat. Sangat membantu operasional kami.",
-    name: "Barber Shop Owner",
+    name: "Pemilik Salon Pria",
     role: "Surabaya",
     initial: "C",
   },

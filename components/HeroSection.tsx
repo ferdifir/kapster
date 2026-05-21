@@ -14,14 +14,14 @@ export default function HeroSection() {
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-dark-800/80 border border-dark-700/50 mb-6">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
               <span className="text-dark-300 text-xs sm:text-sm font-medium">
-                Sudah dipercaya oleh ribuan barbershop di Indonesia
+                Sudah dipercaya oleh ribuan salon pria di Indonesia
               </span>
             </div>
 
             <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-7xl font-black leading-tight mb-6">
               Kelola
               <span className="text-gold-gradient"> Antrian </span>
-              Barbershop
+              Salon Pria
               <br />
               Makin
               <span className="text-gold-gradient"> Gacor</span>
@@ -62,7 +62,7 @@ export default function HeroSection() {
             {/* PERBAIKAN: Menggunakan flex-wrap agar statistik aman jika layar sangat kecil (seperti iPhone SE) */}
             <div className="flex flex-wrap items-center gap-y-4 gap-x-8 justify-center lg:justify-start">
               {[
-                { value: "500+", label: "Barbershop" },
+                { value: "500+", label: "Salon Pria" },
                 { value: "Ribuan", label: "Pelanggan" },
                 { value: "Terpercaya", label: " Indonesia" },
               ].map((stat, i) => (

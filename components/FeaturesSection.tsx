@@ -2,7 +2,7 @@ const features = [
   {
     icon: "M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z",
     title: "Antrian Digital Real-Time",
-    desc: "Pelanggan bisa lihat posisi antrian langsung dari HP. Nggak perlu nongkrong di barbershop.",
+    desc: "Pelanggan bisa lihat posisi antrian langsung dari HP. Nggak perlu nongkrong lama.",
   },
   {
     icon: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9",
@@ -27,7 +27,7 @@ const features = [
   {
     icon: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
     title: "Customer Display",
-    desc: "Tampilkan nomor antrian di TV monitor barbershop. Tampil keren, pelanggan happy.",
+    desc: "Tampilkan nomor antrian di TV monitor usahamu. Tampil keren, pelanggan happy.",
   },
 ];
 
@@ -41,7 +41,7 @@ export default function FeaturesSection() {
             Fitur Lengkap
           </span>
           <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-            Semua yang Barbershop
+            Semua yang Salon Pria
             <span className="text-gold-gradient"> Butuhkan</span>
           </h2>
           <p className="text-dark-300 text-lg max-w-2xl mx-auto">

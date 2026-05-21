@@ -15,11 +15,11 @@ export default function CTASection() {
         </div>
 
         <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black mb-6">
-          Siap Bikin Barbershop Kamu
+          Siap Bikin Usaha Kamu
           <span className="text-gold-gradient"> Lebih Gacor</span>?
         </h2>
         <p className="text-dark-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10">
-          Bergabung dengan ratusan barbershop yang sudah meningkatkan sistem antriannya.
+          Bergabung dengan ratusan salon pria yang sudah meningkatkan sistem antriannya.
           100% gratis selamanya.
         </p>
 
@@ -41,7 +41,7 @@ export default function CTASection() {
         </div>
 
         <p className="text-dark-500 text-sm mt-6">
-          Sistem antrian barbershop gratis · Tanpa biaya bulanan · Daftar langsung pakai
+          Sistem antrian digital gratis · Tanpa biaya bulanan · Daftar langsung pakai
         </p>
       </div>
     </section>
