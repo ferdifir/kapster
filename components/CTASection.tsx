@@ -41,7 +41,7 @@ export default function CTASection() {
         </div>
 
         <p className="text-dark-500 text-sm mt-6">
-          Tanpa kartu kredit · Batal kapan saja · Setup instan
+          Sistem antrian barbershop gratis · Tanpa biaya bulanan · Daftar langsung pakai
         </p>
       </div>
     </section>
