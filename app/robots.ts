@@ -11,6 +11,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: ["GPTBot", "Google-Extended", "CCBot", "Amazonbot"],
         allow: "/",
+        disallow: ["/api/", "/dashboard/", "/barber/", "/onboarding/"],
       },
     ],
     sitemap: "https://kapster.my.id/sitemap.xml",
