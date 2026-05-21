@@ -1,6 +1,6 @@
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center noise overflow-hidden">
+    <section className="relative min-h-screen flex items-center noise bg-dark-950 overflow-hidden">
       <div className="absolute inset-0 line-pattern" />
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-barber-400/5 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-barber-600/5 rounded-full blur-3xl" />
