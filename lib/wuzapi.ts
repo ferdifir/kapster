@@ -1,5 +1,7 @@
 const WUZAPI_URL = process.env.WUZAPI_URL || "https://wa.linkjo.my.id";
 const WUZAPI_ADMIN_TOKEN = process.env.WUZAPI_ADMIN_TOKEN || "";
+export const SYSTEM_WUZAPI_TOKEN = process.env.SYSTEM_WUZAPI_TOKEN || "";
+export const SYSTEM_WA_PHONE = process.env.SYSTEM_WA_PHONE || "62881027979168";
 
 interface WuzApiResponse<T = unknown> {
   code: number;

@@ -36,6 +36,8 @@ const templates: Record<WAEventType, string> = {
     "Halo {name}, reminder: booking Anda di *{barbershop}* dalam 1 jam lagi. 📅 {date}, ⏰ {time}. Jangan sampai telat ya!",
 };
 
+export const WA_FOOTER = "\n\n> _Sent via kapster.my.id_";
+
 export function renderWATemplate(
   eventType: WAEventType,
   context: WAEventContext
@@ -43,14 +45,16 @@ export function renderWATemplate(
   const template = templates[eventType];
   if (!template) return "";
 
-  return template
-    .replace("{name}", context.name || "Pelanggan")
-    .replace("{barbershop}", context.barbershop || "")
-    .replace("{number}", String(context.number ?? ""))
-    .replace("{date}", context.date ?? "")
-    .replace("{time}", context.time ?? "")
-    .replace("{estimated}", context.estimated ?? "")
-    .replace("{position}", String(context.position ?? ""))
-    .replace("{service}", context.service ?? "")
-    .replace("{barber}", context.barber ?? "");
+  return (
+    template
+      .replace("{name}", context.name || "Pelanggan")
+      .replace("{barbershop}", context.barbershop || "")
+      .replace("{number}", String(context.number ?? ""))
+      .replace("{date}", context.date ?? "")
+      .replace("{time}", context.time ?? "")
+      .replace("{estimated}", context.estimated ?? "")
+      .replace("{position}", String(context.position ?? ""))
+      .replace("{service}", context.service ?? "")
+      .replace("{barber}", context.barber ?? "") + WA_FOOTER
+  );
 }

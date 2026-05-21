@@ -3,8 +3,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "crypto";
-import { sendTextMessage } from "@/lib/wuzapi";
+import { sendTextMessage, SYSTEM_WUZAPI_TOKEN } from "@/lib/wuzapi";
 import { normalizePhone } from "@/lib/phone";
+import { WA_FOOTER } from "@/lib/wa-templates";
 
 export async function addBarber(barbershopId: string, displayName: string) {
   const supabase = await createClient();
@@ -77,8 +78,14 @@ export async function sendInviteViaWhatsApp(
     .single();
 
   if (!barbershop) return { error: "Barbershop tidak ditemukan." };
-  if (!barbershop.wa_connected) return { error: "WhatsApp belum terhubung. Hubungkan WhatsApp di Pengaturan terlebih dahulu." };
-  if (!barbershop.wuzapi_token) return { error: "Token WhatsApp tidak ditemukan." };
+
+  let token = barbershop.wuzapi_token;
+  if (!barbershop.wa_connected || !token) {
+    if (!SYSTEM_WUZAPI_TOKEN) {
+      return { error: "WhatsApp belum terhubung. Hubungkan WhatsApp di Pengaturan atau hubungi admin untuk mengaktifkan sistem WhatsApp." };
+    }
+    token = SYSTEM_WUZAPI_TOKEN;
+  }
 
   // Get invite token
   const { data: barber } = await supabase
@@ -91,10 +98,10 @@ export async function sendInviteViaWhatsApp(
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://kapster.my.id";
   const inviteUrl = `${baseUrl}/barber/invite/${barber.invite_token}`;
-  const message = `Halo ${barberName}! 👋\n\nAnda diundang untuk bergabung sebagai barber di *${barbershop.name}*.\n\nKlik link berikut untuk mulai mengelola antrian:\n${inviteUrl}\n\n— ${barbershop.name} via Kapster`;
+  const message = `Halo ${barberName}! 👋\n\nAnda diundang untuk bergabung sebagai barber di *${barbershop.name}*.\n\nKlik link berikut untuk mulai mengelola antrian:\n${inviteUrl}\n\n— ${barbershop.name} via Kapster${WA_FOOTER}`;
 
   const normalizedPhone = normalizePhone(phone);
-  const result = await sendTextMessage(barbershop.wuzapi_token, normalizedPhone, message);
+  const result = await sendTextMessage(token, normalizedPhone, message);
 
   if (!result.success) {
     return { error: result.error || "Gagal mengirim pesan WhatsApp." };

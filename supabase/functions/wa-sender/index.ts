@@ -1,6 +1,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.105.4";
 
 const WUZAPI_URL = Deno.env.get("WUZAPI_URL") || "https://wa.linkjo.my.id";
+const SYSTEM_WUZAPI_TOKEN = Deno.env.get("SYSTEM_WUZAPI_TOKEN") || "";
+const SYSTEM_WA_PHONE = Deno.env.get("SYSTEM_WA_PHONE") || "62881027979168";
 
 function normalizePhone(phone: string): string {
   const cleaned = phone.replace(/[\s\-\(\)]/g, "");
@@ -76,28 +78,24 @@ Deno.serve(async (req: Request) => {
       .eq("id", notification.barbershop_id)
       .single();
 
-    if (!barbershop?.wuzapi_token) {
-      await supabase
-        .from("wa_notifications")
-        .update({
-          status: "failed",
-          error_message: "WA not connected — no token",
-        })
-        .eq("id", notification.id);
-      failed++;
-      continue;
-    }
+    let token = barbershop?.wuzapi_token;
+    let sentViaSystem = false;
 
-    if (!barbershop.wa_connected) {
-      await supabase
-        .from("wa_notifications")
-        .update({
-          status: "failed",
-          error_message: "WA disconnected",
-        })
-        .eq("id", notification.id);
-      failed++;
-      continue;
+    if (!token || !barbershop?.wa_connected) {
+      // Fallback to system WhatsApp number
+      if (!SYSTEM_WUZAPI_TOKEN) {
+        await supabase
+          .from("wa_notifications")
+          .update({
+            status: "failed",
+            error_message: "WA not connected and no system token configured",
+          })
+          .eq("id", notification.id);
+        failed++;
+        continue;
+      }
+      token = SYSTEM_WUZAPI_TOKEN;
+      sentViaSystem = true;
     }
 
     // Send message via WuzAPI
@@ -108,7 +106,7 @@ Deno.serve(async (req: Request) => {
       const res = await fetch(`${WUZAPI_URL}/chat/send/text`, {
         method: "POST",
         headers: {
-          Token: barbershop.wuzapi_token,
+          Token: token,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -122,13 +120,17 @@ Deno.serve(async (req: Request) => {
 
       if (res.ok) {
         const data = await res.json();
+        const updateData: Record<string, unknown> = {
+          status: "sent",
+          wuzapi_message_id: data.data?.Id || "",
+          sent_at: new Date().toISOString(),
+        };
+        if (sentViaSystem) {
+          updateData.sent_via_system = true;
+        }
         await supabase
           .from("wa_notifications")
-          .update({
-            status: "sent",
-            wuzapi_message_id: data.data?.Id || "",
-            sent_at: new Date().toISOString(),
-          })
+          .update(updateData)
           .eq("id", notification.id);
         sent++;
       } else {
