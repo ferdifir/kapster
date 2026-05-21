@@ -1,6 +1,6 @@
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center noise bg-dark-950 overflow-hidden">
+    <section className="relative min-h-screen flex items-center noise bg-dark-950 overflow-hidden pt-28 pb-20 lg:py-0">
       <div className="absolute inset-0 line-pattern" />
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-barber-400/5 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-barber-600/5 rounded-full blur-3xl" />
@@ -8,8 +8,8 @@ export default function HeroSection() {
       <div className="hidden lg:block absolute left-8 top-1/4 w-3 h-64 rounded-full barber-pole opacity-40 animate-float" />
       <div className="hidden lg:block absolute right-8 top-1/3 w-3 h-48 rounded-full barber-pole opacity-40 animate-float-delay" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-16 items-center">
           <div className="text-center lg:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-dark-800/80 border border-dark-700/50 mb-6">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
@@ -37,7 +37,7 @@ export default function HeroSection() {
                 href="#harga"
                 className="group relative inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl gold-gradient text-dark-900 font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-barber-400/25 hover:-translate-y-0.5 w-full sm:w-auto"
               >
-                Mulai Gratis 14 Hari
+                Mulai Gratis
                 <svg
                   className="w-5 h-5 group-hover:translate-x-1 transition-transform"
                   fill="none"
@@ -59,28 +59,31 @@ export default function HeroSection() {
               </a>
             </div>
 
-            <div className="flex items-center gap-8 justify-center lg:justify-start">
+            {/* PERBAIKAN: Menggunakan flex-wrap agar statistik aman jika layar sangat kecil (seperti iPhone SE) */}
+            <div className="flex flex-wrap items-center gap-y-4 gap-x-8 justify-center lg:justify-start">
               {[
                 { value: "500+", label: "Barbershop" },
                 { value: "Ribuan", label: "Pelanggan" },
                 { value: "Terpercaya", label: " Indonesia" },
               ].map((stat, i) => (
                 <div key={stat.label} className="flex items-center gap-8">
-                  {i > 0 && <div className="w-px h-12 bg-dark-700" />}
+                  {i > 0 && <div className="hidden sm:block w-px h-12 bg-dark-700" />}
                   <div>
-                    <div className="font-display text-3xl font-bold text-gold-gradient">
+                    <div className="font-display text-2xl sm:text-3xl font-bold text-gold-gradient">
                       {stat.value}
                     </div>
-                    <div className="text-dark-400 text-sm mt-1">{stat.label}</div>
+                    <div className="text-dark-400 text-xs sm:text-sm mt-1">{stat.label}</div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="relative">
+          {/* PERBAIKAN: Menambahkan px-4/px-6 di layar mobile agar badge absolute tidak keluar layar */}
+          <div className="relative px-4 sm:px-6 lg:px-0">
             <div className="relative animate-float">
-              <div className="bg-dark-800/90 backdrop-blur-xl rounded-2xl border border-dark-700/50 p-6 shadow-2xl shadow-black/50">
+              {/* PERBAIKAN: Mengurangi padding di mobile (p-4 sm:p-6) agar muat lebih banyak */}
+              <div className="bg-dark-800/90 backdrop-blur-xl rounded-2xl border border-dark-700/50 p-4 sm:p-6 shadow-2xl shadow-black/50">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg gold-gradient flex items-center justify-center">
@@ -103,12 +106,12 @@ export default function HeroSection() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-4 p-3 rounded-xl bg-barber-400/10 border border-barber-400/20">
                     <div className="w-8 h-8 rounded-lg gold-gradient flex items-center justify-center text-dark-900 font-bold text-sm">01</div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-white font-semibold text-sm">Ahmad Fauzi</span>
-                        <span className="px-2 py-0.5 rounded-full bg-green-400/20 text-green-400 text-xs font-medium">Sedang Dilayani</span>
+                    <div className="flex-1 min-w-0"> {/* PERBAIKAN: min-w-0 mencegah teks merusak flexbox */}
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-white font-semibold text-sm truncate">Ahmad Fauzi</span>
+                        <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-green-400/20 text-green-400 text-xs font-medium">Sedang Dilayani</span>
                       </div>
-                      <div className="text-dark-400 text-xs mt-0.5">Haircut + Beard Trim — Barber: Rizky</div>
+                      <div className="text-dark-400 text-xs mt-0.5 truncate">Haircut + Beard Trim — Barber: Rizky</div>
                     </div>
                     <div className="text-barber-400 font-mono text-sm font-bold">14:30</div>
                   </div>
@@ -120,9 +123,9 @@ export default function HeroSection() {
                   ].map((q) => (
                     <div key={q.num} className="flex items-center gap-4 p-3 rounded-xl bg-dark-900/50 border border-dark-700/30">
                       <div className="w-8 h-8 rounded-xl bg-dark-700 flex items-center justify-center text-dark-300 font-bold text-sm">{q.num}</div>
-                      <div className="flex-1">
-                        <div className="text-white font-semibold text-sm">{q.name}</div>
-                        <div className="text-dark-400 text-xs mt-0.5">{q.service}</div>
+                      <div className="flex-1 min-w-0"> {/* PERBAIKAN: min-w-0 & truncate menjaga teks panjang tidak overflow */}
+                        <div className="text-white font-semibold text-sm truncate">{q.name}</div>
+                        <div className="text-dark-400 text-xs mt-0.5 truncate">{q.service}</div>
                       </div>
                       <div className="text-dark-400 font-mono text-sm">{q.time}</div>
                     </div>
@@ -143,7 +146,8 @@ export default function HeroSection() {
                 </div>
               </div>
 
-              <div className="absolute -top-4 -right-4 bg-dark-800 border border-dark-700/50 rounded-xl p-3 shadow-xl animate-pulse-slow">
+              {/* PERBAIKAN: Menghindari overlapping parah di mobile dengan mengubah posisi koordinat -top & -right */}
+              <div className="absolute -top-6 -right-2 sm:-right-4 bg-dark-800 border border-dark-700/50 rounded-xl p-3 shadow-xl animate-pulse-slow z-20">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-green-400/20 flex items-center justify-center">
                     <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,21 +156,21 @@ export default function HeroSection() {
                   </div>
                   <div>
                     <div className="text-white text-xs font-semibold">Pelanggan #1 Selesai</div>
-                    <div className="text-dark-400 text-xs">Baru saja</div>
+                    <div className="text-dark-400 text-[10px] sm:text-xs">Baru saja</div>
                   </div>
                 </div>
               </div>
 
-              <div className="absolute -bottom-4 -left-4 bg-dark-800 border border-dark-700/50 rounded-xl p-4 shadow-xl animate-float-delay">
+              <div className="absolute -bottom-6 -left-2 sm:-left-4 bg-dark-800 border border-dark-700/50 rounded-xl p-3 sm:p-4 shadow-xl animate-float-delay z-20">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-barber-400/20 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-barber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-barber-400/20 flex items-center justify-center">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-barber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                     </svg>
                   </div>
                   <div>
-                    <div className="text-barber-400 font-bold text-lg">+Produktif</div>
-                    <div className="text-dark-400 text-xs">Kinerja Barber</div>
+                    <div className="text-barber-400 font-bold text-sm sm:text-lg">+Produktif</div>
+                    <div className="text-dark-400 text-[10px] sm:text-xs">Kinerja Barber</div>
                   </div>
                 </div>
               </div>
@@ -175,7 +179,7 @@ export default function HeroSection() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-dark-950 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-dark-950 to-transparent p-0 pointer-events-none" />
     </section>
   );
 }

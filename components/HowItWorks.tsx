@@ -1,5 +1,5 @@
 const steps = [
-  { num: "1", title: "Daftar Akun", desc: "Buat akun gratis dengan mudah. Nggak perlu kartu kredit.", featured: true },
+  { num: "1", title: "Daftar Akun", desc: "Buat akun gratis dengan mudah. Langsung pakai tanpa ribet.", featured: true },
   { num: "2", title: "Setup Barbershop", desc: "Tambahkan barber, layanan, dan harga. Sesuaikan kebutuhan.", featured: false },
   { num: "3", title: "Mulai Antrian", desc: "Pelanggan bisa daftar antrian langsung atau via WhatsApp.", featured: false },
   { num: "4", title: "Monitor & Cuan", desc: "Pantau dari dashboard, analisis data, dan tingkatkan pendapatan.", featured: false },

@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s | Kapster",
   },
   description:
-    "Sistem manajemen antrian digital #1 untuk barbershop di Indonesia. Kelola antrian real-time, booking online, notifikasi WhatsApp, dan laporan bisnis dalam satu platform. Coba gratis 14 hari.",
+    "Sistem manajemen antrian digital #1 untuk barbershop di Indonesia. Kelola antrian real-time, booking online, notifikasi WhatsApp, dan laporan bisnis dalam satu platform. 100% gratis.",
   keywords: [
     "sistem antrian barbershop",
     "antrian digital barbershop",
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     siteName: "Kapster",
     title: "Kapster — Sistem Antrian Barbershop #1 di Indonesia",
     description:
-      "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp, dan laporan bisnis. 500+ barbershop sudah pakai. Coba gratis 14 hari.",
+       "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp, dan laporan bisnis. 500+ barbershop sudah pakai. Gratis selamanya.",
     images: [
       {
         url: "/og-image.png",

@@ -19,8 +19,8 @@ export default function CTASection() {
           <span className="text-gold-gradient"> Lebih Gacor</span>?
         </h2>
         <p className="text-dark-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10">
-          Bergabung dengan ribuan barbershop yang sudah meningkatkan sistem antriannya. Gratis 14 hari,
-          tanpa kartu kredit.
+          Bergabung dengan ratusan barbershop yang sudah meningkatkan sistem antriannya.
+          100% gratis selamanya.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -28,7 +28,7 @@ export default function CTASection() {
             href="/auth/register"
             className="group relative inline-flex items-center justify-center gap-2 px-10 py-4 rounded-xl gold-gradient text-dark-900 font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-barber-400/25 hover:-translate-y-0.5"
           >
-            Mulai Gratis Sekarang
+            Daftar Gratis Sekarang
             <svg
               className="w-5 h-5 group-hover:translate-x-1 transition-transform"
               fill="none"
