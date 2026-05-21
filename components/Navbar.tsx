@@ -23,7 +23,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-500 bg-dark-950/90 backdrop-blur-md border-b border-dark-700/30 ${
+      className={`fixed top-0 w-full z-50 transition-all duration-500 bg-dark-950 md:bg-dark-950/90 md:backdrop-blur-md border-b border-dark-700/30 ${
         scrolled ? "glass border-b border-dark-700/30" : ""
       }`}
     >

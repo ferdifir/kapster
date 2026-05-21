@@ -11,14 +11,14 @@ export default function HeroSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-dark-800/80 border border-dark-700/50 mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-dark-800/80 border border-dark-700/50 mb-6">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-dark-300 text-sm font-medium">
+              <span className="text-dark-300 text-xs sm:text-sm font-medium">
                 Sudah dipercaya oleh ribuan barbershop di Indonesia
               </span>
             </div>
 
-            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight mb-6">
+            <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-7xl font-black leading-tight mb-6">
               Kelola
               <span className="text-gold-gradient"> Antrian </span>
               Barbershop
@@ -27,15 +27,15 @@ export default function HeroSection() {
               <span className="text-gold-gradient"> Gacor</span>
             </h1>
 
-            <p className="text-dark-300 text-lg sm:text-xl leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
+            <p className="text-dark-300 text-base sm:text-lg lg:text-xl leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
               Sistem manajemen antrian digital yang bikin pelanggan setia, barber
               produktif, dan bisnis makin cuan. Tanpa ribet, tanpa drama.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto justify-center lg:justify-start mb-10">
               <a
                 href="#harga"
-                className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl gold-gradient text-dark-900 font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-barber-400/25 hover:-translate-y-0.5"
+                className="group relative inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl gold-gradient text-dark-900 font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-barber-400/25 hover:-translate-y-0.5 w-full sm:w-auto"
               >
                 Mulai Gratis 14 Hari
                 <svg
@@ -49,7 +49,7 @@ export default function HeroSection() {
               </a>
               <a
                 href="#cara-kerja"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-dark-600 text-dark-200 font-semibold text-lg hover:border-barber-400/50 hover:text-barber-400 transition-all duration-300"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-dark-600 text-dark-200 font-semibold text-base sm:text-lg hover:border-barber-400/50 hover:text-barber-400 transition-all duration-300 w-full sm:w-auto"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
