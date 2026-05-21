@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s | Kapster",
   },
   description:
-    "Sistem manajemen antrian digital #1 untuk barbershop di Indonesia. Kelola antrian real-time, booking online, notifikasi WhatsApp, dan laporan bisnis dalam satu platform. 100% gratis.",
+    "Sistem antrian digital gratis untuk barbershop. Kelola antrian real-time, booking online, dan notifikasi WhatsApp.",
   keywords: [
     "sistem antrian barbershop",
     "antrian digital barbershop",
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     siteName: "Kapster",
     title: "Kapster — Sistem Antrian Barbershop #1 di Indonesia",
     description:
-       "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp, dan laporan bisnis. 500+ barbershop sudah pakai. Gratis selamanya.",
+      "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp. 100% gratis.",
     images: [
       {
         url: "/og-image.png",
@@ -106,8 +106,9 @@ const jsonLd = [
       "Sistem manajemen antrian digital #1 untuk barbershop di Indonesia. Kelola antrian real-time, booking online, notifikasi WhatsApp.",
     offers: {
       "@type": "Offer",
+      "@id": `${siteUrl}#/offers/free`,
       name: "Gratis",
-      price: 0,
+      price: "0",
       priceCurrency: "IDR",
       description: "Semua fitur gratis untuk barbershop",
     },
@@ -195,6 +196,7 @@ export default function RootLayout({
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <meta name="theme-color" content="#0a0a0a" />
         <script
           type="application/ld+json"
