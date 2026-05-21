@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main>
+      <main id="main-content">
         <HeroSection />
         <div style={cvStyle}><BrandLogos /></div>
         <div style={cvStyle}><ProblemSection /></div>
