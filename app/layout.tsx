@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Kapster — Sistem Antrian Barbershop #1 di Indonesia",
     description:
-      "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp. 500+ barbershop sudah pakai.",
+      "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp. 100% gratis.",
     images: ["/og-image.png"],
     creator: "@kapster",
     site: "@kapster",
@@ -195,7 +195,7 @@ export default function RootLayout({
       className={`${playfair.variable} ${inter.variable} scroll-smooth`}
     >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <meta name="theme-color" content="#0a0a0a" />
         <script
