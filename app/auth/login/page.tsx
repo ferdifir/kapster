@@ -105,6 +105,15 @@ function LoginForm() {
             />
           </div>
 
+          <div className="flex justify-end">
+            <Link
+              href="/auth/forgot-password"
+              className="text-sm text-dark-400 hover:text-barber-400 transition-colors"
+            >
+              Lupa password?
+            </Link>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
