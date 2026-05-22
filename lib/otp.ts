@@ -1,0 +1,9 @@
+import crypto from "crypto";
+
+export function generateOTP(): string {
+  return crypto.randomInt(100000, 999999).toString();
+}
+
+export function hashOTP(code: string): string {
+  return crypto.createHash("sha256").update(code).digest("hex");
+}
