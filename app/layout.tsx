@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -89,9 +90,7 @@ export const metadata: Metadata = {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     shortcut: "/icon.svg",
   },
-  verification: {
-    google: "your-google-verification-code",
-  },
+
 };
 
 const jsonLd = [
@@ -211,6 +210,16 @@ export default function RootLayout({
           Skip to content
         </a>
         {children}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-XR7645C8QP"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-XR7645C8QP');`}
+        </Script>
       </body>
     </html>
   );
