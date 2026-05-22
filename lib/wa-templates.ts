@@ -5,7 +5,9 @@ export type WAEventType =
   | "queue_done"
   | "queue_number_update"
   | "booking_confirmed"
-  | "booking_reminder";
+  | "booking_reminder"
+  | "registration_otp"
+  | "password_reset_otp";
 
 export interface WAEventContext {
   name: string;
@@ -17,6 +19,7 @@ export interface WAEventContext {
   position?: number;
   service?: string;
   barber?: string;
+  code?: string;
 }
 
 const templates: Record<WAEventType, string> = {
@@ -34,6 +37,10 @@ const templates: Record<WAEventType, string> = {
     "Halo {name}, booking Anda di *{barbershop}* telah dikonfirmasi! 📅 {date}, ⏰ {time}. Layanan: {service}. Barber: {barber}. Sampai jumpa!",
   booking_reminder:
     "Halo {name}, reminder: booking Anda di *{barbershop}* dalam 1 jam lagi. 📅 {date}, ⏰ {time}. Jangan sampai telat ya!",
+  registration_otp:
+    "Kode verifikasi akun Kapster kamu: {code}. Kode berlaku 5 menit. Jangan bagikan kode ini ke siapa pun.",
+  password_reset_otp:
+    "Kode reset password Kapster kamu: {code}. Kode berlaku 5 menit. Jangan bagikan kode ini ke siapa pun.",
 };
 
 export const WA_FOOTER = "\n\n> _Sent via kapster.my.id_";
@@ -54,7 +61,8 @@ export function renderWATemplate(
       .replace("{time}", context.time ?? "")
       .replace("{estimated}", context.estimated ?? "")
       .replace("{position}", String(context.position ?? ""))
-      .replace("{service}", context.service ?? "")
-      .replace("{barber}", context.barber ?? "") + WA_FOOTER
+        .replace("{service}", context.service ?? "")
+        .replace("{barber}", context.barber ?? "")
+        .replace("{code}", context.code ?? "") + WA_FOOTER
   );
 }
