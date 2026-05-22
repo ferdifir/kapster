@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { resetPassword } from "@/app/auth/actions";
 
-export default function ForgotPasswordResetPage() {
+function ResetForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const phone = searchParams.get("phone") || "";
@@ -103,5 +103,13 @@ export default function ForgotPasswordResetPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function ForgotPasswordResetPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-dark-950" />}>
+      <ResetForm />
+    </Suspense>
   );
 }

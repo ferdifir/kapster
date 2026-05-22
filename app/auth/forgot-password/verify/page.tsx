@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { verifyOTP, sendOTP } from "@/app/auth/actions";
 
-export default function ForgotPasswordVerifyPage() {
+function VerifyForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const phone = searchParams.get("phone") || "";
@@ -116,5 +116,13 @@ export default function ForgotPasswordVerifyPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function ForgotPasswordVerifyPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-dark-950" />}>
+      <VerifyForm />
+    </Suspense>
   );
 }
