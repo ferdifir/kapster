@@ -83,6 +83,18 @@ export async function sendOTP(phone: string, purpose: "registration_verification
   const validation = validatePhone(phone);
   if (!validation.valid) return { error: validation.error };
 
+  // For password_reset, only send OTP if phone exists in profiles
+  if (purpose === "password_reset") {
+    const { count } = await admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("phone", normalized);
+
+    if (count === 0) {
+      return { success: true, message: "Jika nomor terdaftar, kode OTP akan dikirim." };
+    }
+  }
+
   // Rate limit
   const { data: lastOtp } = await admin
     .from("phone_otp_codes")
