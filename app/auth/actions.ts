@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { normalizePhone, validatePhone } from "@/lib/phone";
 import { generateOTP, hashOTP } from "@/lib/otp";
-import { sendTextMessage } from "@/lib/wuzapi";
+import { sendTextMessage, SYSTEM_WUZAPI_TOKEN } from "@/lib/wuzapi";
 import { renderWATemplate } from "@/lib/wa-templates";
 
 export async function setupPhoneVerification(phone: string) {
@@ -64,10 +64,13 @@ export async function setupPhoneVerification(phone: string) {
     name: "", barbershop: "", code,
   });
 
-  try {
-    await sendTextMessage(process.env.SYSTEM_WUZAPI_TOKEN!, normalized, message);
-  } catch {
-    return { error: "Gagal mengirim kode OTP via WhatsApp." };
+  if (!SYSTEM_WUZAPI_TOKEN) {
+    return { error: "WhatsApp sistem belum dikonfigurasi. Hubungi admin." };
+  }
+
+  const sendResult = await sendTextMessage(SYSTEM_WUZAPI_TOKEN, normalized, message);
+  if (!sendResult.success) {
+    return { error: sendResult.error || "Gagal mengirim kode OTP via WhatsApp." };
   }
 
   return { success: true };
@@ -136,10 +139,13 @@ export async function sendOTP(phone: string, purpose: "registration_verification
   const template = purpose === "registration_verification" ? "registration_otp" : "password_reset_otp";
   const message = renderWATemplate(template, { name: "", barbershop: "", code });
 
-  try {
-    await sendTextMessage(process.env.SYSTEM_WUZAPI_TOKEN!, normalized, message);
-  } catch {
-    return { error: "Gagal mengirim kode OTP via WhatsApp." };
+  if (!SYSTEM_WUZAPI_TOKEN) {
+    return { error: "WhatsApp sistem belum dikonfigurasi. Hubungi admin." };
+  }
+
+  const sendResult = await sendTextMessage(SYSTEM_WUZAPI_TOKEN, normalized, message);
+  if (!sendResult.success) {
+    return { error: sendResult.error || "Gagal mengirim kode OTP via WhatsApp." };
   }
 
   return { success: true };
