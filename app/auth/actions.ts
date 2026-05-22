@@ -80,16 +80,15 @@ export async function sendOTP(phone: string, purpose: "registration_verification
   const validation = validatePhone(phone);
   if (!validation.valid) return { error: validation.error };
 
-  // For password_reset, check phone exists in profiles and is verified
+  // For password_reset, only check phone exists in profiles (verification optional for reset)
   if (purpose === "password_reset") {
-    const { data: profile } = await admin
+    const { count } = await admin
       .from("profiles")
-      .select("id, phone_verified_at")
-      .eq("phone", normalized)
-      .single();
+      .select("id", { count: "exact", head: true })
+      .eq("phone", normalized);
 
-    if (!profile || !profile.phone_verified_at) {
-      return { success: true, message: "Jika nomor terdaftar dan sudah diverifikasi, kode OTP akan dikirim." };
+    if (count === 0) {
+      return { success: true, message: "Jika nomor terdaftar, kode OTP akan dikirim." };
     }
   }
 
@@ -108,6 +107,17 @@ export async function sendOTP(phone: string, purpose: "registration_verification
     if (elapsed < 60) return { error: "Tunggu 60 detik sebelum mengirim ulang." };
   }
 
+  // Look up profile_id for password_reset
+  let profileId: string | undefined;
+  if (purpose === "password_reset") {
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("id")
+      .eq("phone", normalized)
+      .single();
+    if (profile) profileId = profile.id;
+  }
+
   const code = generateOTP();
   const codeHash = hashOTP(code);
 
@@ -117,6 +127,7 @@ export async function sendOTP(phone: string, purpose: "registration_verification
       phone: normalized,
       code_hash: codeHash,
       purpose,
+      profile_id: profileId,
       expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
     });
 
@@ -178,8 +189,8 @@ export async function verifyOTP(phone: string, code: string, purpose: "registrat
     .update({ verified_at: now })
     .eq("id", otpRecord.id);
 
-  // If registration verification, mark profile phone as verified
-  if (purpose === "registration_verification" && otpRecord.profile_id) {
+  // Mark profile phone as verified
+  if (otpRecord.profile_id) {
     await admin
       .from("profiles")
       .update({ phone_verified_at: now })
