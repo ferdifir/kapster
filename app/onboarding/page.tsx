@@ -29,7 +29,6 @@ export default function OnboardingPage() {
     slug: "",
     city: "",
     address: "",
-    phone: "",
     wa_number: "",
   });
   const [slugEdited, setSlugEdited] = useState(false);
@@ -74,7 +73,6 @@ export default function OnboardingPage() {
         slug: form.slug,
         city: form.city || null,
         address: form.address || null,
-        phone: form.phone || null,
         wa_number: form.wa_number || null,
       })
       .select("id")
@@ -228,20 +226,6 @@ export default function OnboardingPage() {
                 <p className="text-dark-500 text-xs mt-1">
                   Untuk notifikasi otomatis ke pelanggan.
                 </p>
-              </div>
-
-              <div>
-                <label className="block text-dark-300 text-sm font-medium mb-2">
-                  Nomor Telepon
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={form.phone}
-                  onChange={handleChange}
-                  placeholder="021-1234567"
-                  className="w-full px-4 py-3 rounded-xl bg-dark-700/50 border border-dark-600/50 text-white placeholder-dark-500 focus:outline-none focus:border-barber-400/50 transition-colors"
-                />
               </div>
 
               <div className="p-4 rounded-xl bg-barber-400/5 border border-barber-400/15">
