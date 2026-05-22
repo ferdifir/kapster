@@ -263,6 +263,7 @@ export type Database = {
           full_name: string | null
           id: string
           phone: string | null
+          phone_verified_at: string | null
           role: Database["public"]["Enums"]["user_role"]
           updated_at: string
         }
@@ -272,6 +273,7 @@ export type Database = {
           full_name?: string | null
           id: string
           phone?: string | null
+          phone_verified_at?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
         }
@@ -281,10 +283,58 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone?: string | null
+          phone_verified_at?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
         }
         Relationships: []
+      }
+      phone_otp_codes: {
+        Row: {
+          id: string
+          phone: string
+          code_hash: string
+          purpose: "registration_verification" | "password_reset"
+          profile_id: string | null
+          attempts: number
+          max_attempts: number
+          expires_at: string
+          verified_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          phone: string
+          code_hash: string
+          purpose: "registration_verification" | "password_reset"
+          profile_id?: string | null
+          attempts?: number
+          max_attempts?: number
+          expires_at?: string
+          verified_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          phone?: string
+          code_hash?: string
+          purpose?: "registration_verification" | "password_reset"
+          profile_id?: string | null
+          attempts?: number
+          max_attempts?: number
+          expires_at?: string
+          verified_at?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phone_otp_codes_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       queue_entries: {
         Row: {
