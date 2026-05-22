@@ -83,18 +83,6 @@ export async function sendOTP(phone: string, purpose: "registration_verification
   const validation = validatePhone(phone);
   if (!validation.valid) return { error: validation.error };
 
-  // For password_reset, only check phone exists in profiles (verification optional for reset)
-  if (purpose === "password_reset") {
-    const { count } = await admin
-      .from("profiles")
-      .select("id", { count: "exact", head: true })
-      .eq("phone", normalized);
-
-    if (count === 0) {
-      return { success: true, message: "Jika nomor terdaftar, kode OTP akan dikirim." };
-    }
-  }
-
   // Rate limit
   const { data: lastOtp } = await admin
     .from("phone_otp_codes")
@@ -117,7 +105,7 @@ export async function sendOTP(phone: string, purpose: "registration_verification
       .from("profiles")
       .select("id")
       .eq("phone", normalized)
-      .single();
+      .maybeSingle();
     if (profile) profileId = profile.id;
   }
 
@@ -231,20 +219,24 @@ export async function resetPassword(phone: string, newPassword: string) {
 
   const otpRecord = otpRecords[0];
 
-  // Look up profile by phone
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("id")
-    .eq("phone", normalized)
-    .single();
+  // Look up profile by OTP record profile_id or phone
+  let profileId = otpRecord.profile_id;
+  if (!profileId) {
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("id")
+      .eq("phone", normalized)
+      .maybeSingle();
+    if (profile) profileId = profile.id;
+  }
 
-  if (!profile) {
-    return { error: "Akun tidak ditemukan." };
+  if (!profileId) {
+    return { error: "Akun dengan nomor ini tidak ditemukan. Pastikan nomor WhatsApp sudah terdaftar di akun kamu." };
   }
 
   // Update password via Supabase Admin API
   const { error: updateError } = await admin.auth.admin.updateUserById(
-    profile.id,
+    profileId,
     { password: newPassword }
   );
 
