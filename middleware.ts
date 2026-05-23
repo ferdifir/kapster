@@ -71,7 +71,7 @@ export async function middleware(request: NextRequest) {
     return applySecurityHeaders(NextResponse.redirect(loginUrl));
   }
 
-  if (user && isAuthPage) {
+  if (user && isAuthPage && request.method === "GET") {
     return applySecurityHeaders(
       NextResponse.redirect(new URL("/dashboard", request.url))
     );

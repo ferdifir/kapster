@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -19,6 +19,26 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      cooldownRef.current = setInterval(() => {
+        setResendCooldown((prev) => {
+          if (prev <= 1) {
+            if (cooldownRef.current) clearInterval(cooldownRef.current);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (cooldownRef.current) clearInterval(cooldownRef.current);
+    };
+  }, [resendCooldown]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -86,6 +106,7 @@ export default function RegisterPage() {
 
     setStep("otp");
     setLoading(false);
+    setResendCooldown(60);
   };
 
   const handleVerifyOtp = async () => {
@@ -113,7 +134,11 @@ export default function RegisterPage() {
     setResendLoading(true);
     setError("");
     const result = await setupPhoneVerification(form.phone);
-    if (result.error) setError(result.error);
+    if (result.error) {
+      setError(result.error);
+    } else {
+      setResendCooldown(60);
+    }
     setResendLoading(false);
   };
 
@@ -166,10 +191,14 @@ export default function RegisterPage() {
 
           <button
             onClick={handleResendOtp}
-            disabled={resendLoading}
+            disabled={resendLoading || resendCooldown > 0}
             className="text-sm text-dark-400 hover:text-barber-400 transition-colors disabled:opacity-50"
           >
-            {resendLoading ? "Mengirim..." : "Tidak menerima kode? Kirim ulang"}
+            {resendLoading
+              ? "Mengirim..."
+              : resendCooldown > 0
+                ? `Kirim ulang dalam ${resendCooldown} detik`
+                : "Tidak menerima kode? Kirim ulang"}
           </button>
         </div>
       </div>

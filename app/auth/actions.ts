@@ -8,72 +8,109 @@ import { sendTextMessage, SYSTEM_WUZAPI_TOKEN } from "@/lib/wuzapi";
 import { renderWATemplate } from "@/lib/wa-templates";
 
 export async function setupPhoneVerification(phone: string) {
-  const supabase = await createClient();
-  const admin = createAdminClient();
+  // Log inisiasi awal diletakkan di luar try untuk memastikan fungsi terpanggil
+  console.log(`[PhoneVerification] Started for input: ${phone}`);
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Sesi tidak ditemukan. Silakan login ulang." };
+  try {
+    const supabase = await createClient();
+    const admin = createAdminClient();
 
-  const normalized = normalizePhone(phone);
-  const validation = validatePhone(phone);
-  if (!validation.valid) return { error: validation.error };
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.warn(`[PhoneVerification][Auth] Failed: Session not found`);
+      return { error: "Sesi tidak ditemukan. Silakan login ulang." };
+    }
+    
+    console.log(`[PhoneVerification] User authenticated: ${user.id}`);
 
-  // Upsert profile with phone
-  const { error: upsertError } = await admin
-    .from("profiles")
-    .upsert({
-      id: user.id,
-      phone: normalized,
-      full_name: user.user_metadata?.full_name,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: "id" });
+    const normalized = normalizePhone(phone);
+    const validation = validatePhone(phone);
+    if (!validation.valid) {
+      console.warn(`[PhoneVerification][Validation] Invalid phone: ${phone} -> ${validation.error}`);
+      return { error: validation.error };
+    }
 
-  if (upsertError) return { error: "Gagal menyimpan nomor HP." };
+    // Upsert profile with phone
+    const { error: upsertError } = await admin
+      .from("profiles")
+      .upsert({
+        id: user.id,
+        phone: normalized,
+        full_name: user.user_metadata?.full_name,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: "id" });
 
-  // Rate limit check
-  const { data: lastOtp } = await admin
-    .from("phone_otp_codes")
-    .select("created_at")
-    .eq("phone", normalized)
-    .eq("purpose", "registration_verification")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    if (upsertError) {
+      console.error(`[PhoneVerification][DB] Upsert profile failed:`, upsertError.message);
+      return { error: "Gagal menyimpan nomor HP." };
+    }
+    console.log(`[PhoneVerification][DB] Profile upserted successfully`);
 
-  if (lastOtp) {
-    const elapsed = (Date.now() - new Date(lastOtp.created_at).getTime()) / 1000;
-    if (elapsed < 60) return { error: "Tunggu 60 detik sebelum mengirim ulang." };
-  }
+    // Rate limit check
+    const { data: lastOtp } = await admin
+      .from("phone_otp_codes")
+      .select("created_at")
+      .eq("phone", normalized)
+      .eq("purpose", "registration_verification")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-  const code = generateOTP();
-  const codeHash = hashOTP(code);
+    if (lastOtp) {
+      const elapsed = (Date.now() - new Date(lastOtp.created_at).getTime()) / 1000;
+      if (elapsed < 60) {
+        console.warn(`[PhoneVerification][RateLimit] Throttled. Elapsed: ${Math.round(elapsed)}s`);
+        return { error: "Tunggu 60 detik sebelum mengirim ulang." };
+      }
+    }
 
-  const { error: insertError } = await admin
-    .from("phone_otp_codes")
-    .insert({
-      phone: normalized,
-      code_hash: codeHash,
-      purpose: "registration_verification",
-      profile_id: user.id,
-      expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+    const code = generateOTP();
+    const codeHash = hashOTP(code);
+
+    const { error: insertError } = await admin
+      .from("phone_otp_codes")
+      .insert({
+        phone: normalized,
+        code_hash: codeHash,
+        purpose: "registration_verification",
+        profile_id: user.id,
+        expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+      });
+
+    if (insertError) {
+      console.error(`[PhoneVerification][DB] Insert OTP failed:`, insertError.message);
+      return { error: "Gagal menyimpan kode OTP." };
+    }
+    console.log(`[PhoneVerification][DB] OTP code generated and saved`);
+
+    const message = renderWATemplate("registration_otp", {
+      name: "", barbershop: "", code,
     });
 
-  if (insertError) return { error: "Gagal menyimpan kode OTP." };
+    if (!SYSTEM_WUZAPI_TOKEN) {
+      console.error(`[PhoneVerification][WA] Config error: SYSTEM_WUZAPI_TOKEN is missing`);
+      return { error: "WhatsApp sistem belum dikonfigurasi. Hubungi admin." };
+    }
 
-  const message = renderWATemplate("registration_otp", {
-    name: "", barbershop: "", code,
-  });
+    console.log(`[PhoneVerification][WA] Sending OTP to ${normalized}...`);
+    const sendResult = await sendTextMessage(SYSTEM_WUZAPI_TOKEN, normalized, message);
+    
+    if (!sendResult.success) {
+      console.error(`[PhoneVerification][WA] Send failed:`, sendResult.error);
+      return { error: sendResult.error || "Gagal mengirim kode OTP via WhatsApp." };
+    }
 
-  if (!SYSTEM_WUZAPI_TOKEN) {
-    return { error: "WhatsApp sistem belum dikonfigurasi. Hubungi admin." };
+    console.log(`[PhoneVerification][Success] OTP sent to ${normalized}`);
+    return { success: true };
+
+  } catch (fatalError) {
+    // Menangkap segala jenis error fatal/unhandled rejection di dalam fungsi ini
+    console.error(`[PhoneVerification][FATAL_CRASH] An unexpected error occurred:`, fatalError);
+    
+    return { 
+      error: "Terjadi kesalahan internal pada server. Silakan coba beberapa saat lagi."  + fatalError
+    };
   }
-
-  const sendResult = await sendTextMessage(SYSTEM_WUZAPI_TOKEN, normalized, message);
-  if (!sendResult.success) {
-    return { error: sendResult.error || "Gagal mengirim kode OTP via WhatsApp." };
-  }
-
-  return { success: true };
 }
 
 export async function sendOTP(phone: string, purpose: "registration_verification" | "password_reset") {

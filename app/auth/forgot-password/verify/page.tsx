@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/Logo";
@@ -14,7 +14,27 @@ function VerifyForm() {
   const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(60);
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      cooldownRef.current = setInterval(() => {
+        setResendCooldown((prev) => {
+          if (prev <= 1) {
+            if (cooldownRef.current) clearInterval(cooldownRef.current);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (cooldownRef.current) clearInterval(cooldownRef.current);
+    };
+  }, [resendCooldown]);
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -57,7 +77,11 @@ function VerifyForm() {
     setResendLoading(true);
     setError("");
     const result = await sendOTP(phone, "password_reset");
-    if (result.error) setError(result.error);
+    if (result.error) {
+      setError(result.error);
+    } else {
+      setResendCooldown(60);
+    }
     setResendLoading(false);
   };
 
@@ -105,9 +129,13 @@ function VerifyForm() {
           {loading ? "Memverifikasi..." : "Verifikasi"}
         </button>
 
-        <button onClick={handleResend} disabled={resendLoading}
+        <button onClick={handleResend} disabled={resendLoading || resendCooldown > 0}
           className="text-sm text-dark-400 hover:text-barber-400 transition-colors disabled:opacity-50 block w-full mb-4">
-          {resendLoading ? "Mengirim..." : "Tidak menerima kode? Kirim ulang"}
+          {resendLoading
+            ? "Mengirim..."
+            : resendCooldown > 0
+              ? `Kirim ulang dalam ${resendCooldown} detik`
+              : "Tidak menerima kode? Kirim ulang"}
         </button>
 
         <Link href="/auth/forgot-password"

@@ -158,7 +158,7 @@ export async function sendTextMessage(
 ): Promise<{ messageId: string; success: boolean; error?: string }> {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
+    const timeout = setTimeout(() => controller.abort(), 30000);
 
     const res = await fetch(`${WUZAPI_URL}/chat/send/text`, {
       method: "POST",
@@ -168,6 +168,7 @@ export async function sendTextMessage(
       },
       body: JSON.stringify({ Phone: phone, Body: body }),
       signal: controller.signal,
+      cache: "no-store",
     });
 
     clearTimeout(timeout);
