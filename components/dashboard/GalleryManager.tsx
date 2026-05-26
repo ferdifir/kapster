@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { addGalleryImage, removeGalleryImage } from "@/app/dashboard/settings/actions";
 import Image from "next/image";
 
@@ -51,22 +50,20 @@ export default function GalleryManager({ barbershopId, currentImages }: GalleryM
       const fileName = `gallery_${timestamp}.${ext}`;
       const filePath = `${barbershopId}/${fileName}`;
 
-      const supabase = createClient();
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket", "gallery-images");
+      formData.append("path", filePath);
 
-      const { error: uploadError } = await supabase.storage
-        .from("gallery-images")
-        .upload(filePath, file, { upsert: false });
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
 
-      if (uploadError) throw uploadError;
+      if (!res.ok) throw new Error(data.error || "Gagal mengupload");
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("gallery-images")
-        .getPublicUrl(filePath);
-
-      const result = await addGalleryImage(barbershopId, publicUrl);
+      const result = await addGalleryImage(barbershopId, data.url);
       if (result.error) throw new Error(result.error);
 
-      setImages((prev) => [...prev, publicUrl]);
+      setImages((prev) => [...prev, data.url]);
       setSuccess("Gambar berhasil ditambahkan");
       setTimeout(() => setSuccess(""), 3000);
     } catch (err: unknown) {

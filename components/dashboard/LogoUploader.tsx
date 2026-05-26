@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { updateBarbershopLogo } from "@/app/dashboard/settings/actions";
 import Logo from "@/components/Logo";
 
@@ -15,8 +14,8 @@ export default function LogoUploader({ barbershopId, currentLogoUrl }: LogoUploa
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(currentLogoUrl);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const MAX_SIZE = 2 * 1024 * 1024; // 2MB
   const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 
@@ -44,21 +43,19 @@ export default function LogoUploader({ barbershopId, currentLogoUrl }: LogoUploa
       const fileName = `logo_${Date.now()}.${ext}`;
       const filePath = `${barbershopId}/${fileName}`;
 
-      const supabase = createClient();
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket", "logos");
+      formData.append("path", filePath);
 
-      const { error: uploadError } = await supabase.storage
-        .from("logos")
-        .upload(filePath, file, { upsert: true });
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
 
-      if (uploadError) throw uploadError;
+      if (!res.ok) throw new Error(data.error || "Gagal mengupload");
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("logos")
-        .getPublicUrl(filePath);
+      setPreviewUrl(data.url);
 
-      setPreviewUrl(publicUrl);
-
-      const result = await updateBarbershopLogo(barbershopId, publicUrl);
+      const result = await updateBarbershopLogo(barbershopId, data.url);
       if (result.error) throw new Error(result.error);
 
       setSuccess(true);

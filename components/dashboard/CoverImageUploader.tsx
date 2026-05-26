@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { updateBarbershopCoverImage } from "@/app/dashboard/settings/actions";
 
 interface CoverImageUploaderProps {
@@ -14,8 +13,8 @@ export default function CoverImageUploader({ barbershopId, currentCoverUrl }: Co
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(currentCoverUrl);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const MAX_SIZE = 5 * 1024 * 1024; // 5MB
   const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp"];
 
@@ -43,21 +42,19 @@ export default function CoverImageUploader({ barbershopId, currentCoverUrl }: Co
       const fileName = `cover_${Date.now()}.${ext}`;
       const filePath = `${barbershopId}/${fileName}`;
 
-      const supabase = createClient();
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket", "cover-images");
+      formData.append("path", filePath);
 
-      const { error: uploadError } = await supabase.storage
-        .from("cover-images")
-        .upload(filePath, file, { upsert: true });
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
 
-      if (uploadError) throw uploadError;
+      if (!res.ok) throw new Error(data.error || "Gagal mengupload");
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("cover-images")
-        .getPublicUrl(filePath);
+      setPreviewUrl(data.url);
 
-      setPreviewUrl(publicUrl);
-
-      const result = await updateBarbershopCoverImage(barbershopId, publicUrl);
+      const result = await updateBarbershopCoverImage(barbershopId, data.url);
       if (result.error) throw new Error(result.error);
 
       setSuccess(true);
