@@ -52,7 +52,7 @@ export default function RegisterPage() {
             .eq("id", user.id)
             .single();
           if (profile?.phone) {
-            setForm(prev => ({ ...prev, phone: profile.phone }));
+            setForm(prev => ({ ...prev, phone: profile.phone ?? "" }));
             setStep("otp");
           }
         }
