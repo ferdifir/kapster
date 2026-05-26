@@ -2,7 +2,6 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 function setCsp(response: NextResponse) {
-  response.headers.set("X-Proxy-Active", "1");
   response.headers.set(
     "Content-Security-Policy",
     "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.supabase.co; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.supabase.co https://tile.openstreetmap.org https://*.tile.openstreetmap.org; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://nominatim.openstreetmap.org https://tile.openstreetmap.org https://*.tile.openstreetmap.org;"
