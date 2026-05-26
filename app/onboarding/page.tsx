@@ -79,6 +79,18 @@ export default function OnboardingPage() {
     } = await supabase.auth.getUser();
     if (!user) { router.push("/auth/login"); return; }
 
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("phone_verified_at")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile?.phone_verified_at) {
+      setError("Nomor WhatsApp belum diverifikasi. Silakan verifikasi dulu.");
+      setLoading(false);
+      return;
+    }
+
     const { data: shop, error: shopError } = await supabase
       .from("barbershops")
       .insert({
