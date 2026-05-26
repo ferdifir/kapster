@@ -130,8 +130,8 @@ export async function updateBarbershopLogo(
   if (error) return { error: error.message };
 
   revalidatePath("/dashboard/settings");
-  revalidatePath("/display/[slug]");
-  revalidatePath("/q/[slug]");
+  revalidatePath("/display/[slug]", "page");
+  revalidatePath("/q/[slug]", "page");
 
   return {};
 }
@@ -179,7 +179,7 @@ export async function updateBarbershopCoverImage(
   if (error) return { error: error.message };
 
   revalidatePath("/dashboard/settings");
-  revalidatePath("/q/[slug]");
+  revalidatePath("/q/[slug]", "page");
 
   return {};
 }
@@ -212,7 +212,7 @@ export async function updateBarbershopAbout(
   if (error) return { error: error.message };
 
   revalidatePath("/dashboard/settings");
-  revalidatePath("/q/[slug]");
+  revalidatePath("/q/[slug]", "page");
 
   return {};
 }
@@ -248,7 +248,7 @@ export async function updateBarbershopGallery(
   if (error) return { error: error.message };
 
   revalidatePath("/dashboard/settings");
-  revalidatePath("/q/[slug]");
+  revalidatePath("/q/[slug]", "page");
 
   return {};
 }
@@ -290,7 +290,7 @@ export async function addGalleryImage(
   if (error) return { error: error.message };
 
   revalidatePath("/dashboard/settings");
-  revalidatePath("/q/[slug]");
+  revalidatePath("/q/[slug]", "page");
 
   return {};
 }
@@ -342,7 +342,7 @@ export async function removeGalleryImage(
   if (error) return { error: error.message };
 
   revalidatePath("/dashboard/settings");
-  revalidatePath("/q/[slug]");
+  revalidatePath("/q/[slug]", "page");
 
   return {};
 }
