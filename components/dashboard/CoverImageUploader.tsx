@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { updateBarbershopCoverImage } from "@/app/dashboard/settings/actions";
 
@@ -15,6 +15,7 @@ export default function CoverImageUploader({ barbershopId, currentCoverUrl }: Co
   const [success, setSuccess] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(currentCoverUrl);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const MAX_SIZE = 5 * 1024 * 1024; // 5MB
   const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp"];
 
@@ -106,6 +107,7 @@ export default function CoverImageUploader({ barbershopId, currentCoverUrl }: Co
           )}
           <label className="absolute inset-0 cursor-pointer">
             <input
+              ref={fileInputRef}
               type="file"
               accept="image/png,image/jpeg,image/webp"
               onChange={handleFileChange}
@@ -124,12 +126,7 @@ export default function CoverImageUploader({ barbershopId, currentCoverUrl }: Co
           </div>
           <button
             type="button"
-            onClick={() => {
-              const input = document.querySelector(
-                'input[type="file"]'
-              ) as HTMLInputElement;
-              input?.click();
-            }}
+            onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
             className="px-4 py-2 rounded-xl gold-gradient text-dark-900 font-bold text-xs disabled:opacity-50"
           >

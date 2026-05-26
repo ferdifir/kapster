@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { updateBarbershopLogo } from "@/app/dashboard/settings/actions";
 import Logo from "@/components/Logo";
@@ -16,6 +16,7 @@ export default function LogoUploader({ barbershopId, currentLogoUrl }: LogoUploa
   const [success, setSuccess] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(currentLogoUrl);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const MAX_SIZE = 2 * 1024 * 1024; // 2MB
   const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 
@@ -106,6 +107,7 @@ export default function LogoUploader({ barbershopId, currentLogoUrl }: LogoUploa
             )}
           </div>
           <input
+            ref={fileInputRef}
             type="file"
             accept="image/png,image/jpeg,image/webp,image/gif"
             onChange={handleFileChange}
@@ -121,12 +123,7 @@ export default function LogoUploader({ barbershopId, currentLogoUrl }: LogoUploa
           </p>
           <button
             type="button"
-            onClick={() => {
-              const input = document.querySelector(
-                'input[type="file"]'
-              ) as HTMLInputElement;
-              input?.click();
-            }}
+            onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
             className="mt-3 px-4 py-2 rounded-xl gold-gradient text-dark-900 font-bold text-xs disabled:opacity-50"
           >
