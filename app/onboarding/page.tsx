@@ -114,9 +114,16 @@ export default function OnboardingPage() {
       return;
     }
 
-    await supabase.from("services").insert(
+    const { error: servicesError } = await supabase.from("services").insert(
       DEFAULT_SERVICES.map((s) => ({ ...s, barbershop_id: shop.id }))
     );
+
+    if (servicesError) {
+      console.error("Gagal insert services:", servicesError);
+      setError("Barbershop terbuat, tapi gagal menambahkan layanan default. Silakan cek di dashboard.");
+      setLoading(false);
+      return;
+    }
 
     router.push("/dashboard");
   };
