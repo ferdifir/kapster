@@ -217,7 +217,7 @@ export default function StatusPage({
               )}
               {entry.status === "skip" && (
                 <p className="text-dark-400 text-sm mt-2">
-                  Nomor antrian Anda telah dilewati
+                  Dilewati, tunggu panggilan selanjutnya
                 </p>
               )}
             </div>

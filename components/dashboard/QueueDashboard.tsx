@@ -217,9 +217,8 @@ export default function QueueDashboard({
   const activeEntries = entries.filter(
     (e) => !["done", "skip"].includes(e.status)
   );
-  const finishedEntries = entries.filter((e) =>
-    ["done", "skip"].includes(e.status)
-  );
+  const finishedEntries = entries.filter((e) => e.status === "done");
+  const skippedEntries = entries.filter((e) => e.status === "skip");
 
   const formattedDate = new Date(selectedDate + "T00:00:00").toLocaleDateString("id-ID", {
     weekday: "long",
@@ -471,6 +470,28 @@ export default function QueueDashboard({
             </div>
           )}
 
+          {skippedEntries.length > 0 && (
+            <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl overflow-hidden">
+              <div className="px-5 py-4 border-b border-dark-700/30">
+                <h2 className="font-semibold text-dark-400 text-sm">
+                  Dilewati
+                </h2>
+              </div>
+              <div className="divide-y divide-dark-700/30">
+                {skippedEntries.map((entry) => (
+                  <EntryRow
+                    key={entry.id}
+                    entry={entry}
+                    barbers={barbers}
+                    services={services}
+                    onStatusChange={handleStatusChange}
+                    isPending={isPending}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
           {finishedEntries.length > 0 && (
             <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl overflow-hidden">
               <div className="px-5 py-4 border-b border-dark-700/30">
@@ -613,6 +634,15 @@ function EntryRow({
               Skip
             </button>
           </>
+        )}
+        {entry.status === "skip" && (
+          <button
+            onClick={() => onStatusChange(entry.id, "called")}
+            disabled={isPending}
+            className="px-3 py-1.5 rounded-lg bg-barber-400/10 text-barber-400 text-xs font-medium hover:bg-barber-400/20 transition-colors disabled:opacity-50"
+          >
+            Panggil Lagi
+          </button>
         )}
         {entry.status === "serving" && (
           <button
