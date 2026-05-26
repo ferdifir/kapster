@@ -40,6 +40,38 @@ export default function RegisterPage() {
     };
   }, [resendCooldown]);
 
+  // Handle redirect dari onboarding — user sudah punya session, butuh verify WA
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("phone_unverified") === "true") {
+      supabase.auth.getUser().then(async ({ data: { user } }) => {
+        if (user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("phone")
+            .eq("id", user.id)
+            .single();
+          if (profile?.phone) {
+            setForm(prev => ({ ...prev, phone: profile.phone }));
+            setStep("otp");
+          }
+        }
+      });
+    }
+  }, []);
+
+  // Redirect ke dashboard kalau sudah login (kecuali datang dari onboarding)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("phone_unverified") === "true") return;
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        router.push("/dashboard");
+      }
+    });
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
