@@ -39,7 +39,7 @@ export default function CoverImageUploader({ barbershopId, currentCoverUrl }: Co
 
     try {
       const ext = file.type.split("/")[1];
-      const fileName = `cover.${ext}`;
+      const fileName = `cover_${Date.now()}.${ext}`;
       const filePath = `${barbershopId}/${fileName}`;
 
       const supabase = createClient();

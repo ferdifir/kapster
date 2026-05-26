@@ -40,7 +40,7 @@ export default function LogoUploader({ barbershopId, currentLogoUrl }: LogoUploa
 
     try {
       const ext = file.type.split("/")[1];
-      const fileName = `logo.${ext}`;
+      const fileName = `logo_${Date.now()}.${ext}`;
       const filePath = `${barbershopId}/${fileName}`;
 
       const supabase = createClient();
