@@ -100,10 +100,7 @@ export default function RegisterPage() {
     const result = await setupPhoneVerification(form.phone);
     if (result.error) {
       setError(result.error);
-      setLoading(false);
-      return;
     }
-
     setStep("otp");
     setLoading(false);
     setResendCooldown(60);
