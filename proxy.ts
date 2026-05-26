@@ -1,26 +1,16 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-function applySecurityHeaders(response: NextResponse): NextResponse {
-  response.headers.set(
-    "Strict-Transport-Security",
-    "max-age=31536000; includeSubDomains"
-  );
-  response.headers.set("X-Frame-Options", "DENY");
-  response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set(
-    "Referrer-Policy",
-    "strict-origin-when-cross-origin"
-  );
-  response.headers.set(
-    "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=()"
-  );
+function setCsp(response: NextResponse) {
   response.headers.set(
     "Content-Security-Policy",
     "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.supabase.co; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.supabase.co https://tile.openstreetmap.org https://*.tile.openstreetmap.org; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://nominatim.openstreetmap.org https://tile.openstreetmap.org https://*.tile.openstreetmap.org;"
   );
-  return response;
+  response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
 }
 
 export async function proxy(request: NextRequest) {
@@ -47,8 +37,6 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  // Refresh session — required so server components get fresh cookies
-  // Use getUser() not getSession() per @supabase/ssr docs
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -68,16 +56,19 @@ export async function proxy(request: NextRequest) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/auth/login";
     loginUrl.searchParams.set("next", pathname);
-    return applySecurityHeaders(NextResponse.redirect(loginUrl));
+    const r = NextResponse.redirect(loginUrl);
+    setCsp(r);
+    return r;
   }
 
   if (user && isAuthPage && request.method === "GET") {
-    return applySecurityHeaders(
-      NextResponse.redirect(new URL("/dashboard", request.url))
-    );
+    const r = NextResponse.redirect(new URL("/dashboard", request.url));
+    setCsp(r);
+    return r;
   }
 
-  return applySecurityHeaders(supabaseResponse);
+  setCsp(supabaseResponse);
+  return supabaseResponse;
 }
 
 export const config = {
