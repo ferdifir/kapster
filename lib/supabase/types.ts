@@ -532,6 +532,95 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          id: string
+          barbershop_id: string
+          status: Database["public"]["Enums"]["subscription_status"]
+          current_period_start: string
+          current_period_end: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          barbershop_id: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          current_period_start?: string
+          current_period_end: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          barbershop_id?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          current_period_start?: string
+          current_period_end?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_barbershop_id_fkey"
+            columns: ["barbershop_id"]
+            isOneToOne: false
+            referencedRelation: "barbershops"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      payments: {
+        Row: {
+          id: string
+          barbershop_id: string
+          subscription_id: string | null
+          pakasir_order_id: string
+          amount: number
+          status: Database["public"]["Enums"]["payment_status"]
+          payment_method: string | null
+          paid_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          barbershop_id: string
+          subscription_id?: string | null
+          pakasir_order_id: string
+          amount?: number
+          status?: Database["public"]["Enums"]["payment_status"]
+          payment_method?: string | null
+          paid_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          barbershop_id?: string
+          subscription_id?: string | null
+          pakasir_order_id?: string
+          amount?: number
+          status?: Database["public"]["Enums"]["payment_status"]
+          payment_method?: string | null
+          paid_at?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_barbershop_id_fkey"
+            columns: ["barbershop_id"]
+            isOneToOne: false
+            referencedRelation: "barbershops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -558,6 +647,8 @@ export type Database = {
       booking_status: "pending" | "confirmed" | "cancelled" | "done"
       queue_entry_status: "waiting" | "called" | "serving" | "done" | "skip"
       user_role: "owner" | "barber" | "customer" | "superadmin"
+      subscription_status: "active" | "cancelled" | "expired"
+      payment_status: "pending" | "completed" | "failed" | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -688,6 +779,8 @@ export const Constants = {
       booking_status: ["pending", "confirmed", "cancelled", "done"],
       queue_entry_status: ["waiting", "called", "serving", "done", "skip"],
       user_role: ["owner", "barber", "customer", "superadmin"],
+      subscription_status: ["active", "cancelled", "expired"],
+      payment_status: ["pending", "completed", "failed", "expired"],
     },
   },
 } as const
