@@ -1,10 +1,7 @@
+const SUBSCRIPTION_PRICE = 10000;
 const PAKASIR_BASE = "https://app.pakasir.com";
-
-const config = {
-  slug: process.env.PAKASIR_PROJECT_SLUG!,
-  apiKey: process.env.PAKASIR_API_KEY!,
-  baseUrl: process.env.NEXT_PUBLIC_BASE_URL!,
-};
+const PAKASIR_SLUG = process.env.PAKASIR_PROJECT_SLUG || "kapster";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
 export function generateOrderId(barbershopId: string): string {
   const ts = Date.now().toString(36);
@@ -13,6 +10,6 @@ export function generateOrderId(barbershopId: string): string {
 }
 
 export function getPaymentUrl(orderId: string): string {
-  const redirect = encodeURIComponent(`${config.baseUrl}/billing?success=1`);
-  return `${PAKASIR_BASE}/pay/${config.slug}/10000?order_id=${orderId}&redirect=${redirect}`;
+  const redirect = encodeURIComponent(`${BASE_URL}/billing?success=1`);
+  return `${PAKASIR_BASE}/pay/${PAKASIR_SLUG}/${SUBSCRIPTION_PRICE}?order_id=${orderId}&redirect=${redirect}`;
 }
