@@ -1,5 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import type { Database } from "@/lib/supabase/types";
+import { checkSubscription } from "@/lib/subscription";
 
 function setCsp(response: NextResponse) {
   response.headers.set(
@@ -16,7 +18,7 @@ function setCsp(response: NextResponse) {
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
-  const supabase = createServerClient(
+  const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -43,16 +45,21 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  const isProtected =
+  const isAuthProtected =
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/barber") ||
-    pathname.startsWith("/onboarding");
+    pathname.startsWith("/onboarding") ||
+    pathname.startsWith("/billing");
+
+  const isSubProtected =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/barber");
 
   const isAuthPage =
     pathname.startsWith("/auth/login") ||
     pathname.startsWith("/auth/register");
 
-  if (!user && isProtected) {
+  if (!user && isAuthProtected) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/auth/login";
     loginUrl.searchParams.set("next", pathname);
@@ -65,6 +72,14 @@ export async function proxy(request: NextRequest) {
     const r = NextResponse.redirect(new URL("/dashboard", request.url));
     setCsp(r);
     return r;
+  }
+
+  if (user && isSubProtected) {
+    const result = await checkSubscription(supabase, user.id, request);
+    if (!result.hasAccess && result.redirect) {
+      setCsp(result.redirect);
+      return result.redirect;
+    }
   }
 
   setCsp(supabaseResponse);
