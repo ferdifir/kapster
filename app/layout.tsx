@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s | Kapster",
   },
   description:
-    "Antrian digital gratis untuk barbershop. Kelola antrian real-time, booking online, dan notifikasi WhatsApp.",
+    "Antrian digital untuk barbershop. Kelola antrian real-time, booking online, dan notifikasi WhatsApp. Rp10.000/bulan.",
   keywords: [
     "sistem antrian barbershop",
     "antrian digital",
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     siteName: "Kapster",
     title: "Kapster — Sistem Antrian Barbershop #1 di Indonesia",
     description:
-      "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp. 100% gratis.",
+      "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp. Rp10.000/bulan.",
     images: [
       {
         url: "/og-image.png",
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Kapster — Sistem Antrian Barbershop #1 di Indonesia",
     description:
-      "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp. 100% gratis.",
+      "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp. Rp10.000/bulan.",
     images: ["/og-image.png"],
     creator: "@kapster",
     site: "@kapster",
@@ -105,11 +105,12 @@ const jsonLd = [
       "Sistem manajemen antrian digital #1 untuk barbershop di Indonesia. Kelola antrian real-time, booking online, notifikasi WhatsApp.",
     offers: {
       "@type": "Offer",
-      "@id": `${siteUrl}#/offers/free`,
-      name: "Gratis",
-      price: "0",
+      "@id": `${siteUrl}#/offers/subscription`,
+      name: "Langganan",
+      price: "10000",
       priceCurrency: "IDR",
-      description: "Semua fitur gratis untuk barbershop",
+      priceValidUntil: "2027-12-31",
+      description: "Rp10.000/bulan — akses semua fitur Kapster",
     },
     author: {
       "@type": "Organization",
@@ -131,10 +132,10 @@ const jsonLd = [
       },
       {
         "@type": "Question",
-        name: "Apakah Kapster gratis?",
+        name: "Berapa harga Kapster?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Ya, Kapster 100% gratis. Semua fitur tersedia tanpa biaya bulanan dan tanpa batasan tersembunyi.",
+          text: "Kapster Rp10.000/bulan — satu harga untuk semua fitur. Bayar sekali, pakai 30 hari penuh. Cancel kapan saja.",
         },
       },
       {
