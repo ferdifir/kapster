@@ -1,9 +1,10 @@
 const FEATURES = [
-  { label: "Unlimited Barber", desc: "Kelola barber tanpa batas" },
-  { label: "Unlimited Antrian", desc: "Antrian harian tanpa batas" },
-  { label: "Queue Digital", desc: "Antrian online real-time" },
-  { label: "Public Booking Page", desc: "Halaman booking untuk pelanggan" },
-  { label: "TV Display", desc: "Tampilkan antrian di TV" },
+  { label: "Manajemen Antrian", desc: "Antrian real-time dengan update otomatis" },
+  { label: "Booking Online", desc: "Pelanggan bisa booking dari HP" },
+  { label: "Notifikasi WhatsApp", desc: "Panggil antrian otomatis via WA" },
+  { label: "Manajemen Barber", desc: "Kelola barber & layanan" },
+  { label: "Dashboard Analitik", desc: "Laporan harian, mingguan, bulanan" },
+  { label: "Tampilan TV Monitor", desc: "Display antrian di TV barbershop" },
 ];
 
 export default function PricingSection() {
@@ -13,40 +14,43 @@ export default function PricingSection() {
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <span className="inline-block px-4 py-1.5 rounded-full bg-barber-400/10 text-barber-400 text-sm font-semibold mb-4">
-            100% Gratis
+            Rp10.000 / bulan
           </span>
           <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-            Semua Fitur<span className="text-gold-gradient"> Gratis</span>
+            Satu Harga, <span className="text-gold-gradient">Semua Fitur</span>
           </h2>
           <p className="text-dark-300 text-lg max-w-2xl mx-auto">
-            Tanpa biaya bulanan. Tanpa batasan tersembunyi. Langsung pakai.
+            Rp10.000/bulan — cancel kapan saja. Bayar sekali, pakai 30 hari penuh.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {FEATURES.map((f) => (
-            <div
-              key={f.label}
-              className="p-6 rounded-2xl bg-dark-800/50 border border-dark-700/30 card-hover"
+        <div className="max-w-sm mx-auto">
+          <div className="p-8 rounded-2xl bg-dark-800/50 border border-dark-700/30 card-hover text-center">
+            <p className="text-dark-400 text-sm mb-1">Mulai dari</p>
+            <p className="font-display text-5xl font-bold text-white mb-6">
+              Rp10.000
+              <span className="text-lg text-dark-400 font-normal">/bulan</span>
+            </p>
+            <ul className="text-left space-y-4 mb-8">
+              {FEATURES.map((f) => (
+                <li key={f.label} className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-barber-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <p className="text-white font-medium text-sm">{f.label}</p>
+                    <p className="text-dark-400 text-xs">{f.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <a
+              href="/auth/register"
+              className="block w-full px-6 py-3 rounded-xl gold-gradient text-dark-900 font-bold text-lg hover:shadow-lg hover:shadow-barber-400/25 transition-all duration-300"
             >
-              <div className="w-10 h-10 rounded-xl bg-barber-400/10 flex items-center justify-center mb-4">
-                <svg className="w-5 h-5 text-barber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h3 className="text-white font-semibold mb-1">{f.label}</h3>
-              <p className="text-dark-400 text-sm">{f.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="text-center mt-12">
-          <a
-            href="/auth/register"
-            className="inline-block px-8 py-3 rounded-xl gold-gradient text-dark-900 font-bold text-lg hover:shadow-lg hover:shadow-barber-400/25 transition-all duration-300"
-          >
-            Mulai Sekarang — Gratis
-          </a>
+              Mulai Sekarang
+            </a>
+          </div>
         </div>
       </div>
     </section>
