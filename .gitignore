@@ -44,3 +44,4 @@ next-env.d.ts
 SUPABASE_SECRET.md
 *.html
 .claude/
+.superpowers/
