@@ -34,3 +34,41 @@ CREATE TABLE IF NOT EXISTS payments (
 CREATE INDEX IF NOT EXISTS idx_subscriptions_barbershop_id ON subscriptions(barbershop_id);
 CREATE INDEX IF NOT EXISTS idx_payments_barbershop_id ON payments(barbershop_id);
 CREATE INDEX IF NOT EXISTS idx_payments_pakasir_order_id ON payments(pakasir_order_id);
+
+-- Enable RLS
+ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
+
+-- RLS: barbershop owners can view their subscription
+CREATE POLICY "Owners can view their subscription"
+  ON subscriptions FOR SELECT
+  USING (barbershop_id IN (
+    SELECT id FROM barbershops WHERE owner_id = auth.uid()
+  ));
+
+-- RLS: owners can update their subscription (e.g. cancel)
+CREATE POLICY "Owners can update their subscription"
+  ON subscriptions FOR UPDATE
+  USING (barbershop_id IN (
+    SELECT id FROM barbershops WHERE owner_id = auth.uid()
+  ))
+  WITH CHECK (barbershop_id IN (
+    SELECT id FROM barbershops WHERE owner_id = auth.uid()
+  ));
+
+-- RLS: owners can view their payments
+CREATE POLICY "Owners can view their payments"
+  ON payments FOR SELECT
+  USING (barbershop_id IN (
+    SELECT id FROM barbershops WHERE owner_id = auth.uid()
+  ));
+
+-- RLS: authenticated users can insert payments (required for pay button)
+CREATE POLICY "Authenticated users can insert payments"
+  ON payments FOR INSERT
+  WITH CHECK (barbershop_id IN (
+    SELECT id FROM barbershops WHERE owner_id = auth.uid()
+  ));
+
+-- Note: Webhook endpoint uses service_role key which bypasses RLS entirely,
+-- so no policy is needed for webhook operations (payment updates, subscription upserts).
