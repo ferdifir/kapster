@@ -93,8 +93,8 @@ export default function CookiePolicyPage() {
             <h2 className="font-display text-xl font-semibold text-white mb-4">5. Kontak</h2>
             <p className="text-dark-300 leading-relaxed">
               Pertanyaan mengenai cookie:{" "}
-               <a href="mailto:hi@kapster.my.id" className="text-barber-400 hover:text-barber-300">
-                hi@kapster.my.id
+               <a href="mailto:hello@kapster.my.id" className="text-barber-400 hover:text-barber-300">
+                hello@kapster.my.id
               </a>
             </p>
           </section>
