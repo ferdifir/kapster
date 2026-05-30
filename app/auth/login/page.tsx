@@ -62,7 +62,7 @@ function LoginForm() {
               href="/auth/register"
               className="text-barber-400 hover:text-barber-300 transition-colors"
             >
-              Daftar gratis
+              Daftar
             </Link>
           </p>
         </div>

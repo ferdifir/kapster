@@ -244,7 +244,7 @@ export default function RegisterPage() {
             </div>
             <span className="font-display text-xl font-bold text-white">Kapster</span>
           </Link>
-          <h1 className="font-display text-2xl font-bold text-white mb-2">Daftar Gratis</h1>
+          <h1 className="font-display text-2xl font-bold text-white mb-2">Daftar</h1>
           <p className="text-dark-400 text-sm">
             Sudah punya akun?{" "}
             <Link href="/auth/login" className="text-barber-400 hover:text-barber-300 transition-colors">

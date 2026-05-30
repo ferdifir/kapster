@@ -20,7 +20,7 @@ export default function CTASection() {
         </h2>
         <p className="text-dark-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10">
           Bergabung dengan ratusan salon pria yang sudah meningkatkan sistem antriannya.
-          100% gratis selamanya.
+          Rp10.000/bulan — cancel kapan saja.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -28,7 +28,7 @@ export default function CTASection() {
             href="/auth/register"
             className="group relative inline-flex items-center justify-center gap-2 px-10 py-4 rounded-xl gold-gradient text-dark-900 font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-barber-400/25 hover:-translate-y-0.5"
           >
-            Daftar Gratis Sekarang
+            Mulai Sekarang
             <svg
               className="w-5 h-5 group-hover:translate-x-1 transition-transform"
               fill="none"
@@ -41,7 +41,7 @@ export default function CTASection() {
         </div>
 
         <p className="text-dark-500 text-sm mt-6">
-          Sistem antrian digital gratis · Tanpa biaya bulanan · Daftar langsung pakai
+          Sistem antrian digital · Setup 5 menit · Langsung pakai
         </p>
       </div>
     </section>

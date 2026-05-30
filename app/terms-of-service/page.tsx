@@ -64,39 +64,16 @@ export default function TermsOfServicePage() {
           <section>
             <h2 className="font-display text-xl font-semibold text-white mb-4">4. Paket Langganan & Pembayaran</h2>
 <div className="space-y-4 text-dark-300 leading-relaxed">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr className="border-b border-dark-700">
-                      <th className="text-left py-2 pr-4 text-white font-semibold">Paket</th>
-                      <th className="text-left py-2 pr-4 text-white font-semibold">Harga</th>
-                      <th className="text-left py-2 pr-4 text-white font-semibold">Barber</th>
-                      <th className="text-left py-2 text-white font-semibold">Antrian/hari</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-dark-800">
-                    <tr>
-                      <td className="py-2 pr-4">Starter</td>
-                      <td className="py-2 pr-4">Gratis</td>
-                      <td className="py-2 pr-4">1</td>
-                      <td className="py-2">30</td>
-                    </tr>
-                    <tr>
-                      <td className="py-2 pr-4">Basic</td>
-                      <td className="py-2 pr-4">Rp29.000/bulan</td>
-                      <td className="py-2 pr-4">3</td>
-                      <td className="py-2">50</td>
-                    </tr>
-                    <tr>
-                      <td className="py-2 pr-4">Pro</td>
-                      <td className="py-2 pr-4">Rp79.000/bulan</td>
-                      <td className="py-2 pr-4">5</td>
-                      <td className="py-2">100</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <p>Pembayaran diproses melalui <strong className="text-white">Pakasir</strong>. Langganan berlaku 30 hari sejak pembayaran dikonfirmasi.</p>
+              <p>Kapster menawarkan satu paket langganan: <strong className="text-white">Rp10.000/bulan</strong> — satu harga untuk semua fitur.</p>
+              <ul className="list-disc list-inside space-y-1">
+                <li>Manajemen antrian real-time</li>
+                <li>Booking online</li>
+                <li>Notifikasi WhatsApp otomatis</li>
+                <li>Manajemen barber & layanan</li>
+                <li>Dashboard analitik</li>
+                <li>Tampilan TV monitor</li>
+              </ul>
+              <p>Pembayaran diproses melalui <strong className="text-white">Pakasir</strong> (QRIS / Virtual Account). Langganan berlaku 30 hari sejak pembayaran dikonfirmasi. Cancel kapan saja — akses tetap aktif sampai periode berakhir.</p>
               <p>Kami tidak menawarkan refund setelah pembayaran berhasil. Jika ada masalah teknis dari pihak kami, kami akan memperpanjang masa langganan Anda.</p>
             </div>
           </section>

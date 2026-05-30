@@ -2,8 +2,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata = {
-  title: "Tentang Kapster — Sistem Antrian Barbershop Gratis",
-  description: "Kapster adalah sistem manajemen antrian digital gratis untuk barbershop di Indonesia. Dibuat untuk membantu barbershop mengelola antrian lebih efisien.",
+  title: "Tentang Kapster — Sistem Antrian Barbershop",
+  description: "Kapster adalah sistem manajemen antrian digital untuk barbershop di Indonesia. Dibuat untuk membantu barbershop mengelola antrian lebih efisien. Rp10.000/bulan.",
 };
 
 export default function AboutPage() {
@@ -26,7 +26,7 @@ export default function AboutPage() {
             <h2 className="font-display text-2xl font-semibold text-white mt-12 mb-4">Misi Kami</h2>
             <p className="text-dark-300 leading-relaxed mb-6">
               Kami percaya bahwa setiap barbershop berhak memiliki sistem antrian yang modern dan efisien. 
-              Itulah mengapa Kapster 100% gratis — tanpa biaya bulanan, tanpa batasan tersembunyi.
+              Itulah mengapa Kapster hadir dengan harga terjangkau Rp10.000/bulan — bayar sekali, pakai 30 hari penuh.
             </p>
 
             <h2 className="font-display text-2xl font-semibold text-white mt-12 mb-4">Fitur Utama</h2>

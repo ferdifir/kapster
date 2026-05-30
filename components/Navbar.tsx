@@ -64,7 +64,7 @@ export default function Navbar() {
               href="#harga"
               className="relative group px-6 py-2.5 rounded-lg gold-gradient text-dark-900 font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-barber-400/25"
             >
-              Coba Gratis
+              Lihat Harga
             </a>
           </div>
 
@@ -107,7 +107,7 @@ export default function Navbar() {
                   onClick={() => setMobileOpen(false)}
                   className="px-6 py-2.5 rounded-lg gold-gradient text-dark-900 font-semibold text-sm text-center"
                 >
-                  Coba Gratis
+                  Lihat Harga
                 </a>
               </div>
             </div>

@@ -12,7 +12,7 @@ test.describe("Authentication", () => {
 
     test("should show link to register page", async ({ page }) => {
       await page.goto("/auth/login");
-      await page.getByRole("link", { name: /Daftar gratis/i }).click();
+      await page.getByRole("link", { name: /Daftar/i }).click();
       await page.waitForURL("/auth/register");
       await expect(page).toHaveURL("/auth/register");
     });
@@ -43,7 +43,7 @@ test.describe("Authentication", () => {
   test.describe("Register", () => {
     test("should display registration form", async ({ page }) => {
       await page.goto("/auth/register");
-      await expect(page.getByRole("heading", { name: /Daftar Gratis/i })).toBeVisible();
+      await expect(page.getByRole("heading", { name: /Daftar/i })).toBeVisible();
       await expect(page.getByRole("textbox", { name: /Nama Lengkap/i })).toBeVisible();
       await expect(page.getByRole("textbox", { name: /Email/i })).toBeVisible();
       await expect(page.getByRole("textbox", { name: /Password/i })).toBeVisible();

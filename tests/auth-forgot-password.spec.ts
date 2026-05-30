@@ -55,7 +55,7 @@ test.describe("Forgot Password", () => {
   test.describe("Registration Phone Field", () => {
     test("should display phone field on registration form", async ({ page }) => {
       await page.goto("/auth/register");
-      await expect(page.getByRole("heading", { name: /Daftar Gratis/i })).toBeVisible();
+      await expect(page.getByRole("heading", { name: /Daftar/i })).toBeVisible();
       await expect(page.getByRole("textbox", { name: /Nomor WhatsApp/i })).toBeVisible();
     });
 

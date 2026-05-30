@@ -41,7 +41,7 @@ export default function HeroSection() {
                 href="#harga"
                 className="group relative inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl gold-gradient text-dark-900 font-bold text-sm sm:text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-barber-400/25 hover:-translate-y-0.5 w-full xs:w-auto"
               >
-                Mulai Gratis
+                Mulai Sekarang
                 <svg
                   className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform"
                   fill="none"

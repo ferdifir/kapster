@@ -12,7 +12,7 @@ test.describe("Landing Page", () => {
   test("should display navbar with logo and navigation", async ({ page }) => {
     await expect(page.getByText("Kapster").first()).toBeVisible();
     await expect(page.getByRole("link", { name: /Masuk/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Coba Gratis/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Lihat Harga/i })).toBeVisible();
   });
 
   test("should display all navigation links", async ({ page }) => {
@@ -24,7 +24,7 @@ test.describe("Landing Page", () => {
 
   test("should display hero section with CTA", async ({ page }) => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Mulai Gratis/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Mulai Sekarang/i })).toBeVisible();
   });
 
   test("should display brand logos section", async ({ page }) => {
@@ -44,8 +44,8 @@ test.describe("Landing Page", () => {
   });
 
   test("should display pricing section", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: /Gratis/i })).toBeVisible();
-    await expect(page.getByText(/100% Gratis/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Satu Harga/i })).toBeVisible();
+    await expect(page.getByText(/Rp10.000/)).toBeVisible();
   });
 
   test("should display testimonials section", async ({ page }) => {
@@ -69,7 +69,7 @@ test.describe("Landing Page", () => {
   });
 
   test("should navigate to register page", async ({ page }) => {
-    await page.getByRole("link", { name: /Coba Gratis/i }).click();
+    await page.getByRole("link", { name: /Mulai Sekarang/ }).last().click();
     await page.waitForURL("/auth/register");
     await expect(page).toHaveURL("/auth/register");
   });
