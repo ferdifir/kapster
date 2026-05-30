@@ -37,6 +37,19 @@ export async function POST(request: Request) {
     const now = new Date().toISOString();
     const periodEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
+    const { error: updateError } = await supabase
+      .from("payments")
+      .update({
+        status: "completed",
+        payment_method: payment_method || null,
+        paid_at: completed_at || now,
+      })
+      .eq("id", payment.id);
+
+    if (updateError) {
+      return NextResponse.json({ error: "Failed to update payment" }, { status: 500 });
+    }
+
     const { data: subscription, error: subError } = await supabase
       .from("subscriptions")
       .upsert({
@@ -56,18 +69,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to create subscription" }, { status: 500 });
     }
 
-    const { error: updateError } = await supabase
+    const { error: linkError } = await supabase
       .from("payments")
-      .update({
-        status: "completed",
-        payment_method: payment_method || null,
-        paid_at: completed_at || now,
-        subscription_id: subscription.id,
-      })
+      .update({ subscription_id: subscription.id })
       .eq("id", payment.id);
 
-    if (updateError) {
-      return NextResponse.json({ error: "Failed to update payment" }, { status: 500 });
+    if (linkError) {
+      console.error("Failed to link payment to subscription:", linkError);
     }
 
     return NextResponse.json({ message: "Subscription activated" }, { status: 200 });
