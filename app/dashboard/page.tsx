@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import SubscriptionActions from "./subscription-actions";
 
 function StatCard({
   label,
@@ -86,6 +87,16 @@ export default async function DashboardPage() {
       ).count ?? 0
     : 0;
 
+  const { data: subscription } = await supabase
+    .from("subscriptions")
+    .select("status, current_period_end")
+    .eq("barbershop_id", barbershop.id)
+    .maybeSingle();
+
+  const subActive = subscription?.status === "active" && subscription.current_period_end
+    ? new Date(subscription.current_period_end) > new Date()
+    : false;
+
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <div>
@@ -167,6 +178,29 @@ export default async function DashboardPage() {
           }
         />
       </div>
+
+      {subActive && (
+        <div className="rounded-2xl bg-dark-800/50 border border-dark-700/30 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-dark-400 text-sm mb-1">Langganan</p>
+              <h3 className="text-white font-semibold">Aktif</h3>
+              <p className="text-dark-400 text-xs mt-1">
+                Berlaku hingga{" "}
+                {new Date(subscription!.current_period_end).toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </p>
+            </div>
+            <SubscriptionActions
+              barbershopId={barbershop.id}
+              periodEnd={subscription!.current_period_end}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6">
