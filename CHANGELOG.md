@@ -1,3 +1,15 @@
+# [1.3.0](https://github.com/ferdifir/kapster/compare/v1.2.0...v1.3.0) (2026-05-31)
+
+
+### Bug Fixes
+
+* type-safe updateBlogPostStatus ([35b4e93](https://github.com/ferdifir/kapster/commit/35b4e93e29372e5ec3b1a6418979c0bdb1dcf2bd))
+
+
+### Features
+
+* add cron API endpoint and pg_cron migration ([7dad760](https://github.com/ferdifir/kapster/commit/7dad76079fb3dda388cbd5b5ecb0b2bf5477ab75))
+
 # [1.2.0](https://github.com/ferdifir/kapster/compare/v1.1.0...v1.2.0) (2026-05-31)
 
 
