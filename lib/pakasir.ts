@@ -1,7 +1,7 @@
 const SUBSCRIPTION_PRICE = 10000;
 const PAKASIR_BASE = "https://app.pakasir.com";
 const PAKASIR_SLUG = process.env.PAKASIR_PROJECT_SLUG || "kapster";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3003";
 
 export function generateOrderId(barbershopId: string): string {
   const ts = Date.now().toString(36);
