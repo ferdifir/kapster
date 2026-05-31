@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/ferdifir/kapster/compare/v1.0.0...v1.1.0) (2026-05-31)
+
+
+### Features
+
+* add groq client ([2357117](https://github.com/ferdifir/kapster/commit/23571173901bb03906f3c186396a8e63e8bfde9d))
+* add groq client ([8f24bea](https://github.com/ferdifir/kapster/commit/8f24bea926596c7dcf6e2760fc6352549e620d32))
+* add whatsapp bot processor ([b2e48a2](https://github.com/ferdifir/kapster/commit/b2e48a2ef736e1ce2c86280c0c0551babe063aaa))
+* add whatsapp bot processor ([16577f6](https://github.com/ferdifir/kapster/commit/16577f6729d16b1c62f2b094654f6079ff7afd6b))
+* add whatsapp webhook endpoint ([398ec16](https://github.com/ferdifir/kapster/commit/398ec160281cecd21a6647757076dc35601d90c1))
+* add whatsapp webhook endpoint ([d8c3314](https://github.com/ferdifir/kapster/commit/d8c3314a9d747a3bb551ac35c55a4c41f12f964d))
+
 # 1.0.0 (2026-05-31)
 
 
