@@ -1,3 +1,5 @@
+import { logError } from "@/lib/error-logger";
+
 const WUZAPI_URL = process.env.WUZAPI_URL || "https://wa.linkjo.my.id";
 const WUZAPI_ADMIN_TOKEN = process.env.WUZAPI_ADMIN_TOKEN || "";
 export const SYSTEM_WUZAPI_TOKEN = process.env.SYSTEM_WUZAPI_TOKEN || "";
@@ -61,11 +63,15 @@ export async function createWuzApiUser(barbershopId: string): Promise<{
   if (!res.ok) {
     const errorText = await res.text().catch(() => "");
     console.error(`[WuzAPI] createWuzApiUser failed: ${res.status} ${errorText}`);
+    logError("createWuzApiUser", new Error(`HTTP ${res.status}`), { barbershopId, errorText });
     return null;
   }
 
   const data = (await res.json()) as WuzApiResponse<WuzApiUser>;
-  if (!data.success) return null;
+  if (!data.success) {
+    logError("createWuzApiUser", new Error("API returned success=false"), { barbershopId, response: JSON.stringify(data) });
+    return null;
+  }
 
   return { userId: data.data.id, token: data.data.token };
 }
@@ -97,6 +103,7 @@ export async function connectSession(userToken: string): Promise<{
 
   if (!res.ok) {
     const errorText = await res.text().catch(() => "");
+    logError("connectSession", new Error(`HTTP ${res.status}`), { errorText });
     let errorMessage = `WuzAPI error ${res.status}`;
     try {
       const errorData = JSON.parse(errorText);
@@ -192,6 +199,7 @@ export async function sendTextMessage(
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error(`[WuzAPI] Exception: ${message}`);
+    logError("sendTextMessage", err, { phone });
     return { messageId: "", success: false, error: message };
   }
 }

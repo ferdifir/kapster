@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { renderWATemplate, type WAEventType } from "@/lib/wa-templates";
+import { logError } from "@/lib/error-logger";
 
 export async function enqueueWANotification(
   barbershopId: string,
@@ -42,7 +43,7 @@ export async function enqueueWANotification(
       message_body: messageBody,
       status: "pending",
     });
-  } catch {
-    // Silently fail — WA notification must never block the main process
+  } catch (err) {
+    logError("enqueueWANotification", err, { barbershopId, eventType, customerPhone });
   }
 }

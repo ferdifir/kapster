@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/lib/supabase/types";
 import { checkSubscription } from "@/lib/subscription";
+import { logError } from "@/lib/error-logger";
 
 function setCsp(response: NextResponse) {
   response.headers.set(
@@ -17,6 +18,8 @@ function setCsp(response: NextResponse) {
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
+
+  try {
 
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -84,6 +87,12 @@ export async function proxy(request: NextRequest) {
 
   setCsp(supabaseResponse);
   return supabaseResponse;
+  } catch (err) {
+    logError("proxy middleware", err, { pathname: request.nextUrl.pathname });
+    const r = NextResponse.redirect(new URL("/auth/login", request.url));
+    setCsp(r);
+    return r;
+  }
 }
 
 export const config = {

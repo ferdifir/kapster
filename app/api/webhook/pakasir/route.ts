@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendTelegramNotification } from "@/lib/telegram";
+import { logError } from "@/lib/error-logger";
 
 export async function POST(request: Request) {
+  let rawBody = "{}";
   try {
-    const body = await request.json();
+    rawBody = await request.text();
+    const body = JSON.parse(rawBody);
     const { amount, order_id, status, payment_method, completed_at } = body;
 
     if (!order_id || !amount || !status) {
@@ -24,6 +27,7 @@ export async function POST(request: Request) {
       .single();
 
     if (paymentError || !payment) {
+      logError("webhook/pakasir", "Payment not found", { order_id });
       return NextResponse.json({ error: "Payment not found" }, { status: 404 });
     }
 
@@ -32,6 +36,9 @@ export async function POST(request: Request) {
     }
 
     if (Number(payment.amount) !== Number(amount)) {
+      logError("webhook/pakasir", "Amount mismatch", {
+        order_id, expected: payment.amount, received: amount,
+      });
       return NextResponse.json({ error: "Amount mismatch" }, { status: 400 });
     }
 
@@ -48,6 +55,7 @@ export async function POST(request: Request) {
       .eq("id", payment.id);
 
     if (updateError) {
+      logError("webhook/pakasir", updateError.message, { order_id, payment_id: payment.id });
       return NextResponse.json({ error: "Failed to update payment" }, { status: 500 });
     }
 
@@ -67,6 +75,7 @@ export async function POST(request: Request) {
       .single();
 
     if (subError) {
+      logError("webhook/pakasir", subError.message, { barbershop_id: payment.barbershop_id });
       return NextResponse.json({ error: "Failed to create subscription" }, { status: 500 });
     }
 
@@ -106,6 +115,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: "Subscription activated" }, { status: 200 });
   } catch (err) {
+    logError("webhook/pakasir", err, { body: rawBody });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

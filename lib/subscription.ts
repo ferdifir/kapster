@@ -1,13 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "./supabase/types";
+import { logError } from "./error-logger";
 
 export async function checkSubscription(
   supabase: SupabaseClient<Database>,
   userId: string,
   request: NextRequest
 ): Promise<{ hasAccess: boolean; redirect?: NextResponse }> {
-  const { data: barbershop } = await supabase
+  try {
+    const { data: barbershop } = await supabase
     .from("barbershops")
     .select("id")
     .eq("owner_id", userId)
@@ -43,4 +45,8 @@ export async function checkSubscription(
   }
 
   return { hasAccess: true };
+  } catch (err) {
+    logError("checkSubscription", err, { userId });
+    return { hasAccess: false, redirect: NextResponse.redirect(new URL("/billing", request.url)) };
+  }
 }

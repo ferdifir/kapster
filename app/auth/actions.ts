@@ -6,6 +6,7 @@ import { normalizePhone, validatePhone } from "@/lib/phone";
 import { generateOTP, hashOTP } from "@/lib/otp";
 import { sendTextMessage, SYSTEM_WUZAPI_TOKEN } from "@/lib/wuzapi";
 import { renderWATemplate } from "@/lib/wa-templates";
+import { logError } from "@/lib/error-logger";
 
 export async function setupPhoneVerification(phone: string) {
   // Log inisiasi awal diletakkan di luar try untuk memastikan fungsi terpanggil
@@ -104,17 +105,15 @@ export async function setupPhoneVerification(phone: string) {
     return { success: true };
 
   } catch (fatalError) {
-    // Menangkap segala jenis error fatal/unhandled rejection di dalam fungsi ini
     console.error(`[PhoneVerification][FATAL_CRASH] An unexpected error occurred:`, fatalError);
-    
-    return { 
-      error: "Terjadi kesalahan internal pada server. Silakan coba beberapa saat lagi."  + fatalError
-    };
+    logError("setupPhoneVerification", fatalError, { phone });
+    return { error: "Terjadi kesalahan internal pada server. Silakan coba beberapa saat lagi." };
   }
 }
 
 export async function sendOTP(phone: string, purpose: "registration_verification" | "password_reset") {
-  const admin = createAdminClient();
+  try {
+    const admin = createAdminClient();
 
   const normalized = normalizePhone(phone);
   const validation = validatePhone(phone);
@@ -186,10 +185,15 @@ export async function sendOTP(phone: string, purpose: "registration_verification
   }
 
   return { success: true };
+  } catch (err) {
+    logError("sendOTP", err, { phone, purpose });
+    return { error: "Terjadi kesalahan internal. Silakan coba lagi." };
+  }
 }
 
 export async function verifyOTP(phone: string, code: string, purpose: "registration_verification" | "password_reset") {
-  const admin = createAdminClient();
+  try {
+    const admin = createAdminClient();
   const normalized = normalizePhone(phone);
 
   const { data: otpRecords, error: fetchError } = await admin
@@ -241,10 +245,15 @@ export async function verifyOTP(phone: string, code: string, purpose: "registrat
   }
 
   return { success: true };
+  } catch (err) {
+    logError("verifyOTP", err, { phone, purpose });
+    return { error: "Terjadi kesalahan internal. Silakan coba lagi." };
+  }
 }
 
 export async function resetPassword(phone: string, newPassword: string) {
-  const admin = createAdminClient();
+  try {
+    const admin = createAdminClient();
   const normalized = normalizePhone(phone);
 
   if (!newPassword || newPassword.length < 8) {
@@ -300,4 +309,8 @@ export async function resetPassword(phone: string, newPassword: string) {
     .eq("id", otpRecord.id);
 
   return { success: true };
+  } catch (err) {
+    logError("resetPassword", err, { phone });
+    return { error: "Terjadi kesalahan internal. Silakan coba lagi." };
+  }
 }
