@@ -56,15 +56,9 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-4">
             <a
               href="/auth/login"
-              className="text-dark-300 hover:text-white transition-colors text-sm font-medium"
-            >
-              Masuk
-            </a>
-            <a
-              href="#harga"
               className="relative group px-6 py-2.5 rounded-lg gold-gradient text-dark-900 font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-barber-400/25"
             >
-              Lihat Harga
+              Masuk
             </a>
           </div>
 
@@ -99,15 +93,12 @@ export default function Navbar() {
                 </a>
               ))}
               <div className="flex flex-col gap-3 pt-4 border-t border-dark-700/50">
-                <a href="/auth/login" className="text-dark-300 hover:text-white transition-colors text-sm font-medium py-2 text-center">
-                  Masuk
-                </a>
                 <a
-                  href="#harga"
+                  href="/auth/login"
                   onClick={() => setMobileOpen(false)}
                   className="px-6 py-2.5 rounded-lg gold-gradient text-dark-900 font-semibold text-sm text-center"
                 >
-                  Lihat Harga
+                  Masuk
                 </a>
               </div>
             </div>
