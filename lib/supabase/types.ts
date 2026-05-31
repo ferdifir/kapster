@@ -621,6 +621,57 @@ export type Database = {
           }
         ]
       }
+      feedback: {
+        Row: {
+          id: string
+          barbershop_id: string
+          profile_id: string | null
+          name: string
+          category: string
+          message: string
+          screenshot_url: string | null
+          is_read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          barbershop_id: string
+          profile_id?: string | null
+          name: string
+          category: string
+          message: string
+          screenshot_url?: string | null
+          is_read?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          barbershop_id?: string
+          profile_id?: string | null
+          name?: string
+          category?: string
+          message?: string
+          screenshot_url?: string | null
+          is_read?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_barbershop_id_fkey"
+            columns: ["barbershop_id"]
+            isOneToOne: false
+            referencedRelation: "barbershops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
