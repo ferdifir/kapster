@@ -672,6 +672,57 @@ export type Database = {
           },
         ]
       }
+      blog_posts: {
+        Row: {
+          id: string
+          title: string
+          slug: string
+          content_html: string
+          excerpt: string
+          meta_description: string
+          keywords: string[]
+          og_image_url: string | null
+          topics: string[]
+          status: "draft" | "published" | "cancelled"
+          telegram_msg_id: number | null
+          published_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          slug: string
+          content_html: string
+          excerpt?: string
+          meta_description?: string
+          keywords?: string[]
+          og_image_url?: string | null
+          topics?: string[]
+          status?: "draft" | "published" | "cancelled"
+          telegram_msg_id?: number | null
+          published_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          slug?: string
+          content_html?: string
+          excerpt?: string
+          meta_description?: string
+          keywords?: string[]
+          og_image_url?: string | null
+          topics?: string[]
+          status?: "draft" | "published" | "cancelled"
+          telegram_msg_id?: number | null
+          published_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
