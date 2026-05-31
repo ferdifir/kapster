@@ -6,6 +6,7 @@ import FeaturesSection from "@/components/FeaturesSection";
 import HowItWorks from "@/components/HowItWorks";
 import PricingSection from "@/components/PricingSection";
 import Testimonials from "@/components/Testimonials";
+import FAQSection from "@/components/FAQSection";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
 
@@ -23,6 +24,7 @@ export default function Home() {
         <div style={cvStyle}><HowItWorks /></div>
         <div style={cvStyle}><PricingSection /></div>
         <div style={cvStyle}><Testimonials /></div>
+        <div style={cvStyle}><FAQSection /></div>
         <div style={cvStyle}><CTASection /></div>
       </main>
       <Footer />
