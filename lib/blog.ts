@@ -67,7 +67,7 @@ export async function getRelatedPosts(post: BlogPost, limit = 4) {
 }
 
 export async function getAllPublishedSlugs() {
-  const supabase = await createClient()
+  const supabase = await createAdminClient()
   const { data, error } = await supabase
     .from("blog_posts")
     .select("slug, updated_at")
