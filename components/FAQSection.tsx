@@ -26,7 +26,7 @@ const faqs = [
   {
     question: "Bisakah saya mencoba Kapster sebelum berlangganan?",
     answer:
-      "Ya. Daftar sekarang dan nikmati masa percobaan untuk menjelajahi semua fitur. Tidak perlu komitmen di awal.",
+      "Kapster berbayar Rp10.000 per bulan dan belum menyediakan masa percobaan. Namun dengan harga tersebut, semua fitur sudah bisa langsung digunakan tanpa biaya tambahan.",
   },
   {
     question: "Apakah data saya aman?",
