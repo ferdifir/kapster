@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SYSTEM_WUZAPI_TOKEN } from "@/lib/wuzapi";
 import { handleGroupInfo, handleMessage } from "@/lib/whatsapp-bot";
+import { logError } from "@/lib/error-logger";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch (err) {
+    logError("webhook_whatsapp", err, { bodyRaw: await req.text().catch(() => "") });
+    return NextResponse.json({ error: "invalid json" }, { status: 400 });
+  }
+
   const { type, event, token } = body;
 
   if (token !== SYSTEM_WUZAPI_TOKEN) {
@@ -15,9 +23,15 @@ export async function POST(req: NextRequest) {
   }
 
   if (type === "GroupInfo") {
-    handleGroupInfo(event).catch(() => {});
+    handleGroupInfo(event as Record<string, unknown>).catch((err) => {
+      logError("webhook_whatsapp_groupinfo", err);
+    });
   } else if (type === "Message") {
-    handleMessage(event).catch(() => {});
+    handleMessage(event as Record<string, unknown>).catch((err) => {
+      logError("webhook_whatsapp_message", err);
+    });
+  } else {
+    console.log(`[Webhook] Unknown event type: ${type}`);
   }
 
   return NextResponse.json({ received: true });
