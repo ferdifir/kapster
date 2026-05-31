@@ -25,7 +25,7 @@ export default function FeedbackTabs({ form, inbox, unreadCount }: FeedbackTabsP
               active === tab.key ? "bg-barber-400/10 text-barber-400" : "text-dark-400 hover:text-dark-200"
             }`}>
             {tab.label}
-            {tab.count > 0 && (
+            {(tab.count ?? 0) > 0 && (
               <span className="w-5 h-5 rounded-full bg-barber-400/20 text-barber-400 text-xs flex items-center justify-center">
                 {tab.count}
               </span>
