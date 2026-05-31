@@ -86,7 +86,7 @@ Beri output JSON SAJA (tanpa markdown formatting):
 
   console.log(`[blog-gen] Topic: ${topicData.title}`);
 
-  // Phase 3: Content Generation
+  // Phase 3: Content Generation + SEO Metadata (merged to save API calls)
   console.log("[blog-gen] Phase 3: Generating article...");
   const contentPrompt = `Kamu adalah penulis konten ahli untuk blog kapster.my.id.
 
@@ -104,24 +104,20 @@ STRUKTUR:
 4. Kesimpulan (150-200 kata)
 5. CTA ke Kapster di akhir: "Kalau kamu ingin fokus mengembangkan bisnis barbershop tanpa pusing urus antrian, coba deh pakai Kapster. Sistem antrian digital yang bikin pelanggan puas dan operasional makin rapi. Cuma Rp10.000/bulan. Mulai gratis di ${SITE_URL}!"
 
-FORMAT: HTML murni (tanpa html/body/head). Gunakan <h2>, <h3>, <p>, <ul>, <ol>, <strong>, <em>, <blockquote>. JANGAN markdown.`;
+FORMAT: HTML murni (tanpa html/body/head). Gunakan <h2>, <h3>, <p>, <ul>, <ol>, <strong>, <em>, <blockquote>. JANGAN markdown.
 
-  const contentHtml = await callGroq(contentPrompt, 0.8, 8192);
-  console.log(`[blog-gen] Content: ${contentHtml.length} chars`);
-
-  // Generate SEO metadata
-  console.log("[blog-gen] Generating SEO metadata...");
-  const seoPrompt = `Berdasarkan artikel berikut, generate metadata SEO JSON SAJA:
-
-${contentHtml.slice(0, 3000)}
-
-Output JSON SAJA (tanpa markdown):
+SETELAH artikel, di baris terakhir beri metadata JSON:
+---METADATA
 {"excerpt": "ringkasan 150-200 karakter", "meta_description": "meta description 150-160 karakter", "slug": "url-slug-dari-judul", "keywords": ["kw1","kw2","kw3","kw4","kw5"], "topics": ["topik1","topik2"], "seo_score": 85}`;
 
-  const seoResponse = await callGroq(seoPrompt, 0.3, 500);
+  const fullResponse = await callGroq(contentPrompt, 0.8, 8192);
+
+  // Split article and metadata
+  const metaSplit = fullResponse.split("---METADATA");
+  const contentHtml = metaSplit[0]?.trim() || fullResponse;
   let seoData: { excerpt: string; meta_description: string; slug: string; keywords: string[]; topics: string[]; seo_score: number };
   try {
-    seoData = JSON.parse(seoResponse.trim());
+    seoData = JSON.parse(metaSplit[1]?.trim() || "{}");
   } catch {
     const text = contentHtml.replace(/<[^>]*>/g, "");
     seoData = {
@@ -134,6 +130,7 @@ Output JSON SAJA (tanpa markdown):
     };
   }
 
+  console.log(`[blog-gen] Content: ${contentHtml.length} chars`);
   console.log(`[blog-gen] Slug: ${seoData.slug}`);
 
   // Phase 4: Telegram Notification
