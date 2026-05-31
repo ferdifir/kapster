@@ -2,7 +2,7 @@ import { sendTextMessage, SYSTEM_WUZAPI_TOKEN, SYSTEM_WA_PHONE } from "@/lib/wuz
 import { askGroq } from "@/lib/groq";
 import { logError } from "@/lib/error-logger";
 
-const GROUP_JID = process.env.WHATSBOT_GROUP_JID || "120363407853341919@g.us";
+const GROUP_JID = process.env.WHATSBOT_GROUP_JID || "";
 
 function extractJidPhone(jid: string): string {
   return jid.split(":")[0].split("@")[0];
@@ -33,7 +33,7 @@ function stripTag(text: string): string {
 export async function handleGroupInfo(event: Record<string, unknown>): Promise<void> {
   try {
     const groupJid = event.JID as string | undefined;
-    if (groupJid !== GROUP_JID) return;
+    if (!GROUP_JID || groupJid !== GROUP_JID) return;
 
     const joinList = event.Join as string[] | undefined;
     if (!joinList || joinList.length === 0) return;
@@ -42,12 +42,11 @@ export async function handleGroupInfo(event: Record<string, unknown>): Promise<v
     if (!token) return;
 
     for (const jid of joinList) {
-      const phone = extractJidPhone(jid);
-
       const welcomeMessage =
         `Halo! Selamat datang di grup Kapster — komunitas pengguna sistem antrian digital untuk salon pria. Aku bot Kapster 🤖 Untuk bertanya seputar Kapster, cukup kirim pesan dengan #ask atau #tanya ya. Selamat bergabung! 🎉`;
 
       await sendTextMessage(token, groupJid, welcomeMessage);
+      console.log(`[WhatsAppBot] Welcome sent to ${jid} in ${groupJid}`);
     }
   } catch (err) {
     logError("handleGroupInfo", err, { event });
@@ -58,12 +57,12 @@ export async function handleMessage(event: Record<string, unknown>): Promise<voi
   try {
     const info = event.Info as Record<string, unknown> | undefined;
     const groupJid = info?.Chat as string | undefined;
-    if (groupJid !== GROUP_JID) return;
+    if (!GROUP_JID || groupJid !== GROUP_JID) return;
 
     const senderJid = info?.Sender as string | undefined;
     if (senderJid && extractJidPhone(senderJid) === SYSTEM_WA_PHONE) return;
 
-    const text = extractText(event as Record<string, unknown>);
+    const text = extractText(event);
     if (!text) return;
 
     if (!hasAskTag(text)) return;
@@ -75,6 +74,7 @@ export async function handleMessage(event: Record<string, unknown>): Promise<voi
     const answer = await askGroq(question);
 
     await sendTextMessage(token, groupJid, answer);
+    console.log(`[WhatsAppBot] Answered in ${groupJid}: "${question.substring(0, 50)}"`);
   } catch (err) {
     logError("handleMessage", err, { event });
     try {
