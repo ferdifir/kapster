@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/ferdifir/kapster/compare/v1.3.0...v1.3.1) (2026-05-31)
+
+
+### Bug Fixes
+
+* use admin client in getAllPublishedSlugs for build-time compat ([1636101](https://github.com/ferdifir/kapster/commit/16361013c9fe87774eee684315b5c1eb38691b0c))
+
 # [1.3.0](https://github.com/ferdifir/kapster/compare/v1.2.0...v1.3.0) (2026-05-31)
 
 
