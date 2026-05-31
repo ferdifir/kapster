@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/ferdifir/kapster/compare/v1.3.1...v1.3.2) (2026-05-31)
+
+
+### Bug Fixes
+
+* remove Puter API key dependency, image gen optional ([3c82f87](https://github.com/ferdifir/kapster/commit/3c82f8733c4b445ba8f09da0e8e4950bc52d7e8c))
+
 ## [1.3.1](https://github.com/ferdifir/kapster/compare/v1.3.0...v1.3.1) (2026-05-31)
 
 
