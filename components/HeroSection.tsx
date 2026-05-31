@@ -27,7 +27,7 @@ export default function HeroSection() {
               <br className="hidden xs:block" /> 
               <span className="flex flex-wrap justify-center lg:justify-start gap-x-1.5">
                 Makin
-                <span className="text-gold-gradient">Gacor</span>
+                <span className="text-gold-gradient">Profesional</span>
               </span>
             </h1>
 

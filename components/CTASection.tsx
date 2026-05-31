@@ -16,7 +16,7 @@ export default function CTASection() {
 
         <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black mb-6">
           Siap Bikin Usaha Kamu
-          <span className="text-gold-gradient"> Lebih Gacor</span>?
+          <span className="text-gold-gradient"> Lebih Profesional</span>?
         </h2>
         <p className="text-dark-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10">
           Bergabung dengan ratusan salon pria yang sudah meningkatkan sistem antriannya.
