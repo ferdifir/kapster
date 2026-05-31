@@ -6,7 +6,6 @@ import { fileURLToPath } from "url";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
-const PUTER_API_URL = "https://api.puter.com/v2/images/generate";
 const SITE_URL = "https://kapster.my.id";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,7 +13,6 @@ const __dirname = path.dirname(__filename);
 const MCP_SERVER_PATH = path.resolve(__dirname, "../mcp-servers/content-researcher/dist/index.js");
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
-const PUTER_API_KEY = process.env.PUTER_API_KEY;
 
 interface SearchResult {
   title: string;
@@ -138,30 +136,7 @@ Output JSON SAJA (tanpa markdown):
 
   console.log(`[blog-gen] Slug: ${seoData.slug}`);
 
-  // Phase 4: Image Generation
-  console.log("[blog-gen] Phase 4: Image...");
-  let ogImageUrl = "";
-  if (PUTER_API_KEY) {
-    try {
-      const imageRes = await fetch(PUTER_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${PUTER_API_KEY}` },
-        body: JSON.stringify({
-          prompt: `Blog thumbnail: ${topicData.title}, barbershop theme, modern, professional, Indonesian style`,
-          size: "1200x630",
-          n: 1,
-        }),
-      });
-      if (imageRes.ok) {
-        const imageData = await imageRes.json();
-        ogImageUrl = imageData.data?.[0]?.url ?? "";
-      }
-    } catch (err) {
-      console.error("[blog-gen] Image failed:", err);
-    }
-  }
-
-  // Phase 5: Telegram Notification
+  // Phase 4: Telegram Notification
   console.log("[blog-gen] Phase 5: Telegram...");
   const previewText = `<b>${topicData.title}</b>
 
@@ -170,8 +145,6 @@ Output JSON SAJA (tanpa markdown):
 🏷 Keywords: ${seoData.keywords.join(", ")}
 📐 Panjang: ~${contentHtml.length} karakter
 ⭐ SEO Score: ${seoData.seo_score || "N/A"}
-
-${ogImageUrl ? `<a href="${ogImageUrl}">🖼 Lihat thumbnail</a>` : ""}
 
 <em>Review dan pilih aksi di bawah:</em>`;
 
@@ -206,7 +179,6 @@ ${ogImageUrl ? `<a href="${ogImageUrl}">🖼 Lihat thumbnail</a>` : ""}
     excerpt: seoData.excerpt || contentHtml.replace(/<[^>]*>/g, "").slice(0, 200),
     meta_description: seoData.meta_description || contentHtml.replace(/<[^>]*>/g, "").slice(0, 160),
     keywords: seoData.keywords || [],
-    og_image_url: ogImageUrl || null,
     topics: seoData.topics || [],
     status: "draft",
     telegram_msg_id: msgId,
