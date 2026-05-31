@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendTelegramNotification } from "@/lib/telegram";
 
 export async function POST(request: Request) {
   try {
@@ -76,6 +77,31 @@ export async function POST(request: Request) {
 
     if (linkError) {
       console.error("Failed to link payment to subscription:", linkError);
+    }
+
+    const { data: shop } = await supabase
+      .from("barbershops")
+      .select("name")
+      .eq("id", payment.barbershop_id)
+      .single();
+
+    if (shop) {
+      const { count } = await supabase
+        .from("payments")
+        .select("id", { count: "exact", head: true })
+        .eq("barbershop_id", payment.barbershop_id)
+        .eq("status", "completed")
+        .neq("id", payment.id);
+
+      const isRenewal = (count ?? 0) > 0;
+
+      const text = [
+        `💰 <b>Langganan ${isRenewal ? "Perpanjangan" : "Baru"}</b>`,
+        `🏪 ${shop.name}`,
+        `💵 Rp${Number(payment.amount).toLocaleString("id-ID")}`,
+      ].join("\n");
+
+      sendTelegramNotification(text);
     }
 
     return NextResponse.json({ message: "Subscription activated" }, { status: 200 });

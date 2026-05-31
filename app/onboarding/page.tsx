@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { notifyNewRegistration } from "@/app/actions/notifications";
 import Logo from "@/components/Logo";
 
 const DEFAULT_SERVICES = [
@@ -123,6 +124,11 @@ export default function OnboardingPage() {
       setError("Barbershop terbuat, tapi gagal menambahkan layanan default. Silakan cek di dashboard.");
       setLoading(false);
       return;
+    }
+
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    if (currentUser?.email) {
+      notifyNewRegistration(form.name, currentUser.email, form.city);
     }
 
     router.push("/dashboard");
