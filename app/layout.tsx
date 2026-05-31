@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     siteName: "Kapster",
     title: "Kapster — Sistem Antrian Barbershop #1 di Indonesia",
     description:
-      "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp. Rp10.000/bulan.",
+      "Kelola antrian barbershop makin profesional! Antrian real-time, booking online, notifikasi WhatsApp. Rp10.000/bulan.",
     images: [
       {
         url: "/og-image.png",
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Kapster — Sistem Antrian Barbershop #1 di Indonesia",
     description:
-      "Kelola antrian barbershop makin gacor! Antrian real-time, booking online, notifikasi WhatsApp. Rp10.000/bulan.",
+      "Kelola antrian barbershop makin profesional! Antrian real-time, booking online, notifikasi WhatsApp. Rp10.000/bulan.",
     images: ["/og-image.png"],
     creator: "@kapster",
     site: "@kapster",

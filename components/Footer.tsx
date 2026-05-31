@@ -32,7 +32,7 @@ export default function Footer() {
               </span>
             </a>
             <p className="text-dark-400 text-sm leading-relaxed">
-              Sistem manajemen antrian digital #1 untuk barbershop di Indonesia. Bikin bisnis makin gacor.
+              Sistem manajemen antrian digital #1 untuk barbershop di Indonesia. Bikin bisnis makin profesional.
             </p>
           </div>
 
