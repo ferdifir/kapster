@@ -1,3 +1,16 @@
+# [1.2.0](https://github.com/ferdifir/kapster/compare/v1.1.0...v1.2.0) (2026-05-31)
+
+
+### Features
+
+* add blog content generator script ([e4fd854](https://github.com/ferdifir/kapster/commit/e4fd854ba74e64a2160fba8526f269bf29992ed8))
+* add blog list and detail pages ([fd33c3d](https://github.com/ferdifir/kapster/commit/fd33c3de1fa2bd1f8a8cf6c74f1d48f7c0dcc698))
+* add blog posts to sitemap ([ddcf7d6](https://github.com/ferdifir/kapster/commit/ddcf7d644a7b7131aa57ebf57bb821e10a9141c1))
+* add blog_posts table ([39ec3bf](https://github.com/ferdifir/kapster/commit/39ec3bf0b246ac7f2e7cb0b020428f90ad0ec10f))
+* add blog_posts types and blog utility library ([3df0666](https://github.com/ferdifir/kapster/commit/3df066603f259e0c08196c50463f953701348e35))
+* add MCP content-researcher server with web search and fetch tools ([4228cc2](https://github.com/ferdifir/kapster/commit/4228cc23543e77b32793704c725dd2abd34abc0c))
+* add telegram inline keyboard support and blog webhook ([7a5cd79](https://github.com/ferdifir/kapster/commit/7a5cd790ac3bc90ec445d7ae1e09e9fadc8c4af3))
+
 # [1.1.0](https://github.com/ferdifir/kapster/compare/v1.0.0...v1.1.0) (2026-05-31)
 
 
