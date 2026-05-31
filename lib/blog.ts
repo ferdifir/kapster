@@ -83,13 +83,12 @@ export async function updateBlogPostStatus(
   status: "draft" | "published" | "cancelled"
 ) {
   const admin = await createAdminClient()
-  const update: Record<string, unknown> = { status }
-  if (status === "published") {
-    update.published_at = new Date().toISOString()
-  }
   const { error } = await admin
     .from("blog_posts")
-    .update(update)
+    .update({
+      status,
+      ...(status === "published" ? { published_at: new Date().toISOString() } : null),
+    } as any)
     .eq("id", id)
 
   if (error) throw error
