@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 
 export type BlogPost = {
@@ -21,7 +20,7 @@ export type BlogPost = {
 const POSTS_PER_PAGE = 12
 
 export async function getPublishedPosts(page = 1) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const from = (page - 1) * POSTS_PER_PAGE
   const to = from + POSTS_PER_PAGE - 1
 
@@ -38,7 +37,7 @@ export async function getPublishedPosts(page = 1) {
 }
 
 export async function getPublishedPostBySlug(slug: string) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from("blog_posts")
     .select("*")
@@ -52,7 +51,7 @@ export async function getPublishedPostBySlug(slug: string) {
 }
 
 export async function getRelatedPosts(post: BlogPost, limit = 4) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from("blog_posts")
     .select("*")
@@ -67,7 +66,7 @@ export async function getRelatedPosts(post: BlogPost, limit = 4) {
 }
 
 export async function getAllPublishedSlugs() {
-  const supabase = await createAdminClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from("blog_posts")
     .select("slug, updated_at")

@@ -133,27 +133,8 @@ SETELAH artikel, di baris terakhir beri metadata JSON:
   console.log(`[blog-gen] Content: ${contentHtml.length} chars`);
   console.log(`[blog-gen] Slug: ${seoData.slug}`);
 
-  // Phase 4: Telegram Notification
-  console.log("[blog-gen] Phase 5: Telegram...");
-  const previewText = `<b>${topicData.title}</b>
-
-📝 ${seoData.excerpt.slice(0, 300)}
-
-🏷 Keywords: ${seoData.keywords.join(", ")}
-📐 Panjang: ~${contentHtml.length} karakter
-⭐ SEO Score: ${seoData.seo_score || "N/A"}
-
-<em>Review dan pilih aksi di bawah:</em>`;
-
-  const msgId = await sendTelegramInlineKeyboard(previewText, [
-    [
-      { text: "✅ Post", callback_data: "pending_post" },
-      { text: "❌ Cancel", callback_data: "pending_cancel" },
-    ],
-  ]);
-
-  // Phase 6: Save as Draft
-  console.log("[blog-gen] Phase 6: Saving draft...");
+  // Phase 4: Save as Draft
+  console.log("[blog-gen] Phase 4: Saving draft...");
   let slug = seoData.slug;
   if (!slug || slug.length < 3) {
     slug = topicData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -169,7 +150,7 @@ SETELAH artikel, di baris terakhir beri metadata JSON:
     slug = `${slug}-${Date.now().toString(36)}`;
   }
 
-  const { error: insertError } = await supabase.from("blog_posts").insert({
+  const { data: draft, error: insertError } = await supabase.from("blog_posts").insert({
     title: topicData.title,
     slug,
     content_html: contentHtml,
@@ -178,15 +159,37 @@ SETELAH artikel, di baris terakhir beri metadata JSON:
     keywords: seoData.keywords || [],
     topics: seoData.topics || [],
     status: "draft",
-    telegram_msg_id: msgId,
-  });
+  }).select("id").single();
 
   if (insertError) {
     console.error("[blog-gen] Failed to save draft:", insertError);
     throw insertError;
   }
 
-  console.log(`[blog-gen] Draft saved: /blog/${slug}`);
+  console.log(`[blog-gen] Draft saved: /blog/${slug} (id: ${draft.id})`);
+
+  // Phase 5: Telegram Notification
+  console.log("[blog-gen] Phase 5: Telegram...");
+  const previewText = `<b>${topicData.title}</b>
+
+📝 ${seoData.excerpt.slice(0, 300)}
+
+🏷 Keywords: ${seoData.keywords.join(", ")}
+📐 Panjang: ~${contentHtml.length} karakter
+⭐ SEO Score: ${seoData.seo_score || "N/A"}
+
+<em>Review dan pilih aksi di bawah:</em>`;
+
+  const msgId = await sendTelegramInlineKeyboard(previewText, [
+    [
+      { text: "✅ Post", callback_data: `blog_post:${draft.id}` },
+      { text: "❌ Cancel", callback_data: `blog_cancel:${draft.id}` },
+    ],
+  ]);
+
+  // Update draft with telegram message id
+  await supabase.from("blog_posts").update({ telegram_msg_id: msgId }).eq("id", draft.id);
+
   console.log("[blog-gen] Done!");
 }
 

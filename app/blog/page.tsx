@@ -10,8 +10,6 @@ export const metadata: Metadata = {
     "Baca artikel seputar barbershop, gaya rambut, perawatan, dan tips bisnis untuk mengembangkan usahamu. Lengkap dengan rekomendasi dari Kapster.",
 };
 
-export const revalidate = 3600;
-
 export default async function BlogPage() {
   const { posts, total, page, pageSize } = await getPublishedPosts(1);
   const totalPages = Math.ceil(total / pageSize);

@@ -1,23 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
+import { spawn } from "child_process";
+import path from "path";
 
 const CRON_SECRET = process.env.CRON_SECRET;
 
-export async function GET(request: NextRequest) {
+function verifyAuth(request: NextRequest): boolean {
   const auth = request.headers.get("authorization")?.replace("Bearer ", "");
-  if (auth !== CRON_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  return auth === CRON_SECRET;
+}
 
-  const { spawn } = await import("child_process");
-  const path = await import("path");
-
+function runGenerator() {
   const scriptPath = path.join(process.cwd(), "scripts/generate-blog-post.ts");
-
   spawn("npx", ["tsx", scriptPath], {
     cwd: process.cwd(),
     stdio: "inherit",
     env: { ...process.env },
   });
+}
 
+export async function GET(request: NextRequest) {
+  if (!verifyAuth(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  runGenerator();
+  return NextResponse.json({ ok: true, message: "Generation started" });
+}
+
+export async function POST(request: NextRequest) {
+  if (!verifyAuth(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  runGenerator();
   return NextResponse.json({ ok: true, message: "Generation started" });
 }
