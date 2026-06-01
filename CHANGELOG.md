@@ -1,3 +1,10 @@
+## [1.6.3](https://github.com/ferdifir/kapster/compare/v1.6.2...v1.6.3) (2026-06-01)
+
+
+### Bug Fixes
+
+* fetch trend_analysis from DB before update ([1e13d78](https://github.com/ferdifir/kapster/commit/1e13d783e2dad25afb719b6282ff68f4161d0ac3))
+
 ## [1.6.2](https://github.com/ferdifir/kapster/compare/v1.6.1...v1.6.2) (2026-06-01)
 
 
