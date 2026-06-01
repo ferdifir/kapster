@@ -1,3 +1,10 @@
+## [1.6.2](https://github.com/ferdifir/kapster/compare/v1.6.1...v1.6.2) (2026-06-01)
+
+
+### Bug Fixes
+
+* rename to .tsx for JSX support ([03bd91c](https://github.com/ferdifir/kapster/commit/03bd91c76cd5fc072e0a2cb3a472f1fdd72e7fb1))
+
 ## [1.6.1](https://github.com/ferdifir/kapster/compare/v1.6.0...v1.6.1) (2026-06-01)
 
 
