@@ -1,3 +1,10 @@
+## [1.6.6](https://github.com/ferdifir/kapster/compare/v1.6.5...v1.6.6) (2026-06-01)
+
+
+### Bug Fixes
+
+* dynamic Google Fonts URL via CSS API ([9182d36](https://github.com/ferdifir/kapster/commit/9182d36b047b5be5c612b1a0662a002d98eec44c))
+
 ## [1.6.5](https://github.com/ferdifir/kapster/compare/v1.6.4...v1.6.5) (2026-06-01)
 
 
