@@ -1,3 +1,10 @@
+## [1.6.5](https://github.com/ferdifir/kapster/compare/v1.6.4...v1.6.5) (2026-06-01)
+
+
+### Bug Fixes
+
+* cast trend_analysis for TS strict JSON type ([1efe0d6](https://github.com/ferdifir/kapster/commit/1efe0d632678ee872fe9f59913facd5dfab8b552))
+
 ## [1.6.4](https://github.com/ferdifir/kapster/compare/v1.6.3...v1.6.4) (2026-06-01)
 
 
