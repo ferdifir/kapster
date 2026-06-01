@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/ferdifir/kapster/compare/v1.8.0...v1.9.0) (2026-06-01)
+
+
+### Features
+
+* save post_url via Telegram reply for social content analytics ([43dfb90](https://github.com/ferdifir/kapster/commit/43dfb90ea03947a86e8df2594c7e02e606aaf9a0))
+
 # [1.8.0](https://github.com/ferdifir/kapster/compare/v1.7.0...v1.8.0) (2026-06-01)
 
 
