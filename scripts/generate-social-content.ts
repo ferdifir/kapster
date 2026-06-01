@@ -246,13 +246,8 @@ Berikan output JSON SAJA:
 
       const { data: publicUrl } = supabase.storage.from("cover-images").getPublicUrl(fileName);
 
-      // Save image URL to DB
-      const { data: existingPost } = await supabase.from("social_posts").select("trend_analysis").eq("id", id).single();
-      await supabase.from("social_posts").update({
-        trend_analysis: {
-          ...(existingPost?.trend_analysis || {}),
-          image_url: publicUrl.publicUrl,
-        },
+      await (supabase.from("social_posts") as any).update({
+        trend_analysis: { image_url: publicUrl.publicUrl },
       }).eq("id", id);
 
       console.log(`[social-gen] Card image: ${publicUrl.publicUrl}`);
