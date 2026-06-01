@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/ferdifir/kapster/compare/v1.6.0...v1.6.1) (2026-06-01)
+
+
+### Bug Fixes
+
+* Buffer to Uint8Array for Blob type compatibility ([d5e22f0](https://github.com/ferdifir/kapster/commit/d5e22f0adc60b8262a4074e6672ed644ffa3ec89))
+
 # [1.6.0](https://github.com/ferdifir/kapster/compare/v1.5.0...v1.6.0) (2026-06-01)
 
 
