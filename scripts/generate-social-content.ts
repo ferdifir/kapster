@@ -265,7 +265,7 @@ Berikan output JSON SAJA:
   for (const { id, item } of savedPosts) {
     // Get image URL from DB
     const { data: post } = await supabase.from("social_posts").select("trend_analysis").eq("id", id).single();
-    const imageUrl = post?.trend_analysis?.image_url;
+    const imageUrl = (post?.trend_analysis as Record<string, unknown> | undefined)?.image_url as string | undefined;
 
     // Download image from storage
     let photoBuffer: Buffer | null = null;
