@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/ferdifir/kapster/compare/v1.5.0...v1.6.0) (2026-06-01)
+
+
+### Features
+
+* social card image via satori + resvg, Telegram photo, rate limiting ([edbd0ca](https://github.com/ferdifir/kapster/commit/edbd0ca0e7458f2f7267acec4fbbdd645eaa669e))
+
 # [1.5.0](https://github.com/ferdifir/kapster/compare/v1.4.0...v1.5.0) (2026-06-01)
 
 
