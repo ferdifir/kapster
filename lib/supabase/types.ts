@@ -723,6 +723,48 @@ export type Database = {
         }
         Relationships: []
       }
+      social_posts: {
+        Row: {
+          id: string
+          platform: "instagram" | "tiktok" | "both"
+          caption: string
+          topics: string[]
+          content_type: "educational" | "solution" | "social_proof"
+          trend_analysis: Json
+          status: "draft" | "sent_to_telegram" | "posted_ig" | "posted_tt"
+          telegram_msg_id: number | null
+          scheduled_date: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          platform: "instagram" | "tiktok" | "both"
+          caption: string
+          topics?: string[]
+          content_type: "educational" | "solution" | "social_proof"
+          trend_analysis?: Json
+          status?: "draft" | "sent_to_telegram" | "posted_ig" | "posted_tt"
+          telegram_msg_id?: number | null
+          scheduled_date?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          platform?: "instagram" | "tiktok" | "both"
+          caption?: string
+          topics?: string[]
+          content_type?: "educational" | "solution" | "social_proof"
+          trend_analysis?: Json
+          status?: "draft" | "sent_to_telegram" | "posted_ig" | "posted_tt"
+          telegram_msg_id?: number | null
+          scheduled_date?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
