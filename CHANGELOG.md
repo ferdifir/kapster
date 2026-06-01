@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/ferdifir/kapster/compare/v1.6.6...v1.7.0) (2026-06-01)
+
+
+### Features
+
+* redesigned card with scissors logo, link button, title+desc+CTA ([43de550](https://github.com/ferdifir/kapster/commit/43de55063fcb897cee6c01e56f39b5e553511484))
+
 ## [1.6.6](https://github.com/ferdifir/kapster/compare/v1.6.5...v1.6.6) (2026-06-01)
 
 
