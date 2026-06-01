@@ -1,3 +1,20 @@
+# [1.4.0](https://github.com/ferdifir/kapster/compare/v1.3.2...v1.4.0) (2026-06-01)
+
+
+### Bug Fixes
+
+* blog generator full end-to-end flow ([b3663f7](https://github.com/ferdifir/kapster/commit/b3663f79b7245c0d4efe48fd04b0d3f0e4854b33))
+* merge SEO metadata into article gen to reduce Groq API calls ([bf11502](https://github.com/ferdifir/kapster/commit/bf11502823322432f1bc3788743ee3d1cab335b6))
+
+
+### Features
+
+* add API route for social content cron trigger ([af9bbab](https://github.com/ferdifir/kapster/commit/af9bbabf615cea776f1116d0938a5254aec0b428))
+* add daily cron job for social content generation ([4d98a9d](https://github.com/ferdifir/kapster/commit/4d98a9dca118ea4e138446c4b8f133e4c269a9ff))
+* add social content generation script ([007127f](https://github.com/ferdifir/kapster/commit/007127f14c276077d7fee0f059da1a7a34020fbd))
+* add social_posts table for social media content generation ([ea486bc](https://github.com/ferdifir/kapster/commit/ea486bc01a4bb89d74295b3191d4b74284c1b88d))
+* blog UX improvements, anchor fixes, deploy path, Puter AI image gen ([fd299be](https://github.com/ferdifir/kapster/commit/fd299be06a101a99a54f4622d8e698cf4d27f438))
+
 ## [1.3.2](https://github.com/ferdifir/kapster/compare/v1.3.1...v1.3.2) (2026-05-31)
 
 
