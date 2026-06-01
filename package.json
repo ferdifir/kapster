@@ -16,6 +16,7 @@
     "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
+    "@heyputer/puter.js": "^2.5.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.4",
     "lucide-react": "^1.16.0",
