@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendTelegramNotification } from "@/lib/telegram";
+import { sendTelegramInlineKeyboard } from "@/lib/telegram";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
@@ -132,30 +132,18 @@ Berikan output JSON SAJA:
 
   console.log(`[social-gen] Generated ${contents.length} content items`);
 
-  // Phase 4: Send to Telegram
-  console.log("[social-gen] Phase 4: Telegram Delivery...");
-  const platformEmoji: Record<string, string> = { instagram: "📸", tiktok: "🎵", both: "📱" };
-  const platformLabel: Record<string, string> = { instagram: "IG", tiktok: "TikTok", both: "IG + TikTok" };
-  const pillarLabel: Record<string, string> = { educational: "Edukasi", solution: "Solusi", social_proof: "Bukti Sosial" };
-
-  for (const item of contents) {
-    const hashtagText = item.hashtags.map((h) => `#${h.replace(/^#/, "")}`).join(" ");
-    const message = `${platformEmoji[item.platform]} <b>${platformLabel[item.platform]}</b> | <b>${pillarLabel[item.content_type]}</b>
-─────────────────
-${item.caption}
-
-${hashtagText}
-─────────────────
-🔍 <b>Tren:</b> ${item.trend_insight}`;
-
-    await sendTelegramNotification(message);
-  }
-
-  // Phase 5: Save to DB
-  console.log("[social-gen] Phase 5: Saving to DB...");
+  // Phase 4: Save to DB first (get IDs for inline buttons)
+  console.log("[social-gen] Phase 4: Saving to DB...");
   const today = new Date().toISOString().split("T")[0];
+
+  interface SavedPost {
+    id: string;
+    item: SocialContentItem;
+  }
+  const savedPosts: SavedPost[] = [];
+
   for (const item of contents) {
-    const { error } = await supabase.from("social_posts").insert({
+    const { data, error } = await supabase.from("social_posts").insert({
       platform: item.platform,
       caption: item.caption,
       topics: [item.topic],
@@ -163,11 +151,47 @@ ${hashtagText}
       trend_analysis: { hook_type: item.hook_type, trend_insight: item.trend_insight, hashtags: item.hashtags },
       status: "sent_to_telegram",
       scheduled_date: today,
-    });
+    }).select("id").single();
+
     if (error) {
       console.error(`[social-gen] DB insert error for "${item.topic}":`, error);
     } else {
-      console.log(`[social-gen] Saved: "${item.topic}"`);
+      savedPosts.push({ id: data.id, item });
+      console.log(`[social-gen] Saved: "${item.topic}" (${data.id})`);
+    }
+  }
+
+  // Phase 5: Send to Telegram with inline buttons
+  console.log("[social-gen] Phase 5: Telegram Delivery...");
+  const platformEmoji: Record<string, string> = { instagram: "📸", tiktok: "🎵", both: "📱" };
+  const platformLabel: Record<string, string> = { instagram: "IG", tiktok: "TikTok", both: "IG + TikTok" };
+  const pillarLabel: Record<string, string> = { educational: "Edukasi", solution: "Solusi", social_proof: "Bukti Sosial" };
+
+  for (const { id, item } of savedPosts) {
+    const hashtagText = item.hashtags.map((h) => `#${h.replace(/^#/, "")}`).join(" ");
+    const message = `${platformEmoji[item.platform]} <b>${platformLabel[item.platform]}</b> | <b>${pillarLabel[item.content_type]}</b>
+─────────────────
+${item.caption}
+
+${hashtagText}
+─────────────────
+🔍 <b>Tren:</b> ${item.trend_insight}
+
+─────────────────
+⏳ Status: <b>sent_to_telegram</b>`;
+
+    const msgId = await sendTelegramInlineKeyboard(message, [
+      [
+        { text: "📸 Sudah di-post IG", callback_data: `social_post:${id}:posted_ig` },
+        { text: "🎵 Sudah di-post TT", callback_data: `social_post:${id}:posted_tt` },
+      ],
+      [
+        { text: "⏳ Kembali ke Draft", callback_data: `social_post:${id}:draft` },
+      ],
+    ]);
+
+    if (msgId) {
+      await supabase.from("social_posts").update({ telegram_msg_id: msgId }).eq("id", id);
     }
   }
 

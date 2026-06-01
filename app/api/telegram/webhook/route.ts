@@ -26,7 +26,6 @@ export async function POST(request: NextRequest) {
 
       if (action === "blog_post" && postId) {
         await updateBlogPostStatus(postId, "published");
-        // Fetch slug for cache revalidation
         const { data: post } = await createAdminClient().from("blog_posts").select("slug").eq("id", postId).single();
         revalidatePath("/blog");
         if (post) revalidatePath(`/blog/${post.slug}`);
@@ -45,6 +44,24 @@ export async function POST(request: NextRequest) {
           message.message_id,
           `❌ Artikel <b>${message.text?.split("\n")[0] || ""}</b> telah dibatalkan.`
         );
+      } else if (action === "social_post" && postId) {
+        const parts = data.split(":");
+        const newStatus = parts[2];
+        const validStatuses = ["posted_ig", "posted_tt", "draft"];
+        if (newStatus && validStatuses.includes(newStatus)) {
+          const { error } = await createAdminClient().from("social_posts").update({ status: newStatus }).eq("id", postId);
+          if (!error) {
+            const label = { posted_ig: "📸 IG", posted_tt: "🎵 TikTok", draft: "⏳ Draft" };
+            await answerTelegramCallback(callbackId, `✅ Status diubah ke ${label[newStatus as keyof typeof label] || newStatus}`);
+            await editTelegramMessage(
+              message.chat.id,
+              message.message_id,
+              `${message.text?.replace(/⏳ Status: .*$/, `✅ Status: <b>${label[newStatus as keyof typeof label] || newStatus}</b>`)}`
+            );
+          } else {
+            await answerTelegramCallback(callbackId, "❌ Gagal update status.");
+          }
+        }
       }
     }
 
