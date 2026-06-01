@@ -62,6 +62,44 @@ export async function answerTelegramCallback(
   }
 }
 
+export async function sendTelegramPhoto(
+  buffer: Buffer,
+  caption: string,
+  buttons?: InlineKeyboardButton[][],
+  parse_mode: "HTML" | "Markdown" = "HTML"
+): Promise<number | null> {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+    console.warn("Telegram not configured: missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID");
+    return null;
+  }
+
+  try {
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
+    const form = new FormData();
+    form.append("chat_id", TELEGRAM_CHAT_ID);
+    form.append("photo", new Blob([buffer], { type: "image/png" }), "card.png");
+    form.append("caption", caption);
+    form.append("parse_mode", parse_mode);
+    if (buttons) {
+      form.append("reply_markup", JSON.stringify({ inline_keyboard: buttons }));
+    }
+
+    const res = await fetch(url, { method: "POST", body: form });
+
+    if (!res.ok) {
+      const errorBody = await res.text().catch(() => "");
+      console.error("Telegram sendPhoto error:", errorBody);
+      return null;
+    }
+
+    const data = await res.json();
+    return data.result?.message_id ?? null;
+  } catch (err) {
+    console.error("Telegram sendPhoto failed:", err);
+    return null;
+  }
+}
+
 async function sendTelegramMessage(
   text: string,
   replyMarkup?: { inline_keyboard: InlineKeyboardButton[][] },

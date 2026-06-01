@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendTelegramInlineKeyboard } from "@/lib/telegram";
+import { sendTelegramInlineKeyboard, sendTelegramPhoto } from "@/lib/telegram";
+import { generateCardImage } from "./generate-card-image";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
@@ -13,6 +14,61 @@ interface SocialContentItem {
   hook_type: string;
   trend_insight: string;
   topic: string;
+}
+
+async function callGroq(prompt: string, temperature = 0.7, maxTokens = 4096) {
+  if (!GROQ_API_KEY) throw new Error("GROQ_API_KEY not set");
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await fetch(GROQ_API_URL, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: GROQ_MODEL,
+          messages: [
+            { role: "system", content: "Kamu adalah asisten konten Kapster untuk media sosial. Jawab dalam Bahasa Indonesia. Output informatif dan engaging." },
+            { role: "user", content: prompt },
+          ],
+          max_tokens: maxTokens,
+          temperature,
+        }),
+        signal: AbortSignal.timeout(120000),
+      });
+
+      if (res.status === 429) {
+        const retryAfter = parseInt(res.headers.get("Retry-After") || "30", 10);
+        const waitMs = retryAfter * 1000 + 5000;
+        console.log(`[social-gen] Rate limited, waiting ${waitMs / 1000}s...`);
+        await new Promise((r) => setTimeout(r, waitMs));
+        continue;
+      }
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        throw new Error(`Groq API error ${res.status}: ${errText}`);
+      }
+
+      const data = await res.json();
+      return data.choices?.[0]?.message?.content ?? "";
+    } catch (err) {
+      if (attempt === 3) throw err;
+      console.log(`[social-gen] Attempt ${attempt} failed, retrying in 10s...`);
+      await new Promise((r) => setTimeout(r, 10000));
+    }
+  }
+  throw new Error("Max retries exceeded");
+}
+
+function extractHook(caption: string): string {
+  const sentences = caption.match(/[^.!?]+[.!?]+/g);
+  if (!sentences) return caption.slice(0, 120);
+  // Take first 1-2 sentences as hook (max ~200 chars)
+  let hook = "";
+  for (const s of sentences) {
+    if ((hook + s).length > 200) break;
+    hook += s;
+  }
+  return hook.trim() || sentences[0].trim();
 }
 
 async function main() {
@@ -132,7 +188,7 @@ Berikan output JSON SAJA:
 
   console.log(`[social-gen] Generated ${contents.length} content items`);
 
-  // Phase 4: Save to DB first (get IDs for inline buttons)
+  // Phase 4: Save to DB first (get IDs)
   console.log("[social-gen] Phase 4: Saving to DB...");
   const today = new Date().toISOString().split("T")[0];
 
@@ -161,15 +217,75 @@ Berikan output JSON SAJA:
     }
   }
 
-  // Phase 5: Send to Telegram with inline buttons
-  console.log("[social-gen] Phase 5: Telegram Delivery...");
-  const platformEmoji: Record<string, string> = { instagram: "📸", tiktok: "🎵", both: "📱" };
-  const platformLabel: Record<string, string> = { instagram: "IG", tiktok: "TikTok", both: "IG + TikTok" };
-  const pillarLabel: Record<string, string> = { educational: "Edukasi", solution: "Solusi", social_proof: "Bukti Sosial" };
+  // Phase 5: Generate card images via satori + resvg
+  console.log("[social-gen] Phase 5: Generating card images...");
+  const platformLabel: Record<string, string> = { instagram: "IG", tiktok: "TT", both: "IG+TT" };
+  const pillarLabel: Record<string, string> = { educational: "Edukasi", solution: "Solusi", social_proof: "Bukti" };
 
   for (const { id, item } of savedPosts) {
+    try {
+      const hook = extractHook(item.caption);
+      const pngBuffer = await generateCardImage({
+        platform: platformLabel[item.platform],
+        pillar: pillarLabel[item.content_type],
+        hook: hook,
+        body: item.caption,
+        topic: item.topic,
+      });
+
+      // Upload to Supabase Storage
+      const fileName = `social/${id}/card.png`;
+      const { error: uploadError } = await supabase.storage
+        .from("cover-images")
+        .upload(fileName, pngBuffer, { contentType: "image/png", upsert: true });
+
+      if (uploadError) {
+        console.error(`[social-gen] Upload failed for "${item.topic}":`, uploadError);
+        continue;
+      }
+
+      const { data: publicUrl } = supabase.storage.from("cover-images").getPublicUrl(fileName);
+
+      // Save image URL to DB
+      await supabase.from("social_posts").update({
+        trend_analysis: {
+          ...item.trend_analysis,
+          image_url: publicUrl.publicUrl,
+        },
+      }).eq("id", id);
+
+      console.log(`[social-gen] Card image: ${publicUrl.publicUrl}`);
+    } catch (err) {
+      console.error(`[social-gen] Card image generation failed for "${item.topic}":`, err);
+    }
+  }
+
+  // Phase 6: Send to Telegram (photo + text with buttons)
+  console.log("[social-gen] Phase 6: Telegram Delivery...");
+  const platformEmoji: Record<string, string> = { instagram: "📸", tiktok: "🎵", both: "📱" };
+  const platformLabelFull: Record<string, string> = { instagram: "IG", tiktok: "TikTok", both: "IG + TikTok" };
+  const pillarLabelFull: Record<string, string> = { educational: "Edukasi", solution: "Solusi", social_proof: "Bukti Sosial" };
+
+  for (const { id, item } of savedPosts) {
+    // Get image URL from DB
+    const { data: post } = await supabase.from("social_posts").select("trend_analysis").eq("id", id).single();
+    const imageUrl = post?.trend_analysis?.image_url;
+
+    // Download image from storage
+    let photoBuffer: Buffer | null = null;
+    if (imageUrl) {
+      try {
+        const imgRes = await fetch(imageUrl);
+        if (imgRes.ok) {
+          photoBuffer = Buffer.from(await imgRes.arrayBuffer());
+        }
+      } catch {
+        console.warn(`[social-gen] Failed to download image for "${item.topic}"`);
+      }
+    }
+
     const hashtagText = item.hashtags.map((h) => `#${h.replace(/^#/, "")}`).join(" ");
-    const message = `${platformEmoji[item.platform]} <b>${platformLabel[item.platform]}</b> | <b>${pillarLabel[item.content_type]}</b>
+    const fullText = `${platformEmoji[item.platform]} <b>${platformLabelFull[item.platform]}</b> | <b>${pillarLabelFull[item.content_type]}</b>
 ─────────────────
 ${item.caption}
 
@@ -180,46 +296,57 @@ ${hashtagText}
 ─────────────────
 ⏳ Status: <b>sent_to_telegram</b>`;
 
-    const msgId = await sendTelegramInlineKeyboard(message, [
-      [
-        { text: "📸 Sudah di-post IG", callback_data: `social_post:${id}:posted_ig` },
-        { text: "🎵 Sudah di-post TT", callback_data: `social_post:${id}:posted_tt` },
-      ],
-      [
-        { text: "⏳ Kembali ke Draft", callback_data: `social_post:${id}:draft` },
-      ],
-    ]);
+    if (photoBuffer) {
+      // Send photo with caption + buttons
+      const photoCaption = `${platformEmoji[item.platform]} <b>${platformLabelFull[item.platform]}</b> • <b>${pillarLabelFull[item.content_type]}</b>
+  
+${item.caption.length > 800 ? item.caption.slice(0, 800).replace(/\s+\S*$/, "") + "…\n\n📝 <i>Lanjutan caption di bawah</i>" : item.caption}`;
 
-    if (msgId) {
-      await supabase.from("social_posts").update({ telegram_msg_id: msgId }).eq("id", id);
+      const msgId = await sendTelegramPhoto(photoBuffer, photoCaption, [
+        [
+          { text: "📸 Sudah di-post IG", callback_data: `social_post:${id}:posted_ig` },
+          { text: "🎵 Sudah di-post TT", callback_data: `social_post:${id}:posted_tt` },
+        ],
+        [
+          { text: "⏳ Kembali ke Draft", callback_data: `social_post:${id}:draft` },
+        ],
+      ]);
+
+      if (msgId) {
+        await supabase.from("social_posts").update({ telegram_msg_id: msgId }).eq("id", id);
+      }
+
+      // If caption was truncated, send full text as follow-up
+      if (item.caption.length > 800) {
+        await sendTelegramInlineKeyboard(fullText, [
+          [
+            { text: "📸 Sudah di-post IG", callback_data: `social_post:${id}:posted_ig` },
+            { text: "🎵 Sudah di-post TT", callback_data: `social_post:${id}:posted_tt` },
+          ],
+          [
+            { text: "⏳ Kembali ke Draft", callback_data: `social_post:${id}:draft` },
+          ],
+        ]);
+      }
+    } else {
+      // Fallback: send text only (no image)
+      const msgId = await sendTelegramInlineKeyboard(fullText, [
+        [
+          { text: "📸 Sudah di-post IG", callback_data: `social_post:${id}:posted_ig` },
+          { text: "🎵 Sudah di-post TT", callback_data: `social_post:${id}:posted_tt` },
+        ],
+        [
+          { text: "⏳ Kembali ke Draft", callback_data: `social_post:${id}:draft` },
+        ],
+      ]);
+
+      if (msgId) {
+        await supabase.from("social_posts").update({ telegram_msg_id: msgId }).eq("id", id);
+      }
     }
   }
 
   console.log("[social-gen] Done!");
-}
-
-async function callGroq(prompt: string, temperature = 0.7, maxTokens = 4096) {
-  if (!GROQ_API_KEY) throw new Error("GROQ_API_KEY not set");
-  const res = await fetch(GROQ_API_URL, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: GROQ_MODEL,
-      messages: [
-        { role: "system", content: "Kamu adalah asisten konten Kapster untuk media sosial. Jawab dalam Bahasa Indonesia. Output informatif dan engaging." },
-        { role: "user", content: prompt },
-      ],
-      max_tokens: maxTokens,
-      temperature,
-    }),
-    signal: AbortSignal.timeout(120000),
-  });
-  if (!res.ok) {
-    const errText = await res.text().catch(() => "");
-    throw new Error(`Groq API error ${res.status}: ${errText}`);
-  }
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content ?? "";
 }
 
 main().catch((err) => {
