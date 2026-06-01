@@ -1,9 +1,9 @@
 #!/bin/bash
 
-echo "🚀 Deploying Queuebarber..."
+echo "🚀 Deploying Kapster..."
 
 ssh root@109.111.53.58 -p 38954 << 'EOF'
-  cd /var/www/queuebarber || exit 1
+  cd /var/www/kapster || exit 1
   echo "📥 Pulling latest code..."
   git pull
   echo "📦 Installing dependencies..."

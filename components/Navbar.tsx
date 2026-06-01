@@ -15,10 +15,10 @@ export default function Navbar() {
   }, []);
 
   const links = [
-    { href: "#fitur", label: "Fitur" },
-    { href: "#cara-kerja", label: "Cara Kerja" },
-    { href: "#harga", label: "Harga" },
-    { href: "#testimoni", label: "Testimoni" },
+    { href: "/#fitur", label: "Fitur" },
+    { href: "/#cara-kerja", label: "Cara Kerja" },
+    { href: "/#harga", label: "Harga" },
+    { href: "/#testimoni", label: "Testimoni" },
   ];
 
   return (

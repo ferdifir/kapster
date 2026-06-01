@@ -13,6 +13,7 @@ const __dirname = path.dirname(__filename);
 const MCP_SERVER_PATH = path.resolve(__dirname, "../mcp-servers/content-researcher/dist/index.js");
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const PUTER_AUTH_TOKEN = process.env.PUTER_AUTH_TOKEN;
 
 interface SearchResult {
   title: string;
@@ -88,23 +89,41 @@ Beri output JSON SAJA (tanpa markdown formatting):
 
   // Phase 3: Content Generation + SEO Metadata (merged to save API calls)
   console.log("[blog-gen] Phase 3: Generating article...");
-  const contentPrompt = `Kamu adalah penulis konten ahli untuk blog kapster.my.id.
+  const contentPrompt = `Kamu adalah penulis konten ahli untuk blog kapster.my.id — platform manajemen antrian digital untuk barbershop Indonesia.
 
 TUGAS: Tulis artikel BLOG SANGAT MENDALAM (3000-5000 kata) dalam Bahasa Indonesia.
 
 Judul: "${topicData.title}"
 
 Target pembaca: pemilik barbershop, barberman, dan pecinta barber di Indonesia.
-Gaya: informatif, otoritatif, ramah.
+Gaya: informatif, otoritatif, ramah, mengalir alami seperti tulisan majalah — BUKAN kaku seperti buku teks.
 
-STRUKTUR:
-1. Judul H1
-2. Pendahuluan (200-300 kata)
-3. 5-7 sub-bab H2 (masing-masing 400-700 kata dengan data, tips, contoh konkret)
-4. Kesimpulan (150-200 kata)
-5. CTA ke Kapster di akhir: "Kalau kamu ingin fokus mengembangkan bisnis barbershop tanpa pusing urus antrian, coba deh pakai Kapster. Sistem antrian digital yang bikin pelanggan puas dan operasional makin rapi. Cuma Rp10.000/bulan. Mulai gratis di ${SITE_URL}!"
+PANDUAN STRUKTUR & FORMAT (WAJIB):
+1. JANGAN gunakan <h1> — langsung mulai dengan pendahuluan (<p>)
+2. Gunakan <h2> untuk sub-bab utama (5-7 sub-bab)
+3. Gunakan <h3> untuk sub-topik di dalam sub-bab (minimal 2-3 artikel)
+4. Pendahuluan (200-300 kata) yang engaging — bisa pakai hook, pertanyaan retoris, atau data menarik
+5. Setiap sub-bab 400-700 kata dengan data, tips, contoh konkret
+6. Kesimpulan (150-200 kata)
+7. CTA ke Kapster di akhir: <p>Kalau kamu ingin fokus mengembangkan bisnis barbershop tanpa pusing urus antrian, coba deh pakai Kapster. Sistem antrian digital yang bikin pelanggan puas dan operasional makin rapi. Cuma Rp10.000/bulan. Mulai gratis di ${SITE_URL}!</p>
 
-FORMAT: HTML murni (tanpa html/body/head). Gunakan <h2>, <h3>, <p>, <ul>, <ol>, <strong>, <em>, <blockquote>. JANGAN markdown.
+ATURAN FORMAT KONTEN (WAJIB):
+- JANGAN gunakan pola berulang (h2→p→ul→p) di setiap section. Variasikan struktur setiap sub-bab.
+- Gunakan <strong> untuk kata kunci atau poin penting (minimal 5 kali)
+- Gunakan <em> untuk penekanan atau istilah asing (minimal 3 kali)
+- Gunakan <blockquote> untuk quotes, studi kasus, atau data penting (minimal 1 kali)
+- Gunakan tabel <table><thead><tbody> untuk perbandingan, data, atau daftar fitur (jika relevan)
+- Gunakan <ul> dan <ol> untuk daftar, tips, dan langkah-langkah
+- Bervariasi: ada yang dimulai dengan kutipan, ada yang dengan data statistik, ada yang dengan analogi
+- Jika relevan, tambahkan tautan internal: <a href="${SITE_URL}/blog">Blog Kapster</a>
+
+CONTOH VARIASI POLA (bukan harus persis, tapi sebagai inspirasi):
+- <h2> → <blockquote> → <p> → <p> → <ul>
+- <h2> → <p> → <h3> → <p> → <h3> → <p> → <ul>
+- <h2> → <p> → <table> → <p>
+- <h2> → <p> → <strong> → <p> → <blockquote>
+
+FORMAT OUTPUT: HTML murni (tanpa html/body/head). Hanya tag yang disebutkan di atas. JANGAN markdown.
 
 SETELAH artikel, di baris terakhir beri metadata JSON:
 ---METADATA
@@ -168,8 +187,36 @@ SETELAH artikel, di baris terakhir beri metadata JSON:
 
   console.log(`[blog-gen] Draft saved: /blog/${slug} (id: ${draft.id})`);
 
-  // Phase 5: Telegram Notification
-  console.log("[blog-gen] Phase 5: Telegram...");
+  // Phase 5: Generate Image
+  console.log("[blog-gen] Phase 5: Image generation...");
+  let ogImageUrl = "";
+  if (PUTER_AUTH_TOKEN) {
+    try {
+      const { init } = await import("@heyputer/puter.js/src/init.cjs");
+      const puter = init(PUTER_AUTH_TOKEN);
+      const imgPrompt = `Professional blog thumbnail for "barbershop" industry in Indonesia. Topic: "${topicData.title}". Clean flat-design illustration style with warm gold and dark navy color scheme. A modern barbershop scene with barber tools (scissors, comb, razor) and digital elements subtly integrated. Professional Indonesian barber atmosphere. No text overlay. No people faces. Minimalist composition with strong focal point. Warm lighting, premium feel. Suitable for social media sharing card.`;
+      const img = await puter.ai.txt2img(imgPrompt, { model: "gpt-image-1-mini", quality: "medium" });
+      const base64Data = img.src.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(base64Data, "base64");
+      const fileName = `blog/${draft.id}/${slug}.png`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("cover-images")
+        .upload(fileName, buffer, { contentType: "image/png", upsert: true });
+      if (!uploadError && uploadData) {
+        const { data: publicUrl } = supabase.storage.from("cover-images").getPublicUrl(fileName);
+        ogImageUrl = publicUrl.publicUrl;
+        await supabase.from("blog_posts").update({ og_image_url: ogImageUrl }).eq("id", draft.id);
+        console.log(`[blog-gen] Image: ${ogImageUrl}`);
+      } else {
+        console.error("[blog-gen] Upload failed:", uploadError);
+      }
+    } catch (err) {
+      console.error("[blog-gen] Image generation failed:", err);
+    }
+  }
+
+  // Phase 6: Telegram Notification
+  console.log("[blog-gen] Phase 6: Telegram...");
   const previewText = `<b>${topicData.title}</b>
 
 📝 ${seoData.excerpt.slice(0, 300)}

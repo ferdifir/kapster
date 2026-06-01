@@ -2,8 +2,8 @@ import Logo from "./Logo";
 
 const footerLinks = {
   Produk: [
-    { label: "Fitur", href: "#fitur" },
-    { label: "Harga", href: "#harga" },
+    { label: "Fitur", href: "/#fitur" },
+    { label: "Harga", href: "/#harga" },
     { label: "Tentang", href: "/about" },
   ],
   Dukungan: [
