@@ -9,6 +9,7 @@ const FONT_CACHE = "/tmp/kapster-inter-font.woff2";
 interface CardData {
   platform: string;
   pillar: string;
+  handle: string;
   title: string;
   description: string;
   topic: string;
@@ -140,7 +141,7 @@ export async function generateCardImage(data: CardData): Promise<Buffer> {
           </span>
         </div>
 
-        {/* Badge */}
+        {/* Social handle */}
         <div
           style={{
             display: "flex",
@@ -156,9 +157,7 @@ export async function generateCardImage(data: CardData): Promise<Buffer> {
           }}
         >
           <span>{platEmoji}</span>
-          <span>{platLabel}</span>
-          <span style={{ opacity: 0.4, padding: "0 4px" }}>•</span>
-          <span>{pillarLabel}</span>
+          <span>@{data.handle}</span>
         </div>
       </div>
 

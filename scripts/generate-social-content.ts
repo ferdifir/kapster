@@ -221,9 +221,15 @@ Berikan output JSON SAJA:
   console.log("[social-gen] Phase 5: Generating card images...");
   const platformLabel: Record<string, string> = { instagram: "IG", tiktok: "TT", both: "IG+TT" };
   const pillarLabel: Record<string, string> = { educational: "Edukasi", solution: "Solusi", social_proof: "Bukti" };
+  const igUser = process.env.SOCIAL_IG_USERNAME || "kapster.myid";
+  const ttUser = process.env.SOCIAL_TT_USERNAME || "kapster.my.id";
+  const socialHandle: Record<string, string> = {
+    instagram: igUser,
+    tiktok: ttUser,
+    both: `${igUser} & ${ttUser}`,
+  };
 
   function extractDescription(caption: string): string {
-    // Remove the hook (first sentence), then take the first sentence of the body
     const sentences = caption.match(/[^.!?]+[.!?]+/g);
     if (!sentences || sentences.length < 2) return "Simak selengkapnya di caption!";
     const bodySentence = sentences.length > 2 ? sentences[2] : sentences[1];
@@ -237,6 +243,7 @@ Berikan output JSON SAJA:
       const pngBuffer = await generateCardImage({
         platform: platformLabel[item.platform],
         pillar: pillarLabel[item.content_type],
+        handle: socialHandle[item.platform],
         title: hook,
         description,
         topic: item.topic,
