@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/ferdifir/kapster/compare/v1.4.0...v1.5.0) (2026-06-01)
+
+
+### Features
+
+* add Telegram inline buttons for social post status tracking ([7d679fd](https://github.com/ferdifir/kapster/commit/7d679fda0ffc7d8be509382faea666d96342c7ed))
+
 # [1.4.0](https://github.com/ferdifir/kapster/compare/v1.3.2...v1.4.0) (2026-06-01)
 
 
