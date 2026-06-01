@@ -1,3 +1,10 @@
+## [1.6.4](https://github.com/ferdifir/kapster/compare/v1.6.3...v1.6.4) (2026-06-01)
+
+
+### Bug Fixes
+
+* ts-expect-error for JSONB update ([9a8d24b](https://github.com/ferdifir/kapster/commit/9a8d24b3cfddb35d79d5aed730180c60ff8b232f))
+
 ## [1.6.3](https://github.com/ferdifir/kapster/compare/v1.6.2...v1.6.3) (2026-06-01)
 
 
