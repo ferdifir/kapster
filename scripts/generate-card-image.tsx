@@ -5,7 +5,7 @@ import * as path from "path";
 
 const CARD_W = 1080;
 const CARD_H = 1080;
-const FONT_CACHE = "/tmp/kapster-inter-font.woff";
+const FONT_CACHE = "/tmp/kapster-inter-font.woff2";
 
 interface CardData {
   platform: string;
@@ -44,11 +44,19 @@ async function getFontData(): Promise<Buffer> {
     return fs.readFileSync(FONT_CACHE);
   }
 
-  const url =
-    "https://fonts.gstatic.com/s/inter/v18/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7W0Q5n-wU.woff";
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Font download failed: ${res.status}`);
-  const buffer = Buffer.from(await res.arrayBuffer());
+  // Fetch Google Fonts CSS to get the actual woff2 URL
+  const cssUrl = "https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap";
+  const cssRes = await fetch(cssUrl, { headers: { "User-Agent": "Mozilla/5.0" } });
+  if (!cssRes.ok) throw new Error(`Font CSS failed: ${cssRes.status}`);
+  const css = await cssRes.text();
+
+  // Parse the first woff2 URL from the CSS
+  const match = css.match(/url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)/);
+  if (!match) throw new Error("Could not find font URL in CSS");
+
+  const fontRes = await fetch(match[1]);
+  if (!fontRes.ok) throw new Error(`Font download failed: ${fontRes.status}`);
+  const buffer = Buffer.from(await fontRes.arrayBuffer());
   fs.writeFileSync(FONT_CACHE, buffer);
   console.log(`[card-image] Font cached: ${FONT_CACHE}`);
   return buffer;
