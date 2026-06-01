@@ -222,14 +222,23 @@ Berikan output JSON SAJA:
   const platformLabel: Record<string, string> = { instagram: "IG", tiktok: "TT", both: "IG+TT" };
   const pillarLabel: Record<string, string> = { educational: "Edukasi", solution: "Solusi", social_proof: "Bukti" };
 
+  function extractDescription(caption: string): string {
+    // Remove the hook (first sentence), then take the first sentence of the body
+    const sentences = caption.match(/[^.!?]+[.!?]+/g);
+    if (!sentences || sentences.length < 2) return "Simak selengkapnya di caption!";
+    const bodySentence = sentences.length > 2 ? sentences[2] : sentences[1];
+    return bodySentence.trim().slice(0, 200);
+  }
+
   for (const { id, item } of savedPosts) {
     try {
       const hook = extractHook(item.caption);
+      const description = extractDescription(item.caption);
       const pngBuffer = await generateCardImage({
         platform: platformLabel[item.platform],
         pillar: pillarLabel[item.content_type],
-        hook: hook,
-        body: item.caption,
+        title: hook,
+        description,
         topic: item.topic,
       });
 
