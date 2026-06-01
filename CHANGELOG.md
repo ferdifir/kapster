@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/ferdifir/kapster/compare/v1.7.0...v1.8.0) (2026-06-01)
+
+
+### Features
+
+* show social media username instead of pillar badge in card ([1cc0ad0](https://github.com/ferdifir/kapster/commit/1cc0ad0974ea2f89c4481a421541199c18e30106))
+
 # [1.7.0](https://github.com/ferdifir/kapster/compare/v1.6.6...v1.7.0) (2026-06-01)
 
 
