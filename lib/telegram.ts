@@ -77,7 +77,7 @@ export async function sendTelegramPhoto(
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
     const form = new FormData();
     form.append("chat_id", TELEGRAM_CHAT_ID);
-    form.append("photo", new Blob([buffer], { type: "image/png" }), "card.png");
+    form.append("photo", new Blob([new Uint8Array(buffer)], { type: "image/png" }), "card.png");
     form.append("caption", caption);
     form.append("parse_mode", parse_mode);
     if (buttons) {
