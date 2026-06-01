@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { updateBlogPostStatus } from "@/lib/blog";
-import { answerTelegramCallback, editTelegramMessage } from "@/lib/telegram";
+import { answerTelegramCallback, editTelegramMessage, sendTelegramMessage } from "@/lib/telegram";
 import { revalidatePath } from "next/cache";
 
 function verifyTelegramRequest(request: NextRequest): boolean {
@@ -52,16 +52,33 @@ export async function POST(request: NextRequest) {
           const { error } = await createAdminClient().from("social_posts").update({ status: newStatus }).eq("id", postId);
           if (!error) {
             const label = { posted_ig: "📸 IG", posted_tt: "🎵 TikTok", draft: "⏳ Draft" };
+            const platformHint = newStatus === "posted_ig" ? "Instagram" : newStatus === "posted_tt" ? "TikTok" : "";
             await answerTelegramCallback(callbackId, `✅ Status diubah ke ${label[newStatus as keyof typeof label] || newStatus}`);
+            const linkRequest = newStatus !== "draft" ? `\n📎 Reply pesan ini dengan link ${platformHint}-nya buat analisa performa` : "";
             await editTelegramMessage(
               message.chat.id,
               message.message_id,
-              `${message.text?.replace(/⏳ Status: .*$/, `✅ Status: <b>${label[newStatus as keyof typeof label] || newStatus}</b>`)}`
+              `${message.text?.replace(/⏳ Status: .*$/, `✅ Status: <b>${label[newStatus as keyof typeof label] || newStatus}</b>`)}${linkRequest}`
             );
           } else {
             await answerTelegramCallback(callbackId, "❌ Gagal update status.");
           }
         }
+      }
+    }
+
+    if (body.message?.text && body.message?.reply_to_message) {
+      const repliedMsgId = body.message.reply_to_message.message_id;
+      const { data: post, error } = await createAdminClient()
+        .from("social_posts")
+        .update({ post_url: body.message.text })
+        .eq("telegram_msg_id", repliedMsgId)
+        .is("post_url", null)
+        .select("id")
+        .single();
+
+      if (!error && post) {
+        await sendTelegramMessage("✅ Link tersimpan! Bisa dipake buat analisa performa.");
       }
     }
 

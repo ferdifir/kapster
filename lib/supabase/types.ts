@@ -733,6 +733,7 @@ export type Database = {
           trend_analysis: Json
           status: "draft" | "sent_to_telegram" | "posted_ig" | "posted_tt"
           telegram_msg_id: number | null
+          post_url: string | null
           scheduled_date: string
           created_at: string
           updated_at: string
@@ -746,6 +747,7 @@ export type Database = {
           trend_analysis?: Json
           status?: "draft" | "sent_to_telegram" | "posted_ig" | "posted_tt"
           telegram_msg_id?: number | null
+          post_url?: string | null
           scheduled_date?: string
           created_at?: string
           updated_at?: string
@@ -759,6 +761,7 @@ export type Database = {
           trend_analysis?: Json
           status?: "draft" | "sent_to_telegram" | "posted_ig" | "posted_tt"
           telegram_msg_id?: number | null
+          post_url?: string | null
           scheduled_date?: string
           created_at?: string
           updated_at?: string

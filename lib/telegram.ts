@@ -100,7 +100,7 @@ export async function sendTelegramPhoto(
   }
 }
 
-async function sendTelegramMessage(
+export async function sendTelegramMessage(
   text: string,
   replyMarkup?: { inline_keyboard: InlineKeyboardButton[][] },
   parse_mode: "HTML" | "Markdown" = "HTML"
