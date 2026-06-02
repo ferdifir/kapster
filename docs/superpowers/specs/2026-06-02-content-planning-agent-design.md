@@ -71,7 +71,7 @@ Add column `content_plan_id` → FK to `content_plans.id`.
 
 ## Agent Riset
 
-- **Trigger**: Cron 1x/hari (via `/api/cron/generate-social-content`)
+- **Trigger**: Cron 1x/hari (via `/api/cron/research` — endpoint baru)
 - **Input**: Trend-Pulse data mentah (Google Trends, News, Reddit, Wikipedia)
 - **LLM**: Groq llama-3.3-70b-versatile
 - **Prompt**: Benar-benar analisis data, bukan template. Output bebas (narasi,
@@ -132,11 +132,69 @@ Dua cron endpoint terpisah:
 - `app/api/cron/research/route.ts` — baru, panggil `--mode=research`
 - `app/api/telegram/webhook/route.ts` — `/konten` tetap panggil `--mode=generate` dengan topic user
 
-## Success Criteria
+## Success Criteria (Measurable & Trackable)
 
-1. Agent riset bisa jalan sendiri via cron tanpa generate konten
-2. Agent konten bisa baca `content_plans` dan eksekusi pending brief
-3. Manual `/konten ig` tetap jalan tanpa perlu cron riset
-4. Setelah 5 hari: topik yang dihasilkan minimal 4 angle berbeda
-   (tidak semua "optimalkan X")
-5. QA score rata-rata >= 4
+Semua metrics disimpan di tabel baru `content_metrics` dan bisa dicek via query
+kapan saja.
+
+### Tabel baru: `content_metrics`
+
+```sql
+create table content_metrics (
+  id           uuid default gen_random_uuid() primary key,
+  metric_date  date not null default current_date,
+  metric_name  text not null,        -- kode metric (lihat bawah)
+  metric_value numeric not null,
+  metadata     jsonb default '{}',   -- detail tambahan
+  created_at   timestamptz default now(),
+  unique(metric_date, metric_name)
+);
+```
+
+### Metric yang dicatat setiap hari (oleh cron atau di script generate):
+
+| Kode | Metric | Cara Ukur | Target |
+|------|--------|-----------|--------|
+| `plans_created` | Jumlah `content_plans` dibuat hari ini | COUNT `content_plans` WHERE created_at = today | >= 1 |
+| `plans_used` | Jumlah `content_plans` dipakai hari ini | COUNT WHERE used_at = today | >= 1 |
+| `plans_age_hours` | Rata-rata umur pending plan sebelum dipakai | AVG(used_at - created_at) dalam jam | <= 48 |
+| `posts_created` | Jumlah `social_posts` dibuat hari ini | COUNT `social_posts` WHERE created_at = today | >= 1 |
+| `qa_avg_score` | Rata-rata QA score hari ini | AVG dari hasil reviewContent() | >= 4 |
+| `qa_regen_rate` | Persentase konten yang perlu regenerasi | COUNT(skor<4) / COUNT(total) | <= 25% |
+| `qa_fallback_rate` | Persentase QA yang fallback ke Groq | COUNT(fallback) / COUNT(total) | <= 10% |
+| `bigram_dedup_hit` | Jumlah konten kena dedup (false positive?) | COUNT dari log dedup | <= 1 |
+| `unique_content_phrases` | Jumlah bigram unik NON-COMMON_WORDS dari semua konten 7 hari terakhir | Distinct bigrams dari `social_posts.topics` | Naik tiap minggu |
+| `template_ratio` | Persentase topik mengandung kata "optimalkan/maksimalkan" | LIKE query | <= 20% |
+
+### Verifikasi
+
+Setiap akhir minggu, jalankan query:
+```sql
+-- Cek template_ratio
+SELECT COUNT(*) FILTER (
+  WHERE topics::text ILIKE '%optimalkan%' OR topics::text ILIKE '%maksimalkan%'
+) * 100.0 / NULLIF(COUNT(*), 0) as template_pct
+FROM social_posts
+WHERE created_at >= now() - interval '7 days';
+
+-- Cek unique bigrams diversity
+SELECT COUNT(DISTINCT unnest) as unique_phrases FROM social_posts,
+  LATERAL (
+    SELECT regexp_split_to_table(lower(regexp_replace(topics::text, '[^a-z0-9 ]', '', 'g')), ' ')
+  ) words(word)
+WHERE word != '' AND word NOT IN ('barbershop','digital','manajemen','antrian','kapster','tips','cara','dengan','yang','untuk','dari','ini','agar','biar','saat','tanpa','lebih','bikin','bisa','supaya','indonesia','online','bisnis','meningkatkan','pendapatan','teknologi','waktu','mengoptimalkan','pengelolaan','mengelola','membantu','memaksimalkan')
+AND char_length(word) > 3;
+```
+
+### Accountability
+
+Semua metric di atas disimpan di database. CEO (kamu) bisa cek kapan saja via:
+- Query langsung ke Supabase
+- Dashboard (jika ada nanti)
+- Report mingguan
+
+Kalau `template_ratio > 20%` atau `qa_avg_score < 4` selama 3 hari berturut-turut,
+sistem WAJIB:
+1. Log peringatan ke file
+2. Kirim notifikasi ke Telegram admin
+3. (FUTURE) Trigger auto-retrain prompt
