@@ -1,3 +1,23 @@
+# [1.13.0](https://github.com/ferdifir/kapster/compare/v1.12.0...v1.13.0) (2026-06-02)
+
+
+### Bug Fixes
+
+* add missing execFile import ([47a1adf](https://github.com/ferdifir/kapster/commit/47a1adfa2e8e63aba4ec0318617e6311213e2663))
+* change contents from const to let for dedup filter ([39f64cf](https://github.com/ferdifir/kapster/commit/39f64cf7da38baa6664c321460c5c6c7b201ee80))
+* dedup filter out common barbershop words, require 2 unique matches ([b62be28](https://github.com/ferdifir/kapster/commit/b62be28e7d0da2fd00a798116e082e9e59391a53))
+* fallback QA to Groq if Ollama fails ([248c394](https://github.com/ferdifir/kapster/commit/248c394c31c37b155da3acf8512cf9b9a68ec8eb))
+* ollama ToolCall type cast ([09b9cb2](https://github.com/ferdifir/kapster/commit/09b9cb21a67996260974fe8e8fecc1476c033798))
+* replace Ollama QA with OpenRouter (gpt-oss-120b:free) ([7a7b0dc](https://github.com/ferdifir/kapster/commit/7a7b0dcf2a52eac2ae90c174348ce64421be45a5))
+* use bigram overlap for dedup — req 1 unique 2-word phrase match ([eb6d96c](https://github.com/ferdifir/kapster/commit/eb6d96cd8eca389bb7f09541f8cfcd432e3eedb7))
+
+
+### Features
+
+* dedup layer 3 — skip save if topic >50% word overlap with 14d history ([2eeeb5f](https://github.com/ferdifir/kapster/commit/2eeeb5f8b78fb5a328d5d4d9efbac9af010289da))
+* dedup topics — fetch recent posts, prompt LLM to avoid repeats ([11ae1df](https://github.com/ferdifir/kapster/commit/11ae1df5593bfde8e9d574c43b15586e214e7514))
+* trend-pulse real-time trend research + llm curation ([6cd61bf](https://github.com/ferdifir/kapster/commit/6cd61bf1b68f694f40513e429ace4d9a4d22b953))
+
 # [1.12.0](https://github.com/ferdifir/kapster/compare/v1.11.0...v1.12.0) (2026-06-02)
 
 
