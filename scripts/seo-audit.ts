@@ -44,6 +44,10 @@ async function main() {
   // Phase 3: Scoring
   console.log("[seo-audit] Phase 3: Scoring...");
   const scores = audits.map(calcScore);
+  if (scores.length === 0) {
+    console.warn("[seo-audit] No URLs audited, skipping.");
+    return;
+  }
   const aggregateScore = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
   const issuesCount = audits.filter((a) => !a.robotsIndexable || !a.title.content || !a.metaDescription.content).length;
 
@@ -91,7 +95,11 @@ ${analysis.critical.slice(0, 5).map((c: any) => `• [${c.impact.toUpperCase()}]
 💡 *Rekomendasi utama:*
 ${analysis.summary}`;
 
-  await sendTelegramMessage(msg);
+  try {
+    await sendTelegramMessage(msg);
+  } catch (err) {
+    console.warn("[seo-audit] Telegram notification failed:", err);
+  }
   console.log("[seo-audit] Done!");
 }
 
@@ -143,6 +151,10 @@ async function auditPage(url: string): Promise<PageAudit> {
 
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    if (!res.ok) {
+      defaultAudit.pageError = `HTTP ${res.status}`;
+      return defaultAudit;
+    }
     const html = await res.text();
 
     const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
@@ -152,10 +164,17 @@ async function auditPage(url: string): Promise<PageAudit> {
       hasMultipleH1: (html.match(/<h1[\s\S]*?<\/h1>/gi) || []).length > 1,
     };
 
-    const metaDesc = html.match(/<meta\s+[^>]*name=["']description["'][^>]*content=["']([^"']*)["']/i);
+    let metaDescContent: string | null = null;
+    const metaDescMatch1 = html.match(/<meta\s+[^>]*name=["']description["'][^>]*content=["']([^"']*)["']/i);
+    if (metaDescMatch1) {
+      metaDescContent = metaDescMatch1[1];
+    } else {
+      const metaDescMatch2 = html.match(/<meta\s+[^>]*content=["']([^"']*)["'][^>]*name=["']description["']/i);
+      if (metaDescMatch2) metaDescContent = metaDescMatch2[1];
+    }
     defaultAudit.metaDescription = {
-      content: metaDesc?.[1] || null,
-      length: (metaDesc?.[1] || "").length,
+      content: metaDescContent,
+      length: (metaDescContent || "").length,
     };
 
     defaultAudit.headings.h1 = (html.match(/<h1[\s\S]*?<\/h1>/gi) || []).length;
