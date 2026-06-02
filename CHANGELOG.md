@@ -1,3 +1,10 @@
+## [1.10.2](https://github.com/ferdifir/kapster/compare/v1.10.1...v1.10.2) (2026-06-02)
+
+
+### Bug Fixes
+
+* add JSON code block stripping, enforce SAJA in prompt ([504d30d](https://github.com/ferdifir/kapster/commit/504d30d3bcb2bb61017fd12b995cc484282ca552))
+
 ## [1.10.1](https://github.com/ferdifir/kapster/compare/v1.10.0...v1.10.1) (2026-06-02)
 
 
