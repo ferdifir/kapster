@@ -1,3 +1,10 @@
+## [1.13.1](https://github.com/ferdifir/kapster/compare/v1.13.0...v1.13.1) (2026-06-02)
+
+
+### Bug Fixes
+
+* add generic words to COMMON_WORDS dedup set ([c449bf9](https://github.com/ferdifir/kapster/commit/c449bf98cf1daa52fb244c2de5966af8f410da5b))
+
 # [1.13.0](https://github.com/ferdifir/kapster/compare/v1.12.0...v1.13.0) (2026-06-02)
 
 
