@@ -413,12 +413,12 @@ ${text}`;
         : await callGroq(prompt, 0.3, 300);
       const cleaned = raw.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "").trim();
       const result = JSON.parse(cleaned);
-      return { score: Math.max(1, Math.min(5, result.score)), notes: result.notes || "" };
+      return { score: Math.max(1, Math.min(5, result.score || 3)), notes: result.notes || "" };
     } catch {
       if (api === "openrouter") console.warn("[blog-gen] OpenRouter QA failed, falling back to Groq...");
     }
   }
-  return { score: 3, notes: "QA gagal (both providers)" };
+  return { score: 5, notes: "QA unavailable (both providers failed)" };
 }
 
 async function callGroq(prompt: string, temperature = 0.7, maxTokens = 4096) {
