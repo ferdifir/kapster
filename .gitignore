@@ -45,3 +45,4 @@ SUPABASE_SECRET.md
 *.html
 .claude/
 .superpowers/
+gsc-connector.json
