@@ -341,17 +341,26 @@ Berikan output JSON SAJA (tanpa markdown, tanpa teks lain):
     ?.flatMap((p) => (Array.isArray(p.topics) ? p.topics : []))
     .filter(Boolean) || [];
 
-  const COMMON_WORDS = new Set(["barbershop", "digital", "manajemen", "antrian", "kapster", "tips", "cara", "dengan", "yang", "untuk", "dari", "ini", "agar", "biar", "saat", "tanpa", "lebih", "bikin", "bisa", "supaya", "indonesia", "online", "bisnis"]);
+  const COMMON_WORDS = new Set(["barbershop", "digital", "manajemen", "antrian", "kapster", "tips", "cara", "dengan", "yang", "untuk", "dari", "ini", "agar", "biar", "saat", "tanpa", "lebih", "bikin", "bisa", "supaya", "indonesia", "online", "bisnis", "meningkatkan", "pendapatan", "teknologi", "waktu"]);
+
+  function makeBigrams(words: string[]): Set<string> {
+    const s = new Set<string>();
+    for (let i = 0; i < words.length - 1; i++) s.add(`${words[i]} ${words[i + 1]}`);
+    return s;
+  }
 
   function isDuplicate(topic: string): boolean {
     const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim();
     const words = norm(topic).split(/\s+/).filter((w) => w.length > 3 && !COMMON_WORDS.has(w));
     if (words.length < 2) return false;
+    const bigrams = makeBigrams(words);
     return existingTopics.some((existing) => {
       const existingWords = norm(existing).split(/\s+/).filter((w) => w.length > 3 && !COMMON_WORDS.has(w));
       if (existingWords.length < 2) return false;
-      const overlap = words.filter((w) => existingWords.includes(w)).length;
-      return overlap >= Math.min(2, Math.min(words.length, existingWords.length));
+      const existingBigrams = makeBigrams(existingWords);
+      let overlap = 0;
+      for (const b of bigrams) if (existingBigrams.has(b)) overlap++;
+      return overlap >= 1; // at least one unique 2-word phrase matches
     });
   }
 
