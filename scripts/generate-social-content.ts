@@ -229,7 +229,7 @@ Output JSON SAJA (tanpa markdown):
 
   // Phase 3: Copy Generation
   console.log("[social-gen] Phase 3: Copy Generation...");
-  const contents: SocialContentItem[] = [];
+  let contents: SocialContentItem[] = [];
 
   const validPlatforms = new Set(["instagram", "tiktok", "both"]);
   const validPillars = new Set(["educational", "solution"]);
