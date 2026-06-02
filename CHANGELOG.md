@@ -1,3 +1,12 @@
+# [1.14.0](https://github.com/ferdifir/kapster/compare/v1.13.1...v1.14.0) (2026-06-02)
+
+
+### Features
+
+* add quality monitoring and Telegram alerts for content degradation ([1793a5c](https://github.com/ferdifir/kapster/commit/1793a5c630fc8ead04df343419079e121c8da131))
+* add research cron endpoint, update generate cron endpoint ([c95cb52](https://github.com/ferdifir/kapster/commit/c95cb5260acd80012cbf9497d2ffdf2bfe20c4c4))
+* split generate script into research mode and generate mode ([4686a04](https://github.com/ferdifir/kapster/commit/4686a0474187a177389b5db9731b88421aab9a23))
+
 ## [1.13.1](https://github.com/ferdifir/kapster/compare/v1.13.0...v1.13.1) (2026-06-02)
 
 
