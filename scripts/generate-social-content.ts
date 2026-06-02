@@ -229,6 +229,13 @@ Berikan output JSON SAJA:
     }
   }
 
+  function extractDescription(caption: string): string {
+    const sentences = caption.match(/[^.!?]+[.!?]+/g);
+    if (!sentences || sentences.length < 2) return "Simak selengkapnya di caption!";
+    const bodySentence = sentences.length > 2 ? sentences[2] : sentences[1];
+    return bodySentence.trim().slice(0, 200);
+  }
+
   // Phase 5: Generate card images via satori + resvg
   console.log("[social-gen] Phase 5: Generating card images...");
   const platformLabel: Record<string, string> = { instagram: "IG", tiktok: "TT", both: "IG+TT" };
@@ -240,13 +247,6 @@ Berikan output JSON SAJA:
     tiktok: ttUser,
     both: `${igUser} & ${ttUser}`,
   };
-
-  function extractDescription(caption: string): string {
-    const sentences = caption.match(/[^.!?]+[.!?]+/g);
-    if (!sentences || sentences.length < 2) return "Simak selengkapnya di caption!";
-    const bodySentence = sentences.length > 2 ? sentences[2] : sentences[1];
-    return bodySentence.trim().slice(0, 200);
-  }
 
   for (const { id, item } of savedPosts) {
     try {
@@ -274,9 +274,12 @@ Berikan output JSON SAJA:
 
       const { data: publicUrl } = supabase.storage.from("cover-images").getPublicUrl(fileName);
 
-      await (supabase.from("social_posts") as any).update({
-        trend_analysis: { image_url: publicUrl.publicUrl },
-      }).eq("id", id);
+      // Merge image_url into existing trend_analysis instead of overwriting
+      const { data: existing } = await supabase.from("social_posts").select("trend_analysis").eq("id", id).single();
+      const existingAnalysis = (existing?.trend_analysis ?? {}) as Record<string, unknown>;
+      const trendUpdate = { ...existingAnalysis, image_url: publicUrl.publicUrl };
+
+      await supabase.from("social_posts").update({ trend_analysis: trendUpdate as any }).eq("id", id);
 
       console.log(`[social-gen] Card image: ${publicUrl.publicUrl}`);
     } catch (err) {
