@@ -681,6 +681,7 @@ export type Database = {
           excerpt: string
           meta_description: string
           keywords: string[]
+          content_plan_id: string | null
           og_image_url: string | null
           topics: string[]
           status: "draft" | "published" | "cancelled"
@@ -697,6 +698,7 @@ export type Database = {
           excerpt?: string
           meta_description?: string
           keywords?: string[]
+          content_plan_id?: string | null
           og_image_url?: string | null
           topics?: string[]
           status?: "draft" | "published" | "cancelled"
@@ -713,6 +715,7 @@ export type Database = {
           excerpt?: string
           meta_description?: string
           keywords?: string[]
+          content_plan_id?: string | null
           og_image_url?: string | null
           topics?: string[]
           status?: "draft" | "published" | "cancelled"
