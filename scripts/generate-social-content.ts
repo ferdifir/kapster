@@ -156,13 +156,26 @@ TARGET AUDIENS: Pemilik barbershop Indonesia usia 23-40 tahun
 
 FORMAT KONTEN: ${topic.pillar === "solution" ? "Solusi" : "Edukasi"}
 
+PANDUAN HOOK (PALING PENTING):
+Hook harus SPESIFIK, bukan generik. Gunakan salah satu formula ini:
+- "Curiosity gap": "[Pain point]? Ternyata solusinya [simple thing]"
+  Contoh: "Pelanggan kabur gara-gara antrian? Ternyata solusinya cuma Rp10.000/bulan"
+- "Problem-first": "Masalah [spesifik] yang bikin [dampak]"
+  Contoh: "Kesalahan ini bikin omzet barbershop turun 30% tanpa kamu sadari"
+- "Myth-bust": "Kamu pikir [common belief]? Justru sebaliknya"
+  Contoh: "Antrian manual bikin barbershop terlihat profesional? Justru bikin pelanggan kabur"
+- "Direct address": "[target audiens], [pain point/big promise]"
+  Contoh: "Pemilik barbershop, pendapatan bocor karena komisi kapster gak jelas? Berhenti tebak-tebak"
+- "Question": "Pertanyaan yang memicu rasa penasaran"
+  Contoh: "Berapa omzet yang hilang setiap jam karena pelanggan menunggu antrian?"
+
 GUIDELINES COPYWRITING:
-1. Gunakan framework PAS (Problem → Agitation → Solution) atau AIDA (Attention → Interest → Desire → Action)
-2. HOOK (1-2 kalimat pertama) — strong, relatable, pake pertanyaan retoris atau pain point
-3. BODY (3-5 paragraf pendek) — bahasa Indonesia santai, natural, kayak ngobrol. Ceritakan masalah → perparah → kasih solusi
+1. Gunakan framework PAS (Problem → Agitation → Solution) atau AIDA
+2. HOOK (1-2 kalimat pertama) — spesifik, pake pain point yang relatable, jangan generik
+3. BODY (3-5 paragraf pendek) — bahasa Indonesia santai, natural, kayak ngobrol. Ceritakan masalah → perparah → kasih solusi dengan Kapster
 4. CTA (1 kalimat terakhir) — ajakan action yang jelas
-5. TITLE/HOOK untuk card: max 10 KATA, harus menarik perhatian
-6. DESCRIPTION: 1 baris max 100 karakter, menjelaskan isi konten
+5. TITLE untuk card — harus SPESIFIK dan menarik, muat di 2 baris card (ideal 7-14 kata)
+6. DESCRIPTION: 1 baris, menjelaskan isi konten dengan jelas (max 100 karakter)
 7. Integrasi Kapster natural (jangan hard-sell). Kapster disebut di bagian solusi.
 8. 5-8 hashtag relevan (campuran Indonesia & Inggris)
 9. Max 300 kata untuk Instagram, 200 karakter untuk TikTok
@@ -170,8 +183,8 @@ GUIDELINES COPYWRITING:
 
 TREND INSIGHT: ${topic.reasoning}
 
-Berikan output JSON SAJA:
-{"title": "hook untuk card max 10 kata", "description": "satu baris desc max 100 char", "caption": "caption lengkap", "hashtags": ["#tag1", "#tag2"], "content_type": "educational|solution"}`;
+Berikan output JSON:
+{"title": "hook spesifik dan menarik untuk card", "description": "satu baris desc max 100 char", "caption": "caption lengkap", "hashtags": ["#tag1", "#tag2"], "content_type": "educational|solution"}`;
 
     const copyResponse = await callGroq(copyPrompt, 0.8, 1500);
     try {
