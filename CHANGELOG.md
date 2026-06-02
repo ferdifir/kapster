@@ -1,3 +1,10 @@
+## [1.10.1](https://github.com/ferdifir/kapster/compare/v1.10.0...v1.10.1) (2026-06-02)
+
+
+### Bug Fixes
+
+* better hook prompt based on research ([23d551e](https://github.com/ferdifir/kapster/commit/23d551e3fc043bbfbf2e1ef44c07e6dde56414b1))
+
 # [1.10.0](https://github.com/ferdifir/kapster/compare/v1.9.0...v1.10.0) (2026-06-02)
 
 
