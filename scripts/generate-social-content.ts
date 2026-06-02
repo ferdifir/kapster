@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendTelegramInlineKeyboard, sendTelegramPhoto } from "@/lib/telegram";
+import { sendTelegramPhoto } from "@/lib/telegram";
 import { generateCardImage } from "./generate-card-image";
 import { askOpenRouter } from "@/lib/ollama";
 import { execFile } from "child_process";
@@ -137,7 +137,9 @@ Output JSON SAJA:
         item.hashtags = regenData.hashtags || item.hashtags;
         item.card_title = regenData.title || item.card_title;
         item.card_description = regenData.description || item.card_description;
-      } catch {}
+      } catch {
+        console.warn(`[social-gen] Regen parse failed, keeping original for "${item.topic}"`);
+      }
     }
 
     // Dedup
@@ -146,7 +148,7 @@ Output JSON SAJA:
       .select("topics")
       .gte("created_at", new Date(Date.now() - 14 * 86400000).toISOString());
     const existingTopics: string[] = existingPosts
-      ?.flatMap((p) => (Array.isArray(p.topics) ? p.topics : []))
+    ?.flatMap((p: any) => (Array.isArray(p.topics) ? p.topics : []))
       .filter(Boolean) || [];
 
     const COMMON_WORDS = new Set(["barbershop", "digital", "manajemen", "antrian", "kapster", "tips", "cara", "dengan", "yang", "untuk", "dari", "ini", "agar", "biar", "saat", "tanpa", "lebih", "bikin", "bisa", "supaya", "indonesia", "online", "bisnis", "meningkatkan", "pendapatan", "teknologi", "waktu", "mengoptimalkan", "pengelolaan", "mengelola", "membantu", "memaksimalkan"]);
@@ -269,6 +271,7 @@ Output JSON SAJA:
   }
 
   await recordMetric(supabase, "unique_content_phrases", 1, {});
+  await checkQualityAlerts(supabase);
   console.log("[social-gen] Done!");
 }
 
@@ -417,7 +420,62 @@ async function recordMetric(supabase: any, metricName: string, metricValue: numb
   await supabase.from("content_metrics").upsert(
     { metric_date: today, metric_name: metricName, metric_value: metricValue, metadata: metadata || {} },
     { onConflict: "metric_date,metric_name" }
-  ).catch(() => {});
+  ).catch((err: Error) => console.warn("[social-gen] Metric write failed:", err.message));
+}
+
+async function checkQualityAlerts(supabase: any) {
+  const { data: recentTopics } = await supabase
+    .from("social_posts")
+    .select("topics")
+    .gte("created_at", new Date(Date.now() - 7 * 86400000).toISOString());
+
+  const allTopics: string[] = recentTopics
+    ?.flatMap((p: any) => (Array.isArray(p.topics) ? p.topics : []))
+    .filter(Boolean) || [];
+
+  const templateCount = allTopics.filter((t) =>
+    t.toLowerCase().includes("optimalkan") || t.toLowerCase().includes("maksimalkan")
+  ).length;
+
+  const templateRatio = allTopics.length > 0 ? templateCount / allTopics.length : 0;
+  await recordMetric(supabase, "template_ratio", Math.round(templateRatio * 100), {});
+
+  const threeDaysAgo = new Date(Date.now() - 3 * 86400000).toISOString().split("T")[0];
+  const { data: scores } = await supabase
+    .from("content_metrics")
+    .select("metric_value, metric_date")
+    .eq("metric_name", "qa_avg_score")
+    .gte("metric_date", threeDaysAgo)
+    .order("metric_date", { ascending: false })
+    .limit(3);
+
+  const lowScoreDays = scores?.filter((s: any) => s.metric_value < 4).length || 0;
+
+  if (templateRatio > 0.2) {
+    console.warn(`[monitor] ALERT: template_ratio = ${Math.round(templateRatio * 100)}% (> 20%)`);
+    await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: process.env.TELEGRAM_CHAT_ID,
+        text: `⚠️ *Content Quality Alert*\n\ntemplate_ratio: ${Math.round(templateRatio * 100)}% (target: <=20%)\n7 hari terakhir: ${templateCount}/${allTopics.length} topik mengandung 'optimalkan'/'maksimalkan'`,
+        parse_mode: "Markdown",
+      }),
+    }).catch(() => {});
+  }
+
+  if (lowScoreDays >= 3) {
+    console.warn(`[monitor] ALERT: QA score < 4 for ${lowScoreDays} consecutive days`);
+    await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: process.env.TELEGRAM_CHAT_ID,
+        text: `⚠️ *Content Quality Alert*\n\nQA score < 4 selama ${lowScoreDays} hari berturut-turut.\nPeriksa prompt riset atau kualitas brief.`,
+        parse_mode: "Markdown",
+      }),
+    }).catch(() => {});
+  }
 }
 
 main().catch((err) => {
