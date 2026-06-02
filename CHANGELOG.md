@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/ferdifir/kapster/compare/v1.10.2...v1.11.0) (2026-06-02)
+
+
+### Features
+
+* auto QA review via Ollama Cloud with regen on low score ([38c658c](https://github.com/ferdifir/kapster/commit/38c658cf0dae5dc7ef32441c744609a423e8b1ef))
+
 ## [1.10.2](https://github.com/ferdifir/kapster/compare/v1.10.1...v1.10.2) (2026-06-02)
 
 
