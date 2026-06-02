@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendTelegramInlineKeyboard } from "@/lib/telegram";
-import { recordMetric } from "@/lib/metrics";
+import { recordMetric, checkQualityAlerts } from "@/lib/metrics";
+import { askOpenRouter } from "@/lib/ollama";
 import { spawn } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -112,6 +113,25 @@ SETELAH artikel, di baris terakhir:
   console.log(`[blog-gen] Content: ${contentHtml.length} chars`);
   console.log(`[blog-gen] Slug: ${seoData.slug}`);
 
+  // Phase 2.5: QA Review
+  console.log("[blog-gen] Phase 2.5: QA review...");
+  const qaResult = await reviewBlogContent(contentHtml, topicData.title);
+  await recordMetric(supabase, "qa_avg_score", qaResult.score, { title: topicData.title });
+
+  if (qaResult.score < 4) {
+    console.log(`[blog-gen] QA score ${qaResult.score}/5, regenerating with fix notes...`);
+    const fixedPrompt = contentPrompt + `\n\nQA REVIEW NOTES (PERBAIKI):\n${qaResult.notes}`;
+    const fixedResponse = await callGroq(fixedPrompt, 0.8, 8192);
+    const fixedMetaSplit = fixedResponse.split("---METADATA");
+    const fixedContent = fixedMetaSplit[0]?.trim() || fixedResponse;
+    let fixedSeo: any;
+    try { fixedSeo = JSON.parse(fixedMetaSplit[1]?.trim() || "{}"); } catch { fixedSeo = seoData; }
+    contentHtml = fixedContent;
+    seoData = fixedSeo;
+    console.log(`[blog-gen] Regenerated: ${contentHtml.length} chars`);
+    await recordMetric(supabase, "qa_regen_rate", 1, { title: topicData.title });
+  }
+
   // Phase 3: Save as Draft
   console.log("[blog-gen] Phase 3: Saving draft...");
   let slug = seoData.slug;
@@ -147,6 +167,7 @@ SETELAH artikel, di baris terakhir:
   }
 
   await recordMetric(supabase, "posts_created", 1, { type: "blog" });
+  await checkQualityAlerts(supabase);
   console.log(`[blog-gen] Draft saved: /blog/${slug} (id: ${draft.id})`);
 
   // Phase 4: Generate Image
@@ -366,6 +387,38 @@ async function runTrendPulse(): Promise<string> {
     child.on("error", (err) => reject(err));
     setTimeout(() => { child.kill(); reject(new Error("Trend-Pulse timeout")); }, 25000);
   });
+}
+
+async function reviewBlogContent(html: string, title: string): Promise<{ score: number; notes: string }> {
+  const text = html.replace(/<[^>]*>/g, "").slice(0, 3000);
+  const prompt = `Kamu adalah QA reviewer konten blog. Review artikel berikut dan beri score 1-5.
+
+KRITERIA PENILAIAN:
+1. Hook spesifik (2 points): Apakah pendahuluan engaging, bukan generik?
+2. Format variety (1 point): Apakah ada bullet list, numbering, tabel, blockquote?
+3. No fake claims (1 point): Apakah ada klaim tanpa data?
+4. Tone natural (1 point): Apakah mengalir kayak majalah? Atau kaku kayak buku teks?
+
+FORMAT RESPON (JSON SAJA, tanpa markdown):
+{"score": 4, "notes": "Pendahuluan hook bagus tapi kurang variasi tabel"}
+
+ARTIKEL:
+${text}`;
+
+  const apis = ["openrouter", "groq"] as const;
+  for (const api of apis) {
+    try {
+      const raw = api === "openrouter"
+        ? await askOpenRouter(prompt, { temperature: 0.3, max_tokens: 300 })
+        : await callGroq(prompt, 0.3, 300);
+      const cleaned = raw.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "").trim();
+      const result = JSON.parse(cleaned);
+      return { score: Math.max(1, Math.min(5, result.score)), notes: result.notes || "" };
+    } catch {
+      if (api === "openrouter") console.warn("[blog-gen] OpenRouter QA failed, falling back to Groq...");
+    }
+  }
+  return { score: 3, notes: "QA gagal (both providers)" };
 }
 
 async function callGroq(prompt: string, temperature = 0.7, maxTokens = 4096) {
