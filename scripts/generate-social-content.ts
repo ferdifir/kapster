@@ -341,16 +341,17 @@ Berikan output JSON SAJA (tanpa markdown, tanpa teks lain):
     ?.flatMap((p) => (Array.isArray(p.topics) ? p.topics : []))
     .filter(Boolean) || [];
 
+  const COMMON_WORDS = new Set(["barbershop", "digital", "manajemen", "antrian", "kapster", "tips", "cara", "dengan", "yang", "untuk", "dari", "ini", "agar", "biar", "saat", "tanpa", "lebih", "bikin", "bisa", "supaya", "indonesia", "online", "bisnis"]);
+
   function isDuplicate(topic: string): boolean {
     const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim();
-    const words = new Set(norm(topic).split(/\s+/).filter((w) => w.length > 3));
-    if (!words.size) return false;
+    const words = norm(topic).split(/\s+/).filter((w) => w.length > 3 && !COMMON_WORDS.has(w));
+    if (words.length < 2) return false;
     return existingTopics.some((existing) => {
-      const existingWords = new Set(norm(existing).split(/\s+/).filter((w) => w.length > 3));
-      if (!existingWords.size) return false;
-      let overlap = 0;
-      for (const w of words) if (existingWords.has(w)) overlap++;
-      return overlap / Math.min(words.size, existingWords.size) >= 0.5;
+      const existingWords = norm(existing).split(/\s+/).filter((w) => w.length > 3 && !COMMON_WORDS.has(w));
+      if (existingWords.length < 2) return false;
+      const overlap = words.filter((w) => existingWords.includes(w)).length;
+      return overlap >= Math.min(2, Math.min(words.length, existingWords.length));
     });
   }
 
