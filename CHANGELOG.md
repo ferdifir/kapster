@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/ferdifir/kapster/compare/v1.14.0...v1.14.1) (2026-06-02)
+
+
+### Bug Fixes
+
+* use try/catch for supabase upsert (API has no .catch method) ([f6047ad](https://github.com/ferdifir/kapster/commit/f6047ad80b6efd095bcd4ab7a7dfa8ddf4013201))
+
 # [1.14.0](https://github.com/ferdifir/kapster/compare/v1.13.1...v1.14.0) (2026-06-02)
 
 
