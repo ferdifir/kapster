@@ -332,6 +332,44 @@ Berikan output JSON SAJA (tanpa markdown, tanpa teks lain):
 
   console.log(`[social-gen] Generated ${contents.length} content items`);
 
+  // Phase 3.5: Dedup — skip items too similar to recent posts
+  const { data: existingPosts } = await supabase
+    .from("social_posts")
+    .select("topics, caption")
+    .gte("created_at", new Date(Date.now() - 14 * 86400000).toISOString());
+  const existingTopics: string[] = existingPosts
+    ?.flatMap((p) => (Array.isArray(p.topics) ? p.topics : []))
+    .filter(Boolean) || [];
+
+  function isDuplicate(topic: string): boolean {
+    const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim();
+    const words = new Set(norm(topic).split(/\s+/).filter((w) => w.length > 3));
+    if (!words.size) return false;
+    return existingTopics.some((existing) => {
+      const existingWords = new Set(norm(existing).split(/\s+/).filter((w) => w.length > 3));
+      if (!existingWords.size) return false;
+      let overlap = 0;
+      for (const w of words) if (existingWords.has(w)) overlap++;
+      return overlap / Math.min(words.size, existingWords.size) >= 0.5;
+    });
+  }
+
+  const beforeDedup = contents.length;
+  contents = contents.filter((item) => {
+    if (isDuplicate(item.topic)) {
+      console.log(`[social-gen] Skipping duplicate topic: "${item.topic}"`);
+      return false;
+    }
+    return true;
+  });
+  if (contents.length !== beforeDedup) {
+    console.log(`[social-gen] Dedup removed ${beforeDedup - contents.length} item(s)`);
+  }
+  if (contents.length === 0) {
+    console.log("[social-gen] All items are duplicates, exiting.");
+    return;
+  }
+
   // Phase 4: Save to DB first (get IDs)
   console.log("[social-gen] Phase 4: Saving to DB...");
   const today = new Date().toISOString().split("T")[0];
