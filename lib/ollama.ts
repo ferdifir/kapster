@@ -60,3 +60,50 @@ export async function askOllamaWithSystem(
   messages.push({ role: "user", content: prompt });
   return askOllama(messages, opts);
 }
+
+// OpenRouter provider — drop-in replacement for Ollama QA
+const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
+const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
+const OPENROUTER_DEFAULT_MODEL = "openai/gpt-oss-120b:free";
+
+export interface OpenRouterOptions {
+  system?: string;
+  temperature?: number;
+  max_tokens?: number;
+  model?: string;
+}
+
+export async function askOpenRouter(
+  prompt: string,
+  opts: OpenRouterOptions = {}
+): Promise<string> {
+  if (!OPENROUTER_KEY) throw new Error("OPENROUTER_API_KEY not set");
+  const model = opts.model || OPENROUTER_DEFAULT_MODEL;
+  const messages: { role: string; content: string }[] = [];
+  if (opts.system) messages.push({ role: "system", content: opts.system });
+  messages.push({ role: "user", content: prompt });
+
+  const res = await fetch(`${OPENROUTER_BASE}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${OPENROUTER_KEY}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      temperature: opts.temperature ?? 0.7,
+      max_tokens: opts.max_tokens ?? 4096,
+    }),
+    signal: AbortSignal.timeout(60000),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    if (res.status === 429) throw new Error(`OpenRouter rate limited (429): ${text}`);
+    throw new Error(`OpenRouter API error ${res.status}: ${text}`);
+  }
+
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content ?? "";
+}

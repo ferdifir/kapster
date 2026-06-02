@@ -1,13 +1,13 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendTelegramInlineKeyboard, sendTelegramPhoto } from "@/lib/telegram";
 import { generateCardImage } from "./generate-card-image";
-import { askOllama } from "@/lib/ollama";
+import { askOpenRouter } from "@/lib/ollama";
 import { execFile } from "child_process";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
-const QA_MODEL = process.env.OLLAMA_QA_MODEL || "gpt-oss:120b";
+const QA_MODEL = process.env.OPENROUTER_QA_MODEL || "openai/gpt-oss-120b:free";
 
 interface SocialContentItem {
   platform: "instagram" | "tiktok" | "both";
@@ -41,16 +41,16 @@ Hashtags: ${item.hashtags.join(" ")}
 Output JSON SAJA (tanpa markdown):
 {"score": 1-5, "notes": "catatan spesifik apa yang kurang dan saran perbaikan"}`;
 
-  for (const api of ["ollama", "groq"] as const) {
+  for (const api of ["openrouter", "groq"] as const) {
     try {
-      const res = api === "ollama"
-        ? await askOllama([{ role: "user", content: prompt }], { model: QA_MODEL, temperature: 0.3, max_tokens: 500 })
+      const res = api === "openrouter"
+        ? await askOpenRouter(prompt, { model: QA_MODEL, temperature: 0.3, max_tokens: 500 })
         : await callGroq(prompt, 0.3, 500);
       const cleaned = res.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
       const data = JSON.parse(cleaned);
       return { score: Math.max(1, Math.min(5, data.score || 3)), notes: data.notes || "" };
     } catch {
-      if (api === "ollama") console.warn("[social-gen] Ollama QA failed, falling back to Groq...");
+      if (api === "openrouter") console.warn("[social-gen] OpenRouter QA failed, falling back to Groq...");
       else console.warn("[social-gen] Groq QA failed too, using default score");
     }
   }
@@ -198,6 +198,7 @@ Cara kerja:
 - JANGAN pilih topik yang tidak relevan sama sekali
 - HINDARI topik yang mirip dengan daftar yang sudah pernah dibuat di atas
 - Setiap topik harus FRESH, belum pernah dibahas sebelumnya
+- Setiap topik harus menarik dan spesifik
 
 Output JSON SAJA (tanpa markdown):
 {"topics": [
