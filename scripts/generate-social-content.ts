@@ -1,10 +1,12 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendTelegramInlineKeyboard, sendTelegramPhoto } from "@/lib/telegram";
 import { generateCardImage } from "./generate-card-image";
+import { askOllama } from "@/lib/ollama";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const QA_MODEL = process.env.OLLAMA_QA_MODEL || "gpt-oss:120b";
 
 interface SocialContentItem {
   platform: "instagram" | "tiktok" | "both";
@@ -16,6 +18,41 @@ interface SocialContentItem {
   topic: string;
   card_title: string;
   card_description: string;
+}
+
+async function reviewContent(item: SocialContentItem): Promise<{ score: number; notes: string }> {
+  const prompt = `Kamu adalah QA reviewer konten sosial media untuk kapster.my.id. Review konten berikut dan beri score 1-5.
+
+KRITERIA PENILAIAN:
+1. HOOK SPESIFISITAS (0-2 poin): Apakah hook-nya spesifik, menggunakan pain point/angka/pertanyaan? Atau generik seperti "Optimalkan barbershop Anda"?
+2. STRUKTUR PAS/AIDA (0-1 poin): Apakah caption mengikuti Problem → Solution atau Attention → Action?
+3. NO FAKE CLAIMS (0-1 poin): Tidak ada testimoni palsu, data palsu, klaim tanpa sumber?
+4. TONE & BAHASA (0-1 poin): Bahasa Indonesia santai natural, bukan kaku/formal?
+
+TOTAL = jumlah dari semua poin (max 5)
+
+KONTEN:
+Title (card): "${item.card_title}"
+Description: "${item.card_description}"
+Caption: "${item.caption.slice(0, 500)}"
+Hashtags: ${item.hashtags.join(" ")}
+
+Output JSON SAJA (tanpa markdown):
+{"score": 1-5, "notes": "catatan spesifik apa yang kurang dan saran perbaikan"}`;
+
+  try {
+    const res = await askOllama([{ role: "user", content: prompt }], {
+      model: QA_MODEL,
+      temperature: 0.3,
+      max_tokens: 500,
+    });
+    const cleaned = res.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
+    const data = JSON.parse(cleaned);
+    return { score: Math.max(1, Math.min(5, data.score || 3)), notes: data.notes || "" };
+  } catch (err) {
+    console.warn(`[social-gen] QA review failed:`, err);
+    return { score: 3, notes: "QA review gagal" };
+  }
 }
 
 async function callGroq(prompt: string, temperature = 0.7, maxTokens = 4096) {
@@ -191,7 +228,7 @@ Berikan output JSON SAJA (tanpa markdown, tanpa teks lain):
     try {
       const cleaned = copyResponse.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
       const copyData = JSON.parse(cleaned);
-      contents.push({
+      const item: SocialContentItem = {
         platform: narrowPlatform(IS_MANUAL ? TARGET_PLATFORM! : topic.platform_hint || "instagram"),
         caption: copyData.caption,
         hashtags: copyData.hashtags || [],
@@ -201,7 +238,28 @@ Berikan output JSON SAJA (tanpa markdown, tanpa teks lain):
         topic: topic.title,
         card_title: copyData.title || extractHook(copyData.caption),
         card_description: copyData.description || extractDescription(copyData.caption),
-      });
+      };
+
+      // QA Review: auto-regen if score < 4
+      const review = await reviewContent(item);
+      if (review.score < 4 && review.notes) {
+        console.log(`[social-gen] QA score ${review.score}/5 for "${topic.title}", regenerating...`);
+        const regenPrompt = copyPrompt + `\n\nQA REVIEW DARI GENERATION SEBELUMNYA (PERBAIKI INI):\n${review.notes}\n\nPerbaiki sesuai catatan di atas. Output JSON SAJA.`;
+        const regenRes = await callGroq(regenPrompt, 0.8, 1500);
+        try {
+          const regenCleaned = regenRes.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
+          const regenData = JSON.parse(regenCleaned);
+          item.caption = regenData.caption || item.caption;
+          item.hashtags = regenData.hashtags || item.hashtags;
+          item.card_title = regenData.title || item.card_title;
+          item.card_description = regenData.description || item.card_description;
+          console.log(`[social-gen] Regen OK for "${topic.title}"`);
+        } catch {
+          console.warn(`[social-gen] Regen parse failed for "${topic.title}", keeping original`);
+        }
+      }
+
+      contents.push(item);
     } catch {
       console.error(`[social-gen] Failed to parse copy for: ${topic.title}`);
       continue;
@@ -334,7 +392,6 @@ ${item.caption}
 ${hashtagText}
 ─────────────────
 🔍 <b>Tren:</b> ${item.trend_insight}
-
 ─────────────────
 ⏳ Status: <b>sent_to_telegram</b>`;
 
