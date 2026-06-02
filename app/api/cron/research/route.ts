@@ -8,7 +8,7 @@ export async function GET() {
 
   try {
     const stdout = await new Promise<string>((resolve, reject) => {
-      execFile("npx", ["tsx", scriptPath, "--mode=generate"], {
+      execFile("npx", ["tsx", scriptPath, "--mode=research"], {
         timeout: 120000,
         env: { ...process.env },
       }, (err, stdout) => {
