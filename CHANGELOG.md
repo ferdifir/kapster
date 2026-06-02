@@ -1,3 +1,16 @@
+# [1.10.0](https://github.com/ferdifir/kapster/compare/v1.9.0...v1.10.0) (2026-06-02)
+
+
+### Bug Fixes
+
+* trend_analysis merge, move extractDescription before usage ([073e26d](https://github.com/ferdifir/kapster/commit/073e26d1893f0f2b88e272bfad343c2e6a817b60))
+
+
+### Features
+
+* add /konten command handler to Telegram webhook ([9752b16](https://github.com/ferdifir/kapster/commit/9752b161ae7116e369fbc725b4db521a60680019))
+* add CLI args to social content gen, fix pillar/prompt system ([40c7561](https://github.com/ferdifir/kapster/commit/40c756107bc23df3fbdda62538754876ec5634f9))
+
 # [1.9.0](https://github.com/ferdifir/kapster/compare/v1.8.0...v1.9.0) (2026-06-01)
 
 
