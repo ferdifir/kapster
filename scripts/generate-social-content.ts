@@ -243,6 +243,7 @@ Berikan output JSON SAJA (tanpa markdown, tanpa teks lain):
 
       // QA Review: auto-regen if score < 4
       const review = await reviewContent(item);
+      console.log(`[${topic.title}] QA score ${review.score}/5`);
       if (review.score < 4 && review.notes) {
         console.log(`[social-gen] QA score ${review.score}/5 for "${topic.title}", regenerating...`);
         const regenPrompt = copyPrompt + `\n\nQA REVIEW DARI GENERATION SEBELUMNYA (PERBAIKI INI):\n${review.notes}\n\nPerbaiki sesuai catatan di atas. Output JSON SAJA.`;
