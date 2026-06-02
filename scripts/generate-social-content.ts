@@ -417,10 +417,14 @@ Output JSON: {"score": 1-5, "notes": "..."}`;
 
 async function recordMetric(supabase: any, metricName: string, metricValue: number, metadata?: Record<string, unknown>) {
   const today = new Date().toISOString().split("T")[0];
-  await supabase.from("content_metrics").upsert(
-    { metric_date: today, metric_name: metricName, metric_value: metricValue, metadata: metadata || {} },
-    { onConflict: "metric_date,metric_name" }
-  ).catch((err: Error) => console.warn("[social-gen] Metric write failed:", err.message));
+  try {
+    await supabase.from("content_metrics").upsert(
+      { metric_date: today, metric_name: metricName, metric_value: metricValue, metadata: metadata || {} },
+      { onConflict: "metric_date,metric_name" }
+    );
+  } catch (err: any) {
+    console.warn("[social-gen] Metric write failed:", err?.message || err);
+  }
 }
 
 async function checkQualityAlerts(supabase: any) {
