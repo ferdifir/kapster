@@ -40,19 +40,20 @@ Hashtags: ${item.hashtags.join(" ")}
 Output JSON SAJA (tanpa markdown):
 {"score": 1-5, "notes": "catatan spesifik apa yang kurang dan saran perbaikan"}`;
 
-  try {
-    const res = await askOllama([{ role: "user", content: prompt }], {
-      model: QA_MODEL,
-      temperature: 0.3,
-      max_tokens: 500,
-    });
-    const cleaned = res.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
-    const data = JSON.parse(cleaned);
-    return { score: Math.max(1, Math.min(5, data.score || 3)), notes: data.notes || "" };
-  } catch (err) {
-    console.warn(`[social-gen] QA review failed:`, err);
-    return { score: 3, notes: "QA review gagal" };
+  for (const api of ["ollama", "groq"] as const) {
+    try {
+      const res = api === "ollama"
+        ? await askOllama([{ role: "user", content: prompt }], { model: QA_MODEL, temperature: 0.3, max_tokens: 500 })
+        : await callGroq(prompt, 0.3, 500);
+      const cleaned = res.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
+      const data = JSON.parse(cleaned);
+      return { score: Math.max(1, Math.min(5, data.score || 3)), notes: data.notes || "" };
+    } catch {
+      if (api === "ollama") console.warn("[social-gen] Ollama QA failed, falling back to Groq...");
+      else console.warn("[social-gen] Groq QA failed too, using default score");
+    }
   }
+  return { score: 3, notes: "QA review gagal (semua API)" };
 }
 
 async function callGroq(prompt: string, temperature = 0.7, maxTokens = 4096) {
