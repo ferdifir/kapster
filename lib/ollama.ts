@@ -85,7 +85,7 @@ export async function askOllamaWithTools(
 
     return {
       content: response.message.content,
-      toolCalls: (response.message.tool_calls || []) as ToolCall[],
+      toolCalls: (response.message.tool_calls || []) as unknown as ToolCall[],
     };
   } catch (err) {
     logError("askOllamaWithTools", err, { model, messageCount: messages.length });
