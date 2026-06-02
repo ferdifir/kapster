@@ -3,6 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { updateBlogPostStatus } from "@/lib/blog";
 import { answerTelegramCallback, editTelegramMessage, sendTelegramMessage } from "@/lib/telegram";
 import { revalidatePath } from "next/cache";
+import { spawn } from "child_process";
+import path from "path";
 
 function verifyTelegramRequest(request: NextRequest): boolean {
   const auth = request.headers.get("x-telegram-bot-api-secret-token");
@@ -65,6 +67,38 @@ export async function POST(request: NextRequest) {
           }
         }
       }
+    }
+
+    // Handle /konten command — manual social content generation
+    if (body.message?.text?.startsWith("/konten")) {
+      const text = body.message.text.trim();
+      const parts = text.split(/\s+/);
+      const platform = parts[1]?.toLowerCase();
+
+      if (platform !== "ig" && platform !== "tiktok") {
+        await sendTelegramMessage(
+          "Gunakan: <code>/konten [ig|tiktok] [opsional: topik]</code>\n\nContoh:\n<code>/konten ig</code> — konten Instagram, topik dari AI\n<code>/konten tiktok cara hitung omzet</code> — konten TikTok topik spesifik"
+        );
+        return NextResponse.json({ ok: true });
+      }
+
+      const topic = parts.slice(2).join(" ") || "";
+      const platformFull = platform === "ig" ? "Instagram" : "TikTok";
+      await sendTelegramMessage(`⏳ Lagi nulis konten ${platformFull}...${topic ? ` (topik: "${topic}")` : ""}`);
+
+      // Spawn async — same pattern as cron endpoint
+      const scriptPath = path.join(process.cwd(), "scripts/generate-social-content.ts");
+      const spawnArgs = ["tsx", scriptPath, `--platform=${platform === "ig" ? "instagram" : "tiktok"}`];
+      if (topic) spawnArgs.push(`--topic="${topic}"`);
+
+      spawn("npx", spawnArgs, {
+        cwd: process.cwd(),
+        stdio: "inherit",
+        env: { ...process.env },
+        shell: true,
+      });
+
+      return NextResponse.json({ ok: true });
     }
 
     if (body.message?.text && body.message?.reply_to_message) {
