@@ -111,7 +111,8 @@ Berikan output JSON SAJA (tanpa markdown):
     console.log(`[social-gen] Phase 1: Trend Research for ${TARGET_PLATFORM || "mixed"}...`);
     const trendResponse = await callGroq(trendPrompt, 0.8, 1000);
     try {
-      trendData = JSON.parse(trendResponse.trim());
+      const trendCleaned = trendResponse.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
+      trendData = JSON.parse(trendCleaned);
     } catch {
       console.error("[social-gen] Failed to parse trend response:", trendResponse);
       throw new Error("Trend research failed");
@@ -183,12 +184,13 @@ GUIDELINES COPYWRITING:
 
 TREND INSIGHT: ${topic.reasoning}
 
-Berikan output JSON:
+Berikan output JSON SAJA (tanpa markdown, tanpa teks lain):
 {"title": "hook spesifik dan menarik untuk card", "description": "satu baris desc max 100 char", "caption": "caption lengkap", "hashtags": ["#tag1", "#tag2"], "content_type": "educational|solution"}`;
 
     const copyResponse = await callGroq(copyPrompt, 0.8, 1500);
     try {
-      const copyData = JSON.parse(copyResponse.trim());
+      const cleaned = copyResponse.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
+      const copyData = JSON.parse(cleaned);
       contents.push({
         platform: narrowPlatform(IS_MANUAL ? TARGET_PLATFORM! : topic.platform_hint || "instagram"),
         caption: copyData.caption,
