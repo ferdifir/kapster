@@ -124,42 +124,83 @@ async function main() {
   console.log(`[social-gen] Starting at ${new Date().toISOString()}`);
   const supabase = await createAdminClient();
 
-  // Phase 1: Trend Research (skip if user provided a topic)
-  const trendPrompt = USER_TOPIC
-    ? null
-    : `Kamu adalah analis tren media sosial untuk kapster.my.id, platform manajemen antrian digital untuk barbershop Indonesia.
-
-TUGAS: Identifikasi 1 topik yang sedang relevan untuk barbershop di Indonesia hari ini untuk platform ${TARGET_PLATFORM || "media sosial"}.
-
-Topik bisa berupa:
-- EDUKASI — tips, cara, strategi kelola barbershop
-- SOLUSI — manfaat solusi digital untuk barbershop
-
-Target pembaca: pemilik barbershop usia 23-40 di Indonesia.
-Pain points: pelanggan kabur karena antrian, pendapatan bocor, bingung komisi kapster, ragu bayar software.
-
-Berikan output JSON SAJA (tanpa markdown):
-{"topics": [
-  {"title": "judul topik", "pillar": "educational|solution", "reasoning": "mengapa topik ini relevan"}
-]}`;
-
+  // Phase 1: Trend Research
   let trendData: { topics: Array<{ title: string; pillar: string; reasoning: string; platform_hint?: string }> };
 
-  if (trendPrompt) {
-    console.log(`[social-gen] Phase 1: Trend Research for ${TARGET_PLATFORM || "mixed"}...`);
-    const trendResponse = await callGroq(trendPrompt, 0.8, 1000);
+  if (USER_TOPIC) {
+    // User provided topic — use it directly
+    trendData = {
+      topics: [{ title: USER_TOPIC, pillar: "solution", reasoning: "Topik dari user" }],
+    };
+  } else {
+    // Fetch real trend data via Trend-Pulse
+    console.log("[social-gen] Phase 1: Trend Research (Trend-Pulse)...");
+    const trendPulsePath = `${process.cwd()}/.venv/bin/trend-pulse`;
+    const rawTrends = await new Promise<string>((resolve, reject) => {
+      execFile(trendPulsePath, [
+        "trending",
+        "--sources", "google_trends,google_news,reddit,wikipedia",
+        "--geo", "ID",
+        "--count", "10",
+      ], { timeout: 25000 }, (err, stdout) => {
+        if (err) reject(err);
+        else resolve(stdout);
+      });
+    });
+
+    let trendContext = "";
+    try {
+      const parsed = JSON.parse(rawTrends);
+      const sources = parsed.sources || {};
+      const lines: string[] = [];
+      for (const [src, items] of Object.entries(sources)) {
+        const arr = items as Array<{ keyword: string; score?: number }>;
+        if (arr?.length) {
+          lines.push(`\n${src.toUpperCase()}:`);
+          arr.slice(0, 8).forEach((i) => lines.push(`  - ${i.keyword}${i.score ? ` (score: ${i.score})` : ""}`));
+        }
+      }
+      trendContext = lines.join("\n");
+    } catch {
+      trendContext = rawTrends.slice(0, 1000);
+    }
+
+    console.log("[social-gen] Trend data collected, curating with LLM...");
+
+    const curationPrompt = `Kamu adalah content strategist untuk kapster.my.id, platform manajemen antrian digital untuk barbershop Indonesia.
+
+Berikut adalah data tren real dari Indonesia hari ini dari Google Trends, Google News, Reddit, dan Wikipedia:
+
+${trendContext}
+
+TUGAS: Analisis data di atas dan pilih ${IS_MANUAL ? "1" : "4"} topik yang PALING RELEVAN untuk pemilik barbershop Indonesia.
+
+Cara kerja:
+- Hubungkan tren umum dengan pain point barbershop (antrian, komisi kapster, pendapatan bocor, promosi, manajemen staf)
+- Contoh: tren "efisiensi" → topik "Cara digitalisasi antrian tanpa ribet"
+- Contoh: tren "omzet" → topik "Rahasia barbershop ramai saat jam sibuk"
+- Contoh: tren "AI" → topik "Teknologi barbershop masa depan"
+- JANGAN pilih topik yang tidak relevan sama sekali
+- Setiap topik harus menarik dan spesifik
+
+Output JSON SAJA (tanpa markdown):
+{"topics": [
+  {"title": "judul topik spesifik", "pillar": "educational|solution", "reasoning": "kenapa relevan dengan data tren dan pain point barbershop"}
+]}`;
+
+    const trendResponse = await callGroq(curationPrompt, 0.7, 1000);
     try {
       const trendCleaned = trendResponse.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
       trendData = JSON.parse(trendCleaned);
     } catch {
-      console.error("[social-gen] Failed to parse trend response:", trendResponse);
-      throw new Error("Trend research failed");
+      console.warn("[social-gen] LLM curation failed, using fallback topics");
+      trendData = {
+        topics: [
+          { title: "Tips mengelola antrian barbershop di jam sibuk", pillar: "educational", reasoning: "Topik evergreen dari tren antrian" },
+          { title: "Cara hitung komisi kapster tanpa ribet", pillar: "solution", reasoning: "Solusi dari pain point komisi" },
+        ],
+      };
     }
-  } else {
-    // User provided topic — use it directly
-    trendData = {
-      topics: [{ title: USER_TOPIC!, pillar: "solution", reasoning: "Topik dari user" }],
-    };
   }
 
   console.log(`[social-gen] Using ${trendData.topics.length} topic(s)`);
