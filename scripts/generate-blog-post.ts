@@ -264,7 +264,7 @@ Beri output JSON SAJA (tanpa markdown formatting):
   // 1e: MCP web search
   let webResearchData = "";
   const searchResults = await callMCPTool("web_search", {
-    query: `${topicData.topic} ${topicData.seo_keywords?.slice(0, 2).join(" ")} Indonesia 2026`,
+    query: `${topicData.topic} ${topicData.seo_keywords?.filter(Boolean).slice(0, 2).join(" ")} Indonesia 2026`,
     num_results: 6,
   });
 
@@ -348,24 +348,23 @@ async function fetchGSCKeywordGaps(): Promise<string> {
 }
 
 async function runTrendPulse(): Promise<string> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const child = spawn(TREND_PULSE_PATH, [
       "barbershop Indonesia",
       "gaya rambut trend",
       "perawatan rambut pria",
     ], {
       stdio: ["ignore", "pipe", "pipe"],
-      timeout: 25000,
     });
     let output = "";
     child.stdout.on("data", (d: Buffer) => { output += d.toString(); });
     child.on("close", (code) => {
-      if (code !== 0) resolve("");
+      if (code !== 0) reject(new Error(`Trend-Pulse exited with code ${code}`));
       const lines = output.trim().split("\n").slice(0, 15);
       resolve(lines.join("\n"));
     });
-    child.on("error", () => resolve(""));
-    setTimeout(() => { child.kill(); resolve(""); }, 25000);
+    child.on("error", (err) => reject(err));
+    setTimeout(() => { child.kill(); reject(new Error("Trend-Pulse timeout")); }, 25000);
   });
 }
 
