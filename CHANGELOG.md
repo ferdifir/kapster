@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/ferdifir/kapster/compare/v1.11.0...v1.12.0) (2026-06-02)
+
+
+### Features
+
+* add Ollama Cloud client lib (missing from prev commit) ([752d2ba](https://github.com/ferdifir/kapster/commit/752d2ba86ad948997eb14d7e255a74d670bc6272))
+
 # [1.11.0](https://github.com/ferdifir/kapster/compare/v1.10.2...v1.11.0) (2026-06-02)
 
 
