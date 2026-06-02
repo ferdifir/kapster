@@ -342,7 +342,7 @@ Berikan output JSON SAJA (tanpa markdown, tanpa teks lain):
     ?.flatMap((p) => (Array.isArray(p.topics) ? p.topics : []))
     .filter(Boolean) || [];
 
-  const COMMON_WORDS = new Set(["barbershop", "digital", "manajemen", "antrian", "kapster", "tips", "cara", "dengan", "yang", "untuk", "dari", "ini", "agar", "biar", "saat", "tanpa", "lebih", "bikin", "bisa", "supaya", "indonesia", "online", "bisnis", "meningkatkan", "pendapatan", "teknologi", "waktu"]);
+  const COMMON_WORDS = new Set(["barbershop", "digital", "manajemen", "antrian", "kapster", "tips", "cara", "dengan", "yang", "untuk", "dari", "ini", "agar", "biar", "saat", "tanpa", "lebih", "bikin", "bisa", "supaya", "indonesia", "online", "bisnis", "meningkatkan", "pendapatan", "teknologi", "waktu", "mengoptimalkan", "pengelolaan", "mengelola", "membantu", "memaksimalkan"]);
 
   function makeBigrams(words: string[]): Set<string> {
     const s = new Set<string>();
