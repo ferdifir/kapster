@@ -2,6 +2,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { sendTelegramInlineKeyboard, sendTelegramPhoto } from "@/lib/telegram";
 import { generateCardImage } from "./generate-card-image";
 import { askOllama } from "@/lib/ollama";
+import { execFile } from "child_process";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
