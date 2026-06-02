@@ -735,6 +735,7 @@ export type Database = {
           telegram_msg_id: number | null
           post_url: string | null
           scheduled_date: string
+          content_plan_id: string | null
           created_at: string
           updated_at: string
         }
@@ -749,6 +750,7 @@ export type Database = {
           telegram_msg_id?: number | null
           post_url?: string | null
           scheduled_date?: string
+          content_plan_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -763,8 +765,68 @@ export type Database = {
           telegram_msg_id?: number | null
           post_url?: string | null
           scheduled_date?: string
+          content_plan_id?: string | null
           created_at?: string
           updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_posts_content_plan_id_fkey"
+            columns: ["content_plan_id"]
+            isOneToOne: false
+            referencedRelation: "content_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_plans: {
+        Row: {
+          id: string
+          brief: string
+          status: string
+          created_at: string
+          used_at: string | null
+        }
+        Insert: {
+          id?: string
+          brief: string
+          status?: string
+          created_at?: string
+          used_at?: string | null
+        }
+        Update: {
+          id?: string
+          brief?: string
+          status?: string
+          created_at?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
+      content_metrics: {
+        Row: {
+          id: string
+          metric_date: string
+          metric_name: string
+          metric_value: number
+          metadata: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          metric_date?: string
+          metric_name: string
+          metric_value: number
+          metadata?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          metric_date?: string
+          metric_name?: string
+          metric_value?: number
+          metadata?: Json
+          created_at?: string
         }
         Relationships: []
       }
