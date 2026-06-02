@@ -349,29 +349,35 @@ Berikan output JSON SAJA (tanpa markdown, tanpa teks lain):
     return s;
   }
 
-  function isDuplicate(topic: string): boolean {
+  function getBigrams(topic: string): { words: string[]; bigrams: Set<string> } {
     const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim();
     const words = norm(topic).split(/\s+/).filter((w) => w.length > 3 && !COMMON_WORDS.has(w));
-    if (words.length < 2) return false;
-    const bigrams = makeBigrams(words);
-    return existingTopics.some((existing) => {
-      const existingWords = norm(existing).split(/\s+/).filter((w) => w.length > 3 && !COMMON_WORDS.has(w));
-      if (existingWords.length < 2) return false;
-      const existingBigrams = makeBigrams(existingWords);
-      let overlap = 0;
-      for (const b of bigrams) if (existingBigrams.has(b)) overlap++;
-      return overlap >= 1; // at least one unique 2-word phrase matches
-    });
+    return { words, bigrams: makeBigrams(words) };
+  }
+
+  function isDuplicate(topic: string): { dup: boolean; match?: string } {
+    const { words, bigrams } = getBigrams(topic);
+    if (words.length < 2) return { dup: false };
+    for (const existing of existingTopics) {
+      const { words: ew, bigrams: eb } = getBigrams(existing);
+      if (ew.length < 2) continue;
+      for (const b of bigrams) {
+        if (eb.has(b)) return { dup: true, match: `"${b}" matches "${existing}"` };
+      }
+    }
+    return { dup: false };
   }
 
   const beforeDedup = contents.length;
-  contents = contents.filter((item) => {
-    if (isDuplicate(item.topic)) {
-      console.log(`[social-gen] Skipping duplicate topic: "${item.topic}"`);
-      return false;
+  const dedupResults = contents.map((item) => {
+    const result = isDuplicate(item.topic);
+    if (result.dup) {
+      console.log(`[social-gen] Dedup: "${item.topic}" → ${result.match}`);
+      return null;
     }
-    return true;
+    return item;
   });
+  contents = dedupResults.filter(Boolean) as SocialContentItem[];
   if (contents.length !== beforeDedup) {
     console.log(`[social-gen] Dedup removed ${beforeDedup - contents.length} item(s)`);
   }
