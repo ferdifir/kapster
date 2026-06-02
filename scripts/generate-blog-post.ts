@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendTelegramInlineKeyboard } from "@/lib/telegram";
+import { recordMetric } from "@/lib/metrics";
 import { spawn } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -14,127 +15,86 @@ const MCP_SERVER_PATH = path.resolve(__dirname, "../mcp-servers/content-research
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const PUTER_AUTH_TOKEN = process.env.PUTER_AUTH_TOKEN;
+const TREND_PULSE_PATH = process.env.TREND_PULSE_PATH || "/var/www/kapster/.venv/bin/trend-pulse";
 
-interface SearchResult {
-  title: string;
-  url: string;
-  snippet: string;
+interface ResearchResult {
+  topicData: { topic: string; title: string; reasoning: string; seo_keywords: string[] };
+  webResearchData: string;
+  planId: string;
+  brief: string;
 }
 
 async function main() {
   console.log(`[blog-gen] Starting at ${new Date().toISOString()}`);
-
   const supabase = await createAdminClient();
 
   // Phase 1: Research
   console.log("[blog-gen] Phase 1: Research...");
-  const { data: existingPosts } = await supabase
-    .from("blog_posts")
-    .select("title, excerpt, topics, keywords, meta_description")
-    .order("created_at", { ascending: false });
-
-  const existingTitles = (existingPosts ?? []).map((p: { title: string }) => p.title);
-
-  const searchResults = await callMCPTool("web_search", {
-    query: "trend gaya rambut barbershop Indonesia 2026 tips perawatan",
-    num_results: 8,
-  });
-
-  let webResearchData = "";
-  if (searchResults && Array.isArray(searchResults) && searchResults.length > 0) {
-    webResearchData = (searchResults as SearchResult[])
-      .slice(0, 5)
-      .map((r) => `Title: ${r.title}\nURL: ${r.url}\nSnippet: ${r.snippet}`)
-      .join("\n\n");
-
-    for (const result of (searchResults as SearchResult[]).slice(0, 2)) {
-      const content = await callMCPTool("fetch_page", { url: result.url });
-      if (content) {
-        webResearchData += `\n\n=== Full content from: ${result.url} ===\n${content}`;
-      }
-    }
+  const research = await researchPhase(supabase);
+  if (!research) {
+    console.log("[blog-gen] Research failed or no topic found, skipping.");
+    await recordMetric(supabase, "research_skipped", 1, {});
+    return;
   }
 
-  // Phase 2: Topic Selection
-  console.log("[blog-gen] Phase 2: Topic Selection...");
-  const topicPrompt = `Kamu adalah asisten riset konten untuk blog kapster.my.id, platform manajemen antrian barbershop Indonesia.
+  const { topicData, webResearchData, planId } = research;
+  console.log(`[blog-gen] Topic: ${topicData.title} (${topicData.reasoning})`);
 
-TUGAS: Pilih SATU topik artikel yang paling menarik dan potensial untuk SEO.
-
-Topik harus:
-1. Terkait industri barbershop (gaya rambut, perawatan, bisnis, tips, lifestyle)
-2. Belum pernah dibahas
-3. Punya potensi SEO bagus
-4. Bisa secara natural dikaitkan dengan CTA ke Kapster di akhir
-5. Layak untuk artikel SANGAT MENDALAM (3000+ kata)
-
-Topik yang SUDAH dibahas: ${existingTitles.join(", ") || "(belum ada)"}
-
-Hasil riset web:
-${webResearchData}
-
-Beri output JSON SAJA (tanpa markdown formatting):
-{"topic": "nama topik", "title": "judul artikel max 60 karakter", "reasoning": "penjelasan singkat", "seo_keywords": ["keyword1", "keyword2", "keyword3"]}`;
-
-  const topicResponse = await callGroq(topicPrompt, 0.7, 500);
-  let topicData: { topic: string; title: string; reasoning: string; seo_keywords: string[] };
-  try {
-    topicData = JSON.parse(topicResponse.trim());
-  } catch {
-    console.error("[blog-gen] Failed to parse topic response:", topicResponse);
-    throw new Error("Topic selection failed");
-  }
-
-  console.log(`[blog-gen] Topic: ${topicData.title}`);
-
-  // Phase 3: Content Generation + SEO Metadata (merged to save API calls)
-  console.log("[blog-gen] Phase 3: Generating article...");
+  // Phase 2: Content Generation + SEO Metadata (merged)
+  console.log("[blog-gen] Phase 2: Generating article...");
   const contentPrompt = `Kamu adalah penulis konten ahli untuk blog kapster.my.id — platform manajemen antrian digital untuk barbershop Indonesia.
 
 TUGAS: Tulis artikel BLOG SANGAT MENDALAM (3000-5000 kata) dalam Bahasa Indonesia.
 
 Judul: "${topicData.title}"
 
-Target pembaca: pemilik barbershop, barberman, dan pecinta barber di Indonesia.
-Gaya: informatif, otoritatif, ramah, mengalir alami seperti tulisan majalah — BUKAN kaku seperti buku teks.
+Target pembaca: pemilik barbershop, barberman, dan pria Indonesia yang peduli penampilan.
+Gaya: Seperti tulisan MAJALAH — natural, engaging, kadang ada celotehan atau humor ringan. BUKAN kaku seperti buku teks.
 
-PANDUAN STRUKTUR & FORMAT (WAJIB):
-1. JANGAN gunakan <h1> — langsung mulai dengan pendahuluan (<p>)
-2. Gunakan <h2> untuk sub-bab utama (5-7 sub-bab)
-3. Gunakan <h3> untuk sub-topik di dalam sub-bab (minimal 2-3 artikel)
-4. Pendahuluan (200-300 kata) yang engaging — bisa pakai hook, pertanyaan retoris, atau data menarik
-5. Setiap sub-bab 400-700 kata dengan data, tips, contoh konkret
-6. Kesimpulan (150-200 kata)
-7. CTA ke Kapster di akhir: <p>Kalau kamu ingin fokus mengembangkan bisnis barbershop tanpa pusing urus antrian, coba deh pakai Kapster. Sistem antrian digital yang bikin pelanggan puas dan operasional makin rapi. Cuma Rp10.000/bulan. Mulai gratis di ${SITE_URL}!</p>
+PANDUAN STRUKTUR:
 
-ATURAN FORMAT KONTEN (WAJIB):
-- JANGAN gunakan pola berulang (h2→p→ul→p) di setiap section. Variasikan struktur setiap sub-bab.
-- Gunakan <strong> untuk kata kunci atau poin penting (minimal 5 kali)
-- Gunakan <em> untuk penekanan atau istilah asing (minimal 3 kali)
-- Gunakan <blockquote> untuk quotes, studi kasus, atau data penting (minimal 1 kali)
-- Gunakan tabel <table><thead><tbody> untuk perbandingan, data, atau daftar fitur (jika relevan)
-- Gunakan <ul> dan <ol> untuk daftar, tips, dan langkah-langkah
-- Bervariasi: ada yang dimulai dengan kutipan, ada yang dengan data statistik, ada yang dengan analogi
-- Jika relevan, tambahkan tautan internal: <a href="${SITE_URL}/blog">Blog Kapster</a>
+1. Pendahuluan (200-300 kata) — Variatif tiap artikel:
+   - Bisa hook, data statistik, pertanyaan retoris, analogi, kutipan, atau cerita pendek
+   - JANGAN mulai dengan "Dalam era digital..." atau "Di Indonesia..."
 
-CONTOH VARIASI POLA (bukan harus persis, tapi sebagai inspirasi):
-- <h2> → <blockquote> → <p> → <p> → <ul>
-- <h2> → <p> → <h3> → <p> → <h3> → <p> → <ul>
-- <h2> → <p> → <table> → <p>
-- <h2> → <p> → <strong> → <p> → <blockquote>
+2. 5-7 sub-bab (masing-masing 300-600 kata):
+   - JANGAN semua sub-bab dimulai dengan <p>
+   - Setiap sub-bab harus punya kalimat transisi dari sub-bab sebelumnya
+   - Variasi panjang: ada yang pendek (200), ada yang panjang (600)
+   - JANGAN gunakan pola tag berulang — variasi tiap section
 
-FORMAT OUTPUT: HTML murni (tanpa html/body/head). Hanya tag yang disebutkan di atas. JANGAN markdown.
+3. Kesimpulan (150-200 kata) — JANGAN "Kesimpulan" sebagai heading. Pakai <h2> yang engaging
 
-SETELAH artikel, di baris terakhir beri metadata JSON:
+4. CTA di akhir:
+<p>Kalau kamu ingin fokus mengembangkan bisnis barbershop tanpa pusing urus antrian, coba deh pakai Kapster. Sistem antrian digital yang bikin pelanggan puas dan operasional makin rapi. Cuma Rp10.000/bulan. Mulai gratis di ${SITE_URL}!</p>
+
+ATURAN FORMAT WAJIB:
+- Setiap artikel WAJIB memiliki MINIMAL: 1 <ul>, 1 <ol>, 1 <blockquote>, 1 <table>
+- Dua sub-bab berturut-turut TIDAK BOLEH punya pola tag pertama sama
+- Gunakan <strong> untuk kata kunci (min 5)
+- Gunakan <em> untuk istilah asing (min 2)
+- <table> untuk perbandingan atau data (min 1 jika relevan)
+- Jika topik cocok, pakai satu sub-bab dengan struktur Q&A
+
+CONTOH VARIASI POLA (bukan daftar harus, tapi inspirasi):
+Section 1: <h2> → <blockquote> → <p> → <strong> → <p> → <p> → <ul>
+Section 2: <h2> → <p> → <h3> → <p> → <h3> → <p> → <ol>
+Section 3: <h2> → <p> → <table> → <p> → <ol>
+Section 4: <h2> → <p> → <blockquote> → <p> → <ul>
+Section 5: <h2> → <p> → <h3> → <p> → <ol> → <h3> → <blockquote>
+
+FORMAT OUTPUT: HTML murni. Hanya tag: h2, h3, p, strong, em, ul, ol, li, blockquote, table, thead, tbody, tr, th, td, a. JANGAN markdown. JANGAN <h1>.
+
+SETELAH artikel, di baris terakhir:
 ---METADATA
-{"excerpt": "ringkasan 150-200 karakter", "meta_description": "meta description 150-160 karakter", "slug": "url-slug-dari-judul", "keywords": ["kw1","kw2","kw3","kw4","kw5"], "topics": ["topik1","topik2"], "seo_score": 85}`;
+{"excerpt": "ringkasan 150-200 karakter", "meta_description": "meta 150-160 karakter", "slug": "url-slug", "keywords": ["kw1","kw2","kw3","kw4","kw5"], "topics": ["topik1"], "seo_score": 85}`;
 
   const fullResponse = await callGroq(contentPrompt, 0.8, 8192);
 
   // Split article and metadata
   const metaSplit = fullResponse.split("---METADATA");
-  const contentHtml = metaSplit[0]?.trim() || fullResponse;
-  let seoData: { excerpt: string; meta_description: string; slug: string; keywords: string[]; topics: string[]; seo_score: number };
+  let contentHtml = metaSplit[0]?.trim() || fullResponse;
+  let seoData: any;
   try {
     seoData = JSON.parse(metaSplit[1]?.trim() || "{}");
   } catch {
@@ -152,8 +112,8 @@ SETELAH artikel, di baris terakhir beri metadata JSON:
   console.log(`[blog-gen] Content: ${contentHtml.length} chars`);
   console.log(`[blog-gen] Slug: ${seoData.slug}`);
 
-  // Phase 4: Save as Draft
-  console.log("[blog-gen] Phase 4: Saving draft...");
+  // Phase 3: Save as Draft
+  console.log("[blog-gen] Phase 3: Saving draft...");
   let slug = seoData.slug;
   if (!slug || slug.length < 3) {
     slug = topicData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -176,6 +136,7 @@ SETELAH artikel, di baris terakhir beri metadata JSON:
     excerpt: seoData.excerpt || contentHtml.replace(/<[^>]*>/g, "").slice(0, 200),
     meta_description: seoData.meta_description || contentHtml.replace(/<[^>]*>/g, "").slice(0, 160),
     keywords: seoData.keywords || [],
+    content_plan_id: planId,
     topics: seoData.topics || [],
     status: "draft",
   }).select("id").single();
@@ -185,16 +146,17 @@ SETELAH artikel, di baris terakhir beri metadata JSON:
     throw insertError;
   }
 
+  await recordMetric(supabase, "posts_created", 1, { type: "blog" });
   console.log(`[blog-gen] Draft saved: /blog/${slug} (id: ${draft.id})`);
 
-  // Phase 5: Generate Image
-  console.log("[blog-gen] Phase 5: Image generation...");
+  // Phase 4: Generate Image
+  console.log("[blog-gen] Phase 4: Image generation...");
   let ogImageUrl = "";
   if (PUTER_AUTH_TOKEN) {
     try {
       const { init } = await import("@heyputer/puter.js/src/init.cjs");
       const puter = init(PUTER_AUTH_TOKEN);
-      const imgPrompt = `Professional blog thumbnail for "barbershop" industry in Indonesia. Topic: "${topicData.title}". Clean flat-design illustration style with warm gold and dark navy color scheme. A modern barbershop scene with barber tools (scissors, comb, razor) and digital elements subtly integrated. Professional Indonesian barber atmosphere. No text overlay. No people faces. Minimalist composition with strong focal point. Warm lighting, premium feel. Suitable for social media sharing card.`;
+      const imgPrompt = `Professional blog thumbnail for Indonesia barbershop industry. Topic: "${topicData.title}". Clean flat-design illustration with warm gold and dark navy scheme. Modern barbershop scene. No text overlay. Minimalist. Warm lighting. Premium feel.`;
       const img = await puter.ai.txt2img(imgPrompt, { model: "gpt-image-1-mini", quality: "medium" });
       const base64Data = img.src.replace(/^data:image\/\w+;base64,/, "");
       const buffer = Buffer.from(base64Data, "base64");
@@ -215,13 +177,13 @@ SETELAH artikel, di baris terakhir beri metadata JSON:
     }
   }
 
-  // Phase 6: Telegram Notification
-  console.log("[blog-gen] Phase 6: Telegram...");
+  // Phase 5: Telegram Notification
+  console.log("[blog-gen] Phase 5: Telegram...");
   const previewText = `<b>${topicData.title}</b>
 
-📝 ${seoData.excerpt.slice(0, 300)}
+📝 ${seoData.excerpt?.slice(0, 300) || ""}
 
-🏷 Keywords: ${seoData.keywords.join(", ")}
+🏷 Keywords: ${(seoData.keywords || []).join(", ")}
 📐 Panjang: ~${contentHtml.length} karakter
 ⭐ SEO Score: ${seoData.seo_score || "N/A"}
 
@@ -234,10 +196,177 @@ SETELAH artikel, di baris terakhir beri metadata JSON:
     ],
   ]);
 
-  // Update draft with telegram message id
   await supabase.from("blog_posts").update({ telegram_msg_id: msgId }).eq("id", draft.id);
 
   console.log("[blog-gen] Done!");
+}
+
+async function researchPhase(supabase: any): Promise<ResearchResult | null> {
+  // 1a: Fetch existing posts
+  const { data: existingPosts } = await supabase
+    .from("blog_posts")
+    .select("title, slug")
+    .order("created_at", { ascending: false });
+  const existingTitles = (existingPosts ?? []).map((p: { title: string }) => p.title);
+
+  // 1b: GSC keyword gap analysis
+  let gscData = "";
+  if (process.env.GSC_CLIENT_EMAIL && process.env.GSC_PRIVATE_KEY) {
+    try {
+      gscData = await fetchGSCKeywordGaps();
+    } catch (err) {
+      console.warn("[blog-gen] GSC fetch failed, skipping:", err);
+    }
+  }
+
+  // 1c: Trend-Pulse
+  let trendData = "";
+  try {
+    trendData = await runTrendPulse();
+  } catch (err) {
+    console.warn("[blog-gen] Trend-Pulse failed, skipping:", err);
+  }
+
+  // 1d: LLM topic selection
+  const topicPrompt = `Kamu adalah asisten riset konten untuk blog kapster.my.id, platform manajemen antrian barbershop Indonesia.
+
+TUGAS: Pilih SATU topik artikel blog yang PALING STRATEGIS untuk SEO dan engagement.
+
+DATA GSC (keyword gaps — posisi 11-20 dengan impressions tinggi):
+${gscData || "(Tidak ada data GSC)"}
+
+TREND TERKINI:
+${trendData || "(Tidak ada data trend)"}
+
+JUDUL YANG SUDAH DIBUAT:
+${existingTitles.join(", ") || "(belum ada)"}
+
+Aturan topik:
+1. Bisa radius dari barbershop (tidak harus langsung). Contoh: "Sejarah Kursi" → dikaitkan ke kursi barbershop, "Psikologi Gaya Rambut" → self-esteem → Kapster
+2. Belum pernah dibahas
+3. Punya celah SEO (GSC gaps prioritas)
+4. Natural mengarah ke CTA Kapster
+5. Layak artikel MENDALAM (3000+ kata)
+
+Beri output JSON SAJA (tanpa markdown formatting):
+{"topic": "nama topik singkat", "title": "judul artikel max 60 karakter", "reasoning": "mengapa topik ini dipilih (kaitkan ke SEO)", "seo_keywords": ["kw1", "kw2", "kw3"]}`;
+
+  const topicResponse = await callGroq(topicPrompt, 0.7, 500);
+  let topicData: { topic: string; title: string; reasoning: string; seo_keywords: string[] };
+  try {
+    topicData = JSON.parse(topicResponse.trim());
+  } catch {
+    console.error("[blog-gen] Failed to parse topic:", topicResponse);
+    await recordMetric(supabase, "research_failed", 1, { reason: "llm_parse" });
+    return null;
+  }
+
+  // 1e: MCP web search
+  let webResearchData = "";
+  const searchResults = await callMCPTool("web_search", {
+    query: `${topicData.topic} ${topicData.seo_keywords?.slice(0, 2).join(" ")} Indonesia 2026`,
+    num_results: 6,
+  });
+
+  if (searchResults && Array.isArray(searchResults) && searchResults.length > 0) {
+    const results = searchResults as Array<{ title: string; url: string; snippet: string }>;
+    webResearchData = results.slice(0, 4).map((r) => `Title: ${r.title}\nURL: ${r.url}\nSnippet: ${r.snippet}`).join("\n\n");
+
+    for (const result of results.slice(0, 2)) {
+      const content = await callMCPTool("fetch_page", { url: result.url });
+      if (content) {
+        webResearchData += `\n\n=== ${result.url} ===\n${content}`;
+      }
+    }
+  }
+
+  // 1f: Save to content_plans
+  const brief = `Topik: ${topicData.topic}
+Judul: ${topicData.title}
+Keywords: ${(topicData.seo_keywords || []).join(", ")}
+GSC: ${gscData ? "Ada" : "Tidak ada"}
+Trend: ${trendData ? "Ada" : "Tidak ada"}
+
+Web Research:
+${webResearchData || "(Tidak ada)"}
+
+Alasan: ${topicData.reasoning}`;
+
+  const { data: plan, error: planError } = await supabase.from("content_plans").insert({
+    brief,
+    status: "pending",
+  }).select("id").single();
+
+  if (planError) {
+    console.error("[blog-gen] Failed to save plan:", planError);
+    await recordMetric(supabase, "research_failed", 1, { reason: "db_error" });
+    return null;
+  }
+
+  await recordMetric(supabase, "plans_created", 1, { source: gscData ? "gsc" : "trend" });
+  await recordMetric(supabase, "research_success", 1, {});
+
+  return { topicData, webResearchData, planId: plan.id, brief };
+}
+
+async function fetchGSCKeywordGaps(): Promise<string> {
+  const { GoogleAuth } = await import("google-auth-library");
+  const auth = new GoogleAuth({
+    credentials: {
+      client_email: process.env.GSC_CLIENT_EMAIL!,
+      private_key: process.env.GSC_PRIVATE_KEY!.replace(/\\n/g, "\n"),
+    },
+    scopes: ["https://www.googleapis.com/auth/webmasters.readonly"],
+  });
+  const client = await auth.getClient();
+  const siteUrl = process.env.GSC_SITE_URL || "sc-domain:kapster.my.id";
+  const endDate = new Date().toISOString().split("T")[0];
+  const startDate = new Date(Date.now() - 90 * 86400000).toISOString().split("T")[0];
+
+  const res = await client.request({
+    url: `https://searchconsole.googleapis.com/v1/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`,
+    method: "POST",
+    data: {
+      startDate,
+      endDate,
+      dimensions: ["query"],
+      rowLimit: 200,
+      orderBy: [{ metricName: "impressions", sortOrder: "DESCENDING" }],
+    },
+  });
+
+  const rows = (res.data as any).rows || [];
+  const gaps = rows
+    .filter((r: any) => {
+      const pos = r.position || 100;
+      return pos >= 11 && pos <= 20 && r.impressions > 100;
+    })
+    .map((r: any) => `"${r.keys[0]}" → ${r.impressions} impressions, pos ${Math.round(r.position * 10) / 10}, ${r.clicks} clicks`)
+    .slice(0, 30);
+
+  return gaps.length ? gaps.join("\n") : "Tidak ada keyword gap signifikan";
+}
+
+async function runTrendPulse(): Promise<string> {
+  return new Promise((resolve) => {
+    const child = spawn(TREND_PULSE_PATH, [
+      "barbershop Indonesia",
+      "gaya rambut trend",
+      "perawatan rambut pria",
+    ], {
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: 25000,
+    });
+    let output = "";
+    child.stdout.on("data", (d: Buffer) => { output += d.toString(); });
+    child.on("close", (code) => {
+      if (code !== 0) resolve("");
+      const lines = output.trim().split("\n").slice(0, 15);
+      resolve(lines.join("\n"));
+    });
+    child.on("error", () => resolve(""));
+    setTimeout(() => { child.kill(); resolve(""); }, 25000);
+  });
 }
 
 async function callGroq(prompt: string, temperature = 0.7, maxTokens = 4096) {
