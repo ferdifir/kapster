@@ -125,11 +125,24 @@ async function main() {
   console.log(`[social-gen] Starting at ${new Date().toISOString()}`);
   const supabase = await createAdminClient();
 
+  // Fetch recent topics to avoid duplicates
+  const { data: recentPosts } = await supabase
+    .from("social_posts")
+    .select("topics")
+    .gte("created_at", new Date(Date.now() - 7 * 86400000).toISOString())
+    .order("created_at", { ascending: false });
+  const recentTopics = recentPosts
+    ?.flatMap((p) => (Array.isArray(p.topics) ? p.topics : []))
+    .filter(Boolean)
+    .slice(0, 15) || [];
+  const recentContext = recentTopics.length
+    ? `\nTopik yang SUDAH pernah dibuat (JANGAN buat yang mirip):\n${recentTopics.map((t: string) => `  - ${t}`).join("\n")}`
+    : "";
+
   // Phase 1: Trend Research
   let trendData: { topics: Array<{ title: string; pillar: string; reasoning: string; platform_hint?: string }> };
 
   if (USER_TOPIC) {
-    // User provided topic — use it directly
     trendData = {
       topics: [{ title: USER_TOPIC, pillar: "solution", reasoning: "Topik dari user" }],
     };
@@ -173,6 +186,7 @@ async function main() {
 Berikut adalah data tren real dari Indonesia hari ini dari Google Trends, Google News, Reddit, dan Wikipedia:
 
 ${trendContext}
+${recentContext}
 
 TUGAS: Analisis data di atas dan pilih ${IS_MANUAL ? "1" : "4"} topik yang PALING RELEVAN untuk pemilik barbershop Indonesia.
 
@@ -182,7 +196,8 @@ Cara kerja:
 - Contoh: tren "omzet" → topik "Rahasia barbershop ramai saat jam sibuk"
 - Contoh: tren "AI" → topik "Teknologi barbershop masa depan"
 - JANGAN pilih topik yang tidak relevan sama sekali
-- Setiap topik harus menarik dan spesifik
+- HINDARI topik yang mirip dengan daftar yang sudah pernah dibuat di atas
+- Setiap topik harus FRESH, belum pernah dibahas sebelumnya
 
 Output JSON SAJA (tanpa markdown):
 {"topics": [
