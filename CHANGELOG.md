@@ -1,3 +1,23 @@
+# [1.15.0](https://github.com/ferdifir/kapster/compare/v1.14.1...v1.15.0) (2026-06-02)
+
+
+### Bug Fixes
+
+* add date filter to QA score query and use shared sendTelegramMessage ([da5e7f6](https://github.com/ferdifir/kapster/commit/da5e7f69bde96e3c2e34ab4bfd50f264d5456837))
+* add FK relationship in types and IF NOT EXISTS in migration ([b99ec79](https://github.com/ferdifir/kapster/commit/b99ec7959de58c950aacc1ba43fd5b58882d0960))
+* check HTTP status, guard empty URLs, wrap Telegram in try/catch, improve meta regex ([a42fbd3](https://github.com/ferdifir/kapster/commit/a42fbd3d718d884faf1998be0f12767e8a6ff4f0))
+* prevent NaN score and skip unnecessary regen on QA failure ([4b8a396](https://github.com/ferdifir/kapster/commit/4b8a396d91290ab8bbafde25c32acce63b22d8bb))
+* propagate Trend-Pulse errors and filter empty keywords ([aa9e548](https://github.com/ferdifir/kapster/commit/aa9e5485dd0d254d97222d3b7dc4e294bd4c7794))
+
+
+### Features
+
+* add content_plan_id to blog_posts for plan tracking ([b1aa4b3](https://github.com/ferdifir/kapster/commit/b1aa4b3297a07864be19b69c9de4ddfb4d842fa8))
+* **blog:** add QA review with auto-regen for blog content ([628ff71](https://github.com/ferdifir/kapster/commit/628ff7173c3645ecb93ce72d46e48b847a2e29f6))
+* **blog:** data-driven research with GSC, Trend-Pulse, and MCP ([8e0edcd](https://github.com/ferdifir/kapster/commit/8e0edcd0956870f8fc98ce88d04ba6435e165a2f))
+* **seo:** add SEO audit cron endpoint ([ff39509](https://github.com/ferdifir/kapster/commit/ff395091e3c5caebc567601cedbbaf6d3b067087))
+* **seo:** add SEO audit script with HTML parsing, PSI, and LLM analysis ([28b819a](https://github.com/ferdifir/kapster/commit/28b819a5847ce9b156cc2836dc89e2ef056b782e))
+
 ## [1.14.1](https://github.com/ferdifir/kapster/compare/v1.14.0...v1.14.1) (2026-06-02)
 
 
