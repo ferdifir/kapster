@@ -14,9 +14,14 @@ interface PageAudit {
   images: { total: number; withAlt: number; withoutAlt: number };
   canonical: { url: string | null; matchesExpected: boolean };
   og: { title: boolean; description: boolean; image: boolean };
-  schema: { hasJsonLd: boolean; types: string[] };
-  links: { internal: number; external: number };
+  schema: { hasJsonLd: boolean; types: string[]; validArticle: boolean };
+  links: { internal: number; external: number; internalAnchors: string[] };
   robotsIndexable: boolean;
+  wordCount: number;
+  keywordsInTitle: boolean;
+  keywordsInH1: boolean;
+  keywordsInMeta: boolean;
+  h2Substantive: boolean;
   performanceScore: number | null;
   gsc: { queries: string[]; impressions: number; clicks: number; avgPosition: number | null } | null;
   pageError: string | null;
@@ -141,9 +146,14 @@ async function auditPage(url: string): Promise<PageAudit> {
     images: { total: 0, withAlt: 0, withoutAlt: 0 },
     canonical: { url: null, matchesExpected: true },
     og: { title: false, description: false, image: false },
-    schema: { hasJsonLd: false, types: [] },
-    links: { internal: 0, external: 0 },
+    schema: { hasJsonLd: false, types: [], validArticle: false },
+    links: { internal: 0, external: 0, internalAnchors: [] },
     robotsIndexable: true,
+    wordCount: 0,
+    keywordsInTitle: false,
+    keywordsInH1: false,
+    keywordsInMeta: false,
+    h2Substantive: false,
     performanceScore: null,
     gsc: null,
     pageError: null,
@@ -203,21 +213,49 @@ async function auditPage(url: string): Promise<PageAudit> {
 
     const jsonLdBlocks = html.match(/<script\s+[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi) || [];
     const types: string[] = [];
+    let validArticle = false;
     for (const block of jsonLdBlocks) {
       try {
         const json = JSON.parse(block.replace(/<[^>]*>/g, ""));
-        const t = json["@type"] || (Array.isArray(json["@graph"]) ? json["@graph"][0]?.["@type"] : null);
-        if (t) types.push(t);
+        const items = json["@graph"] || [json];
+        for (const item of items) {
+          const t = item["@type"];
+          if (t) types.push(t);
+          if (t === "Article" || t === "NewsArticle" || t === "BlogPosting") {
+            validArticle = !!(item.headline && item.description && item.datePublished && item.author && item.publisher);
+          }
+        }
       } catch { /* skip parse errors */ }
     }
-    defaultAudit.schema = { hasJsonLd: jsonLdBlocks.length > 0, types };
+    defaultAudit.schema = { hasJsonLd: jsonLdBlocks.length > 0, types, validArticle };
 
-    const allLinks = html.match(/<a\s+[^>]*href=["']([^"']*)["']/gi) || [];
-    defaultAudit.links.internal = allLinks.filter((l) => {
-      const href = l.match(/href=["']([^"']*)["']/i)?.[1] || "";
-      return href.startsWith("/") || href.startsWith(SITE_URL);
-    }).length;
-    defaultAudit.links.external = allLinks.length - defaultAudit.links.internal;
+    const allLinks = html.match(/<a\s+[^>]*href=["']([^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi) || [];
+    const internalAnchors: string[] = [];
+    for (const a of allLinks) {
+      const href = a.match(/href=["']([^"']*)["']/i)?.[1] || "";
+      if (href.startsWith("/") || href.startsWith(SITE_URL)) {
+        const text = a.replace(/<[^>]*>/g, "").trim();
+        if (text && text.length > 2) internalAnchors.push(text.slice(0, 60));
+      }
+    }
+    defaultAudit.links.internal = internalAnchors.length;
+    defaultAudit.links.external = allLinks.length - internalAnchors.length;
+    defaultAudit.links.internalAnchors = internalAnchors.slice(0, 10);
+
+    // Content depth
+    const bodyText = (html.match(/<body[\s\S]*?>([\s\S]*)<\/body>/i)?.[1] || html).replace(/<[^>]*>/g, "").trim();
+    defaultAudit.wordCount = bodyText.split(/\s+/).length;
+
+    // Keyword in title / H1 / meta
+    const titleWords = (defaultAudit.title.content || "").toLowerCase().split(/\s+/).filter(w => w.length > 3);
+    const h1Content = (html.match(/<h1[\s\S]*?>([\s\S]*?)<\/h1>/i)?.[1] || "").toLowerCase();
+    defaultAudit.keywordsInTitle = titleWords.length >= 2;
+    defaultAudit.keywordsInH1 = titleWords.some(w => h1Content.includes(w));
+    defaultAudit.keywordsInMeta = titleWords.some(w => (defaultAudit.metaDescription.content || "").toLowerCase().includes(w));
+
+    // H2 substance: at least 3 h2, each with 100+ chars of content
+    const h2Sections = html.split(/<h2[\s\S]*?<\/h2>/i);
+    defaultAudit.h2Substantive = h2Sections.length >= 4 && h2Sections.slice(1).every(s => s.replace(/<[^>]*>/g, "").trim().length > 100);
 
     const robotsMeta = html.match(/<meta\s+[^>]*name=["']robots["'][^>]*content=["']([^"']*)["']/i);
     defaultAudit.robotsIndexable = !robotsMeta || !robotsMeta[1].includes("noindex");
@@ -249,20 +287,27 @@ function calcScore(audit: PageAudit): number {
   const metaScore = audit.metaDescription.content && audit.metaDescription.length >= 120 && audit.metaDescription.length <= 160 ? 1 : 0.5;
   const headingScore = audit.headings.h1 === 1 && audit.headings.hierarchyValid ? 1 : 0.5;
   const imageScore = audit.images.total > 0 ? audit.images.withAlt / audit.images.total : 1;
-  const schemaScore = audit.schema.hasJsonLd ? 1 : 0.3;
+  const schemaScore = audit.schema.hasJsonLd && audit.schema.validArticle ? 1 : audit.schema.hasJsonLd ? 0.7 : 0.3;
   const canonicalScore = audit.canonical.matchesExpected ? 1 : 0.5;
   const ogScore = (audit.og.title && audit.og.description && audit.og.image) ? 1 : 0.5;
-  const linkScore = audit.links.internal > audit.links.external ? 1 : 0.7;
+  const linkScore = audit.links.internal > 3 && audit.links.internal > audit.links.external ? 1 : 0.7;
   const robotsScore = audit.robotsIndexable ? 1 : 0;
   const perfScore = audit.performanceScore !== null ? audit.performanceScore / 100 : 0.5;
+  const kwScore = (audit.keywordsInTitle && audit.keywordsInH1 && audit.keywordsInMeta) ? 1 : audit.keywordsInTitle ? 0.7 : 0.4;
+  const depthScore = audit.wordCount >= 2000 ? 1 : audit.wordCount >= 1000 ? 0.7 : 0.3;
+  const h2Score = audit.h2Substantive ? 1 : 0.5;
+  const anchorScore = audit.links.internalAnchors.some(a => a.length > 10) ? 1 : 0.6;
 
-  const onpage = (titleScore * 15 + metaScore * 12 + headingScore * 12 + imageScore * 10 +
-    schemaScore * 10 + canonicalScore * 8 + ogScore * 8 + linkScore * 5 + robotsScore * 5) / 85 * 100;
+  const onpage = (
+    titleScore * 10 + metaScore * 10 + headingScore * 8 + imageScore * 8 +
+    schemaScore * 10 + canonicalScore * 5 + ogScore * 5 + linkScore * 5 +
+    robotsScore * 5 + kwScore * 12 + depthScore * 12 + h2Score * 5 + anchorScore * 5
+  ) / 100 * 100;
 
   const perfWeighted = perfScore * 100;
   const gscWeighted = audit.gsc ? calcGscScore(audit.gsc) : 50;
 
-  return Math.round(onpage * 0.45 + gscWeighted * 0.30 + perfWeighted * 0.25);
+  return Math.round(onpage * 0.60 + (audit.gsc ? gscWeighted * 0.20 : 0) + perfWeighted * 0.20 + (audit.gsc ? 0 : 0.20 * 50));
 }
 
 function calcGscScore(gsc: NonNullable<PageAudit["gsc"]>): number {
@@ -280,15 +325,16 @@ async function analyzeAudit(
 ): Promise<{ summary: string; critical: Array<{ page: string; issue: string; impact: string; fix: string }>; improvements: Array<{ page: string; metric: string; change: string }> }> {
   const auditSummary = audits.map((a, i) =>
     `URL: ${a.url}\nScore: ${scores[i]}\n${a.pageError ? `ERROR: ${a.pageError}` : ""}` +
-    `\nTitle: ${a.title.content ? `${a.title.content} (${a.title.length} chars, multiple H1: ${a.title.hasMultipleH1})` : "MISSING"}` +
-    `\nMeta: ${a.metaDescription.content ? `${a.metaDescription.length} chars` : "MISSING"}` +
-    `\nHeadings: H1=${a.headings.h1} H2=${a.headings.h2} H3=${a.headings.h3}` +
+    `\nTitle: ${a.title.content ? `${a.title.content} (${a.title.length} chars, kw in title: ${a.keywordsInTitle})` : "MISSING"}` +
+    `\nMeta: ${a.metaDescription.content ? `${a.metaDescription.length} chars, kw in meta: ${a.keywordsInMeta}` : "MISSING"}` +
+    `\nHeadings: H1=${a.headings.h1} H2=${a.headings.h2} H3=${a.headings.h3} substantive=${a.h2Substantive}` +
+    `\nContent: ${a.wordCount} words` +
     `\nImages: ${a.images.withoutAlt}/${a.images.total} without alt` +
-    `\nSchema: ${a.schema.hasJsonLd} (${a.schema.types.join(", ")})` +
+    `\nSchema: ${a.schema.hasJsonLd} validArticle=${a.schema.validArticle} (${a.schema.types.join(", ")})` +
     `\nCanonical: ${a.canonical.url ? "ok" : "missing"}` +
     `\nOG: title=${a.og.title} desc=${a.og.description} img=${a.og.image}` +
-    `\nIndexable: ${a.robotsIndexable}` +
-    `\nPerformance: ${a.performanceScore ?? "N/A"}` +
+    `\nInternal links: ${a.links.internal} (anchors: ${a.links.internalAnchors.slice(0, 4).join(", ")})` +
+    `\nIndexable: ${a.robotsIndexable} | Performance: ${a.performanceScore ?? "N/A"}` +
     `\n---`
   ).join("\n");
 
