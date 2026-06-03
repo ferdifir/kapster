@@ -45,35 +45,30 @@ async function main() {
   console.log("[blog-gen] Phase 2: Generating article...");
   const contentPrompt = `Kamu adalah penulis konten ahli untuk blog kapster.my.id — platform manajemen antrian digital untuk barbershop Indonesia.
 
-TUGAS: Tulis artikel BLOG SANGAT MENDALAM (3000-5000 kata) dalam Bahasa Indonesia yang benar-benar menjawab judulnya.
-
 Judul: "${topicData.title}"
 
-Target pembaca: pemilik barbershop, barberman, dan pria Indonesia yang peduli penampilan.
-Gaya: Seperti tulisan MAJALAH — natural, engaging, kadang ada celotehan atau humor ringan. BUKAN kaku seperti buku teks.
+[WAJIB] Artikel HARUS MINIMAL 3000 KATA. Target 5000+ kata. Jangan berhenti sampai mencapai target panjang ini. Tulis panjang, mendalam, dan komprehensif.
 
-PANDUAN KONTEN (prioritas utama):
+GAYA: Seperti tulisan MAJALAH — natural, engaging, dengan celotehan atau humor ringan. Bayangkan kamu jelasin ke teman yang punya barbershop.
 
-1. JAWAB PERTANYAAN di judul. Setiap sub-bab harus memberikan informasi konkret yang berguna, bukan sekadar basa-basi.
-
-2. SETIAP sub-bab harus punya: contoh nyata, studi kasus, data spesifik, atau cerita yang relevan. JANGAN menulis saran generik seperti "pastikan pelanggan nyaman" tanpa contoh konkret.
-
-3. Variasikan panjang sub-bab (200-600 kata). JANGAN semua sub-bab seragam.
-
-4. Gunakan bahasa sehari-hari yang natural — bayangkan kamu jelasin ke teman yang punya barbershop. Boleh pake istilah gaul Indonesia yang relevan.
+PANDUAN KONTEN:
+1. Jawab judul dengan contoh nyata, studi kasus, data spesifik, atau cerita — bukan saran generik
+2. Minimal 5 sub-bab <h2>, masing-masing 400-800 kata, dengan variasi panjang
+3. Per sub-bab: minimal 200 kata konten informatif (bukan format HTML kosong)
+4. Semakin panjang semakin bagus. Artikel 5000+ kata jauh lebih bernilai dari 3000 kata
 
 ATURAN FORMAT:
-- Format HTML: h2, h3, p, strong, em, ul, ol, li, blockquote, table, thead, tbody, tr, th, td, a
+- HTML: h2, h3, p, strong, em, ul, ol, li, blockquote, table, thead, tbody, tr, th, td, a
 - JANGAN markdown. JANGAN <h1>
 - Minimal 1 <ul>, 1 <ol>, 1 <blockquote>, 1 <table>
 - Gunakan <strong> untuk keyword penting
 
-CTA di akhir (wajib disertakan):
+CTA di akhir:
 <p>Kalau kamu ingin fokus mengembangkan bisnis barbershop tanpa pusing urus antrian, coba deh pakai Kapster. Sistem antrian digital yang bikin pelanggan puas dan operasional makin rapi. Cuma Rp10.000/bulan. Mulai gratis di ${SITE_URL}!</p>
 
-SETELAH artikel, di baris terakhir:
+SETELAH artikel (di baris terakhir), sertakan metadata:
 ---METADATA
-{"excerpt": "ringkasan 150-200 karakter", "meta_description": "meta 150-160 karakter", "slug": "url-slug", "keywords": ["kw1","kw2","kw3","kw4","kw5"], "topics": ["topik1"], "seo_score": 85}`;
+{"excerpt": "ringkasan artikel 150-200 karakter (bukan judul ulang)", "meta_description": "meta description 150-160 karakter untuk SEO", "slug": "url-slug-pendek-dan-relevan", "keywords": ["kw1","kw2","kw3","kw4","kw5","kapaster"], "topics": ["topik1"], "seo_score": 85}`;
 
   const fullResponse = await callGroq(contentPrompt, 0.8, 8192);
 
@@ -122,6 +117,24 @@ SETELAH artikel, di baris terakhir:
     }
     console.log(`[blog-gen] Regenerated: ${contentHtml.length} chars`);
     await recordMetric(supabase, "qa_regen_rate", 1, { title: topicData.title });
+  }
+
+  // Phase 2.75: Length check — extend if too short
+  const wordCount = contentHtml.replace(/<[^>]*>/g, "").split(/\s+/).length;
+  if (wordCount < 3000) {
+    console.log(`[blog-gen] Word count ${wordCount}, extending article...`);
+    for (let i = 0; i < 2; i++) {
+      const lastPara = contentHtml.match(/<p>[^<]*<\/p>\s*$/);
+      const continuePrompt = `LANJUTKAN artikel berikut. Tambahkan 2000+ KATA BARU setelah bagian terakhir. Jangan ulang konten sebelumnya.\n\n${lastPara ? `Akhir dari artikel sejauh ini:\n...${lastPara[0]}\n\nLANJUTKAN DARI SINI dengan konten baru 2000+ kata:` : "Tulis konten tambahan 2000+ kata:"}`;
+      const moreContent = await callGroq(continuePrompt, 0.8, 8192);
+      const cleanMore = moreContent.replace(/---+\s*METADATA\s*\n{[\s\S]*}/i, "").trim();
+      if (cleanMore.length > 200) {
+        contentHtml = contentHtml + "\n\n" + cleanMore;
+        const newCount = contentHtml.replace(/<[^>]*>/g, "").split(/\s+/).length;
+        console.log(`[blog-gen] Extended to ${newCount} words`);
+        if (newCount >= 3000) break;
+      }
+    }
   }
 
   // Phase 3: Save as Draft
