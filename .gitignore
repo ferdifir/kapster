@@ -49,3 +49,4 @@ SUPABASE_SECRET.md
 .claude/
 .superpowers/
 gsc-connector.json
+.playwright-mcp/
