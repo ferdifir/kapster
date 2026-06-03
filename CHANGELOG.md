@@ -1,3 +1,10 @@
+## [1.18.7](https://github.com/ferdifir/kapster/compare/v1.18.6...v1.18.7) (2026-06-03)
+
+
+### Bug Fixes
+
+* **admin:** use web_app instead of url for inline keyboard ([f06a594](https://github.com/ferdifir/kapster/commit/f06a594f5f5258888f1bb39eeb828822508d4b21))
+
 ## [1.18.6](https://github.com/ferdifir/kapster/compare/v1.18.5...v1.18.6) (2026-06-03)
 
 
