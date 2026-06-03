@@ -1,3 +1,23 @@
+# [1.18.0](https://github.com/ferdifir/kapster/compare/v1.17.3...v1.18.0) (2026-06-03)
+
+
+### Bug Fixes
+
+* **admin:** lock down exec_sql function to service_role only ([194f443](https://github.com/ferdifir/kapster/commit/194f4433e4734cdce6d0368ed5783f68f4ecfa4f))
+* **admin:** resolve process.cwd() client-side bug, fix file read/write paths ([f2e0b11](https://github.com/ferdifir/kapster/commit/f2e0b11a2ad23c62702db12fb6084863c6ac8b5e))
+
+
+### Features
+
+* **admin:** add admin auth library ([e16daed](https://github.com/ferdifir/kapster/commit/e16daedcd1cf5b782463132f973ff8c19af3eac3))
+* **admin:** add admin layout, sidebar, and header ([6ffe493](https://github.com/ferdifir/kapster/commit/6ffe4933d311a79891993516db2533eda6857639))
+* **admin:** add barbershop and user management pages ([bd72e55](https://github.com/ferdifir/kapster/commit/bd72e558b9049520776fb365c13c9fcce50b257c))
+* **admin:** add dashboard redirect and KPIs ([5223bca](https://github.com/ferdifir/kapster/commit/5223bca406aa0c732ce48e5863f8199449cd27e1))
+* **admin:** add SQL query runner ([003e904](https://github.com/ferdifir/kapster/commit/003e9043950ab7544a8f4a0b7d4c6a613b2c8ab8))
+* **admin:** add system health, terminal, file manager, and SEO audit ([93e9763](https://github.com/ferdifir/kapster/commit/93e976386cf030e2d27839a557dba9401c0f6efd))
+* **admin:** add telegram bot /admin command and init endpoint ([819fda7](https://github.com/ferdifir/kapster/commit/819fda78e625c9ee96762c3e9f2e4c7c492f6c5b))
+* **admin:** add telegram_id migration and env vars ([03cf4ac](https://github.com/ferdifir/kapster/commit/03cf4ac707d6b2bb3c93792900363637caf2b580))
+
 ## [1.17.3](https://github.com/ferdifir/kapster/compare/v1.17.2...v1.17.3) (2026-06-03)
 
 
