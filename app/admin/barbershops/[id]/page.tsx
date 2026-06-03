@@ -11,7 +11,7 @@ export default async function AdminBarbershopDetailPage({
 
   const { data: barbershop } = await supabase
     .from("barbershops")
-    .select("*, profiles!barbershops_owner_id_fkey(full_name, phone, email)")
+    .select("*, profiles!barbershops_owner_id_fkey(full_name, phone)")
     .eq("id", id)
     .single();
 
@@ -43,7 +43,7 @@ export default async function AdminBarbershopDetailPage({
     .eq("barbershop_id", id)
     .maybeSingle();
 
-  const profile = barbershop.profiles as { full_name: string | null; phone: string | null; email: string | null } | null;
+  const profile = barbershop.profiles as { full_name: string | null; phone: string | null } | null;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -69,7 +69,6 @@ export default async function AdminBarbershopDetailPage({
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div><span className="text-dark-400">Pemilik:</span> <span className="text-white ml-2">{profile?.full_name ?? "-"}</span></div>
           <div><span className="text-dark-400">Telepon:</span> <span className="text-white ml-2">{barbershop.phone ?? "-"}</span></div>
-          <div><span className="text-dark-400">Email:</span> <span className="text-white ml-2">{profile?.email ?? "-"}</span></div>
           <div><span className="text-dark-400">Kota:</span> <span className="text-white ml-2">{barbershop.city ?? "-"}</span></div>
           <div><span className="text-dark-400">Slug:</span> <span className="text-white ml-2">{barbershop.slug}</span></div>
           <div><span className="text-dark-400">WhatsApp:</span> <span className={`ml-2 ${barbershop.wa_connected ? "text-green-400" : "text-dark-400"}`}>{barbershop.wa_connected ? "Terhubung" : "Tidak terhubung"}</span></div>
