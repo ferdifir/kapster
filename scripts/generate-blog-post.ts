@@ -119,19 +119,21 @@ SETELAH artikel (di baris terakhir), sertakan metadata:
     await recordMetric(supabase, "qa_regen_rate", 1, { title: topicData.title });
   }
 
-  // Phase 2.75: Length check — extend if too short
+  // Phase 2.75: Length check — extend until 3000+ words
   const wordCount = contentHtml.replace(/<[^>]*>/g, "").split(/\s+/).length;
   if (wordCount < 3000) {
-    console.log(`[blog-gen] Word count ${wordCount}, extending article...`);
-    for (let i = 0; i < 4; i++) {
+    console.log(`[blog-gen] Word count ${wordCount}, extending to 3000+...`);
+    for (let i = 0; i < 8; i++) {
+      const newCount = contentHtml.replace(/<[^>]*>/g, "").split(/\s+/).length;
+      if (newCount >= 3000) break;
       const lastPara = contentHtml.match(/<p>[^<]*<\/p>\s*$/);
-      const preview = lastPara ? `Akhir artikel sejauh ini:\n...${lastPara[0]}\n\nLANJUTKAN DARI SINI dengan sub-bab <h2> baru. INI WAJIB: tambahkan minimal 1000+ KATA BARU:` : "Tulis konten baru 1000+ kata dengan sub-bab <h2>. JANGAN KURANG:";
-      const continuePrompt = `Kamu adalah penulis konten ahli. INI WAJIB: tulis MINIMAL 1000+ KATA BARU. Jangan ulang konten sebelumnya.
+      const preview = lastPara ? `Akhir artikel:\n...${lastPara[0].slice(0, 200)}\n\nLANJUTKAN DARI SINI. WAJIB: tambah 1000+ KATA BARU:` : "Tulis konten baru 1000+ kata. WAJIB:";
+      const continuePrompt = `Kamu penulis konten ahli. INI WAJIB: tulis MINIMAL 1000+ KATA BARU, jangan ulang konten sebelumnya.
 
-STRUKTUR W AJIB:
-- Setiap sub-bab: <h2> judul → <p> konten → <h3> sub-bab → <p> detail
+STRUKTUR:
+- <h2> judul → <p> isi → <h3> sub-bab → detail
 - Minimal 2 <h2> baru
-- Gunakan <ul>, <ol>, <blockquote>, <table>
+- Pakai <ul>, <ol>, <blockquote>, <table>
 - JANGAN markdown, JANGAN <h1>
 
 ${preview}`;
@@ -551,7 +553,7 @@ async function callGroqModel(model: string, prompt: string, temperature = 0.7, m
   return data.choices?.[0]?.message?.content ?? "";
 }
 
-async function callLLM(prompt: string, temperature = 0.7, maxTokens = 4096): Promise<string> {
+export async function callLLM(prompt: string, temperature = 0.7, maxTokens = 4096): Promise<string> {
   const providers: { name: string; call: () => Promise<string> }[] = [
     { name: "groq", call: () => callGroq(prompt, temperature, maxTokens) },
   ];
