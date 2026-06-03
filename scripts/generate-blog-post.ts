@@ -448,13 +448,34 @@ ${fullText}`;
 }
 
 async function callGroq(prompt: string, temperature = 0.7, maxTokens = 4096) {
+  const models = [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+    "mixtral-8x7b-32768",
+    "gemma2-9b-it",
+  ];
+  for (const model of models) {
+    try {
+      return await callGroqModel(model, prompt, temperature, maxTokens);
+    } catch (err: any) {
+      if (err.message.includes("rate limit") || err.message.includes("429")) {
+        console.warn(`[blog-gen] Groq ${model} rate limited, trying next model...`);
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error("All Groq models rate limited or failed");
+}
+
+async function callGroqModel(model: string, prompt: string, temperature = 0.7, maxTokens = 4096) {
   if (!GROQ_API_KEY) throw new Error("GROQ_API_KEY not set");
 
   const res = await fetch(GROQ_API_URL, {
     method: "POST",
     headers: { Authorization: `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: GROQ_MODEL,
+      model,
       messages: [
         { role: "system", content: "Kamu adalah asisten konten Kapster. Jawab dalam Bahasa Indonesia. Output informatif dan mendalam." },
         { role: "user", content: prompt },
@@ -467,7 +488,8 @@ async function callGroq(prompt: string, temperature = 0.7, maxTokens = 4096) {
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
-    throw new Error(res.status === 429 ? `Groq rate limited: ${errText}` : `Groq API error ${res.status}: ${errText}`);
+    if (res.status === 429) throw new Error(`Groq rate limited (${model}): ${errText}`);
+    throw new Error(`Groq API error ${res.status} (${model}): ${errText}`);
   }
 
   const data = await res.json();
@@ -480,9 +502,23 @@ async function callLLM(prompt: string, temperature = 0.7, maxTokens = 4096): Pro
   ];
   const openrouterKey = process.env.OPENROUTER_API_KEY;
   if (openrouterKey) {
+    const orModels = [
+      "openai/gpt-oss-120b:free",
+      "google/gemma-2-9b-it:free",
+      "meta-llama/llama-3.2-11b-vision-instruct:free",
+    ];
     providers.push({
       name: "openrouter",
-      call: () => askOpenRouter(prompt, { temperature, max_tokens: maxTokens, model: "openai/gpt-oss-120b:free" }),
+      call: async () => {
+        for (const model of orModels) {
+          try {
+            return await askOpenRouter(prompt, { temperature, max_tokens: maxTokens, model });
+          } catch (err: any) {
+            console.warn(`[blog-gen] OpenRouter ${model} failed: ${err.message}`);
+          }
+        }
+        throw new Error("All OpenRouter models failed");
+      },
     });
   }
   const ollamaKey = process.env.OLLAMA_API_KEY;
