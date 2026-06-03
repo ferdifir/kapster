@@ -70,7 +70,7 @@ SETELAH artikel (di baris terakhir), sertakan metadata:
 ---METADATA
 {"excerpt": "ringkasan artikel 150-200 karakter (bukan judul ulang)", "meta_description": "meta description 150-160 karakter untuk SEO", "slug": "url-slug-pendek-dan-relevan", "keywords": ["kw1","kw2","kw3","kw4","kw5","kapaster"], "topics": ["topik1"], "seo_score": 85}`;
 
-  const fullResponse = await callGroq(contentPrompt, 0.8, 8192);
+  const fullResponse = await callLLM(contentPrompt, 0.8, 8192);
 
   // Split article and metadata
   const metaMatch = fullResponse.match(/---+\s*METADATA\s*\n({[\s\S]*})/i);
@@ -107,7 +107,7 @@ SETELAH artikel (di baris terakhir), sertakan metadata:
   if (qaResult.score < 4) {
     console.log(`[blog-gen] QA score ${qaResult.score}/5, regenerating with fix notes...`);
     const fixedPrompt = contentPrompt + `\n\nQA REVIEW NOTES (PERBAIKI):\n${qaResult.notes}`;
-    const fixedResponse = await callGroq(fixedPrompt, 0.8, 8192);
+    const fixedResponse = await callLLM(fixedPrompt, 0.8, 8192);
     const fixedMetaMatch = fixedResponse.match(/---+\s*METADATA\s*\n({[\s\S]*})/i);
     if (fixedMetaMatch) {
       contentHtml = fixedResponse.slice(0, fixedMetaMatch.index).trim();
@@ -135,7 +135,7 @@ STRUKTUR W AJIB:
 - JANGAN markdown, JANGAN <h1>
 
 ${preview}`;
-      const moreContent = await callGroq(continuePrompt, 0.8, 8192);
+      const moreContent = await callLLM(continuePrompt, 0.8, 8192);
       const cleanMore = moreContent.replace(/---+\s*METADATA\s*\n{[\s\S]*}/i, "").trim();
       if (cleanMore.length > 200) {
         contentHtml = contentHtml + "\n\n" + cleanMore;
@@ -295,7 +295,7 @@ Aturan topik:
 Beri output JSON SAJA (tanpa markdown formatting):
 {"topic": "nama topik singkat", "title": "judul artikel max 60 karakter (spesifik, bukan generik)", "reasoning": "mengapa topik ini dipilih (kaitkan ke SEO dan data GSC)", "seo_keywords": ["kw1", "kw2", "kw3", "kapaster"]}`;
 
-  const topicResponse = await callGroq(topicPrompt, 0.7, 500);
+  const topicResponse = await callLLM(topicPrompt, 0.7, 500);
   let topicData: { topic: string; title: string; reasoning: string; seo_keywords: string[] };
   try {
     topicData = JSON.parse(topicResponse.trim());
@@ -467,11 +467,33 @@ async function callGroq(prompt: string, temperature = 0.7, maxTokens = 4096) {
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
-    throw new Error(`Groq API error ${res.status}: ${errText}`);
+    throw new Error(res.status === 429 ? `Groq rate limited: ${errText}` : `Groq API error ${res.status}: ${errText}`);
   }
 
   const data = await res.json();
   return data.choices?.[0]?.message?.content ?? "";
+}
+
+async function callLLM(prompt: string, temperature = 0.7, maxTokens = 4096): Promise<string> {
+  const providers: { name: string; call: () => Promise<string> }[] = [
+    { name: "groq", call: () => callGroq(prompt, temperature, maxTokens) },
+  ];
+  const openrouterKey = process.env.OPENROUTER_API_KEY;
+  if (openrouterKey) {
+    providers.push({
+      name: "openrouter",
+      call: () => askOpenRouter(prompt, { temperature, max_tokens: maxTokens, model: "openai/gpt-oss-120b:free" }),
+    });
+  }
+  for (const p of providers) {
+    try {
+      const result = await p.call();
+      if (result) return result;
+    } catch (err: any) {
+      console.warn(`[blog-gen] ${p.name} failed: ${err.message}`);
+    }
+  }
+  throw new Error(`All LLM providers failed`);
 }
 
 async function callMCPTool(toolName: string, args: Record<string, unknown>) {
