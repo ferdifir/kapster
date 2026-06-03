@@ -1,3 +1,10 @@
+## [1.18.12](https://github.com/ferdifir/kapster/compare/v1.18.11...v1.18.12) (2026-06-03)
+
+
+### Bug Fixes
+
+* **admin:** move CSP to proxy.ts to workaround Turbopack bug ([c7bd751](https://github.com/ferdifir/kapster/commit/c7bd7517e97dede7b696d1a34dfd3a3766afc43c))
+
 ## [1.18.11](https://github.com/ferdifir/kapster/compare/v1.18.10...v1.18.11) (2026-06-03)
 
 
