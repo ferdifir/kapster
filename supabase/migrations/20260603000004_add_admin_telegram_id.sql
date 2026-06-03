@@ -6,3 +6,6 @@ BEGIN
   RETURN QUERY EXECUTE query_text;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+REVOKE EXECUTE ON FUNCTION exec_sql FROM public, anon, authenticated;
+GRANT EXECUTE ON FUNCTION exec_sql TO service_role;

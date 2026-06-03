@@ -1,0 +1,136 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - navigation [ref=e3]:
+    - generic [ref=e5]:
+      - link "Kapster" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e12]: Kapster
+      - generic [ref=e13]:
+        - link "Fitur" [ref=e14] [cursor=pointer]:
+          - /url: "#fitur"
+        - link "Cara Kerja" [ref=e15] [cursor=pointer]:
+          - /url: "#cara-kerja"
+        - link "Harga" [ref=e16] [cursor=pointer]:
+          - /url: "#harga"
+        - link "Testimoni" [ref=e17] [cursor=pointer]:
+          - /url: "#testimoni"
+      - link "Masuk" [ref=e19] [cursor=pointer]:
+        - /url: /auth/login
+  - main [ref=e20]:
+    - generic [ref=e21]:
+      - navigation [ref=e22]:
+        - link "Beranda" [ref=e23] [cursor=pointer]:
+          - /url: /
+        - text: /
+        - link "Blog" [ref=e24] [cursor=pointer]:
+          - /url: /blog
+        - text: /Maksimalkan Waktu di Barbershop
+      - article [ref=e25]:
+        - generic [ref=e26]:
+          - generic [ref=e27]: bisnis
+          - generic [ref=e28]: barbershop
+        - heading "Maksimalkan Waktu di Barbershop" [level=1] [ref=e29]
+        - time [ref=e30]: 1 Juni 2026
+        - generic [ref=e31]:
+          - heading "Maksimalkan Waktu di Barbershop" [level=1] [ref=e32]
+          - paragraph [ref=e33]: Bagi pemilik barbershop, barberman, dan pecinta barber, waktu adalah komoditas yang sangat berharga. Setiap menit yang terbuang percuma dapat berdampak langsung pada keuntungan dan reputasi bisnis. Oleh karena itu, sangat penting untuk memaksimalkan waktu di barbershop agar dapat memberikan pelayanan yang terbaik kepada pelanggan dan meningkatkan efisiensi operasional. Dalam artikel ini, kita akan membahas beberapa tips dan strategi untuk memaksimalkan waktu di barbershop, sehingga Anda dapat meningkatkan keuntungan dan reputasi bisnis Anda.
+          - heading "Mengelola Antrian dengan Baik" [level=2] [ref=e34]
+          - paragraph [ref=e35]: "Mengelola antrian dengan baik adalah kunci untuk memaksimalkan waktu di barbershop. Dengan sistem antrian yang terorganisir, Anda dapat memastikan bahwa setiap pelanggan dilayani secara efisien dan efektif. Berikut beberapa tips untuk mengelola antrian dengan baik:"
+          - list [ref=e36]:
+            - listitem [ref=e37]: Buat jadwal antrian yang terstruktur dan terorganisir
+            - listitem [ref=e38]: Gunakan sistem antrian digital untuk mempermudah pelanggan membuat janji temu
+            - listitem [ref=e39]: Pastikan bahwa setiap barberman memiliki jadwal yang terstruktur dan terorganisir
+            - listitem [ref=e40]: Gunakan waktu tunggu untuk memberikan pelayanan tambahan, seperti membersihkan dan merawat peralatan
+          - heading "Meningkatkan Efisiensi Operasional" [level=2] [ref=e41]
+          - paragraph [ref=e42]: "Meningkatkan efisiensi operasional adalah salah satu cara untuk memaksimalkan waktu di barbershop. Dengan meminimalkan waktu yang terbuang percuma, Anda dapat meningkatkan produktivitas dan keuntungan bisnis. Berikut beberapa tips untuk meningkatkan efisiensi operasional:"
+          - list [ref=e43]:
+            - listitem [ref=e44]: Optimalkan layout barbershop untuk mempermudah akses dan gerakan
+            - listitem [ref=e45]: Gunakan peralatan yang tepat dan efektif untuk mempermudah pekerjaan
+            - listitem [ref=e46]: Pastikan bahwa setiap barberman memiliki kemampuan yang memadai untuk melakukan pekerjaan dengan efisien
+            - listitem [ref=e47]: Gunakan teknologi untuk mempermudah operasional, seperti sistem manajemen inventori dan sistem pembayaran online
+          - heading "Meningkatkan Kualitas Pelayanan" [level=2] [ref=e48]
+          - paragraph [ref=e49]: "Meningkatkan kualitas pelayanan adalah salah satu cara untuk memaksimalkan waktu di barbershop. Dengan memberikan pelayanan yang terbaik, Anda dapat meningkatkan kepuasan pelanggan dan meningkatkan reputasi bisnis. Berikut beberapa tips untuk meningkatkan kualitas pelayanan:"
+          - paragraph [ref=e50]: Gunakan waktu untuk memahami kebutuhan dan preferensi pelanggan, dan pastikan bahwa setiap barberman memiliki kemampuan yang memadai untuk memberikan pelayanan yang terbaik. Selain itu, pastikan bahwa setiap pelanggan dilayani dengan sopan dan ramah, dan bahwa setiap pertanyaan dan keluhan pelanggan dijawab dengan cepat dan efektif.
+          - heading "Mengembangkan Kemampuan Barberman" [level=2] [ref=e51]
+          - paragraph [ref=e52]: "Mengembangkan kemampuan barberman adalah salah satu cara untuk memaksimalkan waktu di barbershop. Dengan memastikan bahwa setiap barberman memiliki kemampuan yang memadai, Anda dapat meningkatkan kualitas pelayanan dan meningkatkan efisiensi operasional. Berikut beberapa tips untuk mengembangkan kemampuan barberman:"
+          - list [ref=e53]:
+            - listitem [ref=e54]: Berikan pelatihan yang terstruktur dan terorganisir untuk meningkatkan kemampuan barberman
+            - listitem [ref=e55]: Pastikan bahwa setiap barberman memiliki akses ke peralatan dan sumber daya yang memadai
+            - listitem [ref=e56]: Gunakan waktu untuk memantau dan mengevaluasi kinerja barberman, dan berikan umpan balik yang konstruktif
+            - listitem [ref=e57]: Pastikan bahwa setiap barberman memiliki kesempatan untuk mengembangkan karir dan meningkatkan kemampuan
+          - heading "Meningkatkan Keuntungan Bisnis" [level=2] [ref=e58]
+          - paragraph [ref=e59]: "Meningkatkan keuntungan bisnis adalah salah satu tujuan utama dari memaksimalkan waktu di barbershop. Dengan meningkatkan efisiensi operasional, meningkatkan kualitas pelayanan, dan mengembangkan kemampuan barberman, Anda dapat meningkatkan keuntungan bisnis. Berikut beberapa tips untuk meningkatkan keuntungan bisnis:"
+          - list [ref=e60]:
+            - listitem [ref=e61]: Optimalkan harga jasa untuk memastikan bahwa bisnis Anda tetap kompetitif
+            - listitem [ref=e62]: Gunakan waktu untuk memantau dan mengevaluasi kinerja bisnis, dan buat keputusan yang tepat untuk meningkatkan keuntungan
+            - listitem [ref=e63]: Pastikan bahwa setiap pelanggan dilayani dengan sopan dan ramah, dan bahwa setiap pertanyaan dan keluhan pelanggan dijawab dengan cepat dan efektif
+            - listitem [ref=e64]: Gunakan teknologi untuk mempermudah operasional dan meningkatkan keuntungan bisnis
+          - heading "Menggunakan Teknologi untuk Meningkatkan Efisiensi" [level=2] [ref=e65]
+          - paragraph [ref=e66]: "Menggunakan teknologi adalah salah satu cara untuk memaksimalkan waktu di barbershop. Dengan menggunakan teknologi, Anda dapat meningkatkan efisiensi operasional, meningkatkan kualitas pelayanan, dan mengembangkan kemampuan barberman. Berikut beberapa tips untuk menggunakan teknologi:"
+          - paragraph [ref=e67]: Gunakan sistem manajemen inventori untuk mempermudah pengelolaan stok dan meminimalkan kekurangan. Selain itu, gunakan sistem pembayaran online untuk mempermudah transaksi dan meminimalkan waktu tunggu. Anda juga dapat menggunakan teknologi untuk memantau dan mengevaluasi kinerja bisnis, dan membuat keputusan yang tepat untuk meningkatkan keuntungan.
+          - heading "Mengelola Stres dan Kebiasaan Buruk" [level=2] [ref=e68]
+          - paragraph [ref=e69]: "Mengelola stres dan kebiasaan buruk adalah salah satu cara untuk memaksimalkan waktu di barbershop. Dengan memastikan bahwa setiap barberman memiliki kemampuan yang memadai untuk mengelola stres dan kebiasaan buruk, Anda dapat meningkatkan kualitas pelayanan dan meningkatkan efisiensi operasional. Berikut beberapa tips untuk mengelola stres dan kebiasaan buruk:"
+          - list [ref=e70]:
+            - listitem [ref=e71]: Berikan pelatihan yang terstruktur dan terorganisir untuk meningkatkan kemampuan barberman dalam mengelola stres dan kebiasaan buruk
+            - listitem [ref=e72]: Pastikan bahwa setiap barberman memiliki akses ke sumber daya yang memadai untuk mengelola stres dan kebiasaan buruk
+            - listitem [ref=e73]: Gunakan waktu untuk memantau dan mengevaluasi kinerja barberman, dan berikan umpan balik yang konstruktif
+            - listitem [ref=e74]: Pastikan bahwa setiap barberman memiliki kesempatan untuk mengembangkan karir dan meningkatkan kemampuan
+          - paragraph [ref=e75]: Kesimpulan, memaksimalkan waktu di barbershop adalah sangat penting untuk meningkatkan keuntungan bisnis dan reputasi. Dengan mengelola antrian dengan baik, meningkatkan efisiensi operasional, meningkatkan kualitas pelayanan, mengembangkan kemampuan barberman, dan menggunakan teknologi, Anda dapat memaksimalkan waktu di barbershop dan meningkatkan keuntungan bisnis. Jangan lupa untuk mengelola stres dan kebiasaan buruk, dan pastikan bahwa setiap barberman memiliki kemampuan yang memadai untuk mengelola stres dan kebiasaan buruk.
+          - paragraph [ref=e76]: Kalau kamu ingin fokus mengembangkan bisnis barbershop tanpa pusing urus antrian, coba deh pakai Kapster. Sistem antrian digital yang bikin pelanggan puas dan operasional makin rapi. Cuma Rp10.000/bulan. Mulai gratis di https://kapster.my.id!
+      - generic [ref=e77]:
+        - heading "Kelola Barbershop Lebih Mudah dengan Kapster" [level=2] [ref=e78]
+        - paragraph [ref=e79]: Atur antrian, terima booking online, dan kirim notifikasi WhatsApp otomatis. Hanya Rp10.000/bulan!
+        - link "Coba Kapster Gratis" [ref=e80] [cursor=pointer]:
+          - /url: https://kapster.my.id
+  - contentinfo [ref=e81]:
+    - generic [ref=e82]:
+      - generic [ref=e83]:
+        - generic [ref=e84]:
+          - link "Kapster" [ref=e85] [cursor=pointer]:
+            - /url: /
+            - img [ref=e87]
+            - generic [ref=e89]: Kapster
+          - paragraph [ref=e90]: "Sistem manajemen antrian digital #1 untuk barbershop di Indonesia. Bikin bisnis makin profesional."
+        - generic [ref=e91]:
+          - heading "Produk" [level=4] [ref=e92]
+          - list [ref=e93]:
+            - listitem [ref=e94]:
+              - link "Fitur" [ref=e95] [cursor=pointer]:
+                - /url: "#fitur"
+            - listitem [ref=e96]:
+              - link "Harga" [ref=e97] [cursor=pointer]:
+                - /url: "#harga"
+            - listitem [ref=e98]:
+              - link "Tentang" [ref=e99] [cursor=pointer]:
+                - /url: /about
+        - generic [ref=e100]:
+          - heading "Dukungan" [level=4] [ref=e101]
+          - list [ref=e102]:
+            - listitem [ref=e103]:
+              - link "Hubungi Sales" [ref=e104] [cursor=pointer]:
+                - /url: https://wa.me/6285239110184?text=Halo%2C+saya+ingin+tahu+lebih+tentang+Kapster
+            - listitem [ref=e105]:
+              - link "Masuk Dashboard" [ref=e106] [cursor=pointer]:
+                - /url: /auth/login
+        - generic [ref=e107]:
+          - heading "Legal" [level=4] [ref=e108]
+          - list [ref=e109]:
+            - listitem [ref=e110]:
+              - link "Kebijakan Privasi" [ref=e111] [cursor=pointer]:
+                - /url: /privacy-policy
+            - listitem [ref=e112]:
+              - link "Syarat & Ketentuan" [ref=e113] [cursor=pointer]:
+                - /url: /terms-of-service
+            - listitem [ref=e114]:
+              - link "Kebijakan Cookie" [ref=e115] [cursor=pointer]:
+                - /url: /cookie-policy
+      - generic [ref=e116]:
+        - paragraph [ref=e117]: © 2026 Kapster. All rights reserved.
+        - generic [ref=e118]:
+          - link "Tentang Kami" [ref=e119] [cursor=pointer]:
+            - /url: /about
+          - link "WhatsApp" [ref=e120] [cursor=pointer]:
+            - /url: https://wa.me/6285239110184
+            - img [ref=e121]
