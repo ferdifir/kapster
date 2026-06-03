@@ -125,7 +125,7 @@ SETELAH artikel (di baris terakhir), sertakan metadata:
     console.log(`[blog-gen] Word count ${wordCount}, extending article...`);
     for (let i = 0; i < 2; i++) {
       const lastPara = contentHtml.match(/<p>[^<]*<\/p>\s*$/);
-      const continuePrompt = `LANJUTKAN artikel berikut. Tambahkan 2000+ KATA BARU setelah bagian terakhir. Jangan ulang konten sebelumnya.\n\n${lastPara ? `Akhir dari artikel sejauh ini:\n...${lastPara[0]}\n\nLANJUTKAN DARI SINI dengan konten baru 2000+ kata:` : "Tulis konten tambahan 2000+ kata:"}`;
+      const continuePrompt = `LANJUTKAN artikel berikut. Tambahkan 2000+ KATA BARU setelah bagian terakhir. Jangan ulang konten sebelumnya.\n\nLANJUTKAN DENGAN STRUKTUR:\n- Gunakan <h2> dan <h3> untuk sub-bab baru\n- Gunakan <p>, <ul>, <ol>, <blockquote>, <table> untuk konten\n- JANGAN markdown, JANGAN <h1>\n- Minimal 3 sub-bab <h2> baru dengan konten mendalam masing-masing 400+ kata\n\n${lastPara ? `Akhir dari artikel sejauh ini:\n...${lastPara[0]}\n\nLANJUTKAN DARI SINI dengan sub-bab <h2> baru (2000+ kata):` : "Tulis konten baru 2000+ kata dengan sub-bab <h2>:"}`;
       const moreContent = await callGroq(continuePrompt, 0.8, 8192);
       const cleanMore = moreContent.replace(/---+\s*METADATA\s*\n{[\s\S]*}/i, "").trim();
       if (cleanMore.length > 200) {
@@ -139,6 +139,13 @@ SETELAH artikel (di baris terakhir), sertakan metadata:
 
   // Phase 3: Save as Draft
   console.log("[blog-gen] Phase 3: Saving draft...");
+  const rawText = contentHtml.replace(/<[^>]*>/g, "").trim();
+  if (!seoData.excerpt || seoData.excerpt.length < 80) {
+    seoData.excerpt = rawText.slice(0, 200).replace(/^["'\s]+|["'\s]+$/g, "");
+  }
+  if (!seoData.meta_description || seoData.meta_description.length < 80) {
+    seoData.meta_description = rawText.slice(0, 160).replace(/^["'\s]+|["'\s]+$/g, "");
+  }
   let slug = seoData.slug;
   if (!slug || slug.length < 3) {
     slug = topicData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -396,7 +403,7 @@ async function runTrendPulse(): Promise<string> {
 }
 
 async function reviewBlogContent(html: string, title: string): Promise<{ score: number; notes: string }> {
-  const fullText = html.replace(/<[^>]*>/g, "").slice(0, 5000);
+  const fullText = html.replace(/<[^>]*>/g, "").slice(0, 15000);
   const h2Count = (html.match(/<h2/g) || []).length;
   const prompt = `Kamu adalah QA reviewer konten blog. Review artikel berikut dan beri score 1-5.
 
