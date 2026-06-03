@@ -1,3 +1,10 @@
+## [1.18.6](https://github.com/ferdifir/kapster/compare/v1.18.5...v1.18.6) (2026-06-03)
+
+
+### Bug Fixes
+
+* **admin:** add url field to InlineKeyboardButton type ([1eb6855](https://github.com/ferdifir/kapster/commit/1eb68551325de895d624e7e1c40de757b781e574))
+
 ## [1.18.5](https://github.com/ferdifir/kapster/compare/v1.18.4...v1.18.5) (2026-06-03)
 
 
