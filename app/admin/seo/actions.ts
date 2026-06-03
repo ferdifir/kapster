@@ -13,5 +13,4 @@ export async function triggerSeoAudit() {
     shell: true,
   });
   revalidatePath("/admin/seo");
-  return { success: true };
 }
