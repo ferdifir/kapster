@@ -2,31 +2,58 @@
 
 import { useEffect, useState } from "react";
 
+const TELEGRAM_SCRIPT = "https://telegram.org/js/telegram-web-app.js";
+
+function injectTelegramScript(): Promise<void> {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = TELEGRAM_SCRIPT;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => resolve();
+    document.head.appendChild(script);
+  });
+}
+
+function getTelegramInitData(): string | undefined {
+  const tg = (window as unknown as Record<string, unknown>).Telegram;
+  return (tg as { WebApp?: { initData?: string } } | undefined)?.WebApp?.initData;
+}
+
+function hasTelegramWebApp(): boolean {
+  return !!(window as unknown as Record<string, unknown>).Telegram;
+}
+
 export default function AdminAuthGate() {
   const [status, setStatus] = useState<"loading" | "error" | "redirecting">("loading");
   const [error, setError] = useState("");
 
   useEffect(() => {
     let attempts = 0;
-    const maxAttempts = 10;
+    const maxAttempts = 15;
+    let scriptInjected = false;
 
     async function verify() {
       try {
-        const tg = (window as unknown as Record<string, unknown>).Telegram;
-        const initData = (tg as { WebApp?: { initData?: string } } | undefined)?.WebApp?.initData;
+        let initData = getTelegramInitData();
 
         if (!initData) {
+          if (!hasTelegramWebApp() && !scriptInjected) {
+            scriptInjected = true;
+            await injectTelegramScript();
+          }
+
           if (attempts < maxAttempts) {
             attempts++;
-            setTimeout(verify, 500);
+            setTimeout(verify, 400);
             return;
           }
+
           setStatus("error");
-          const hasTg = !!tg;
-          const hasWebApp = !!(tg as { WebApp?: unknown } | undefined)?.WebApp;
-          const isTg = typeof (window as unknown as Record<string, unknown>).Telegram;
+          const hasTg = hasTelegramWebApp();
+          const hasWebApp = !!(window as unknown as { Telegram?: { WebApp?: unknown } } | undefined)?.Telegram?.WebApp;
           setError(
-            `Halaman ini hanya bisa dibuka dari Telegram. (tg=${hasTg}, webapp=${hasWebApp}, initData=${typeof initData}, typeof=${isTg})`
+            `Halaman ini hanya bisa dibuka dari Telegram. (tg=${hasTg}, webapp=${hasWebApp}, initData=${typeof initData})`
           );
           return;
         }
