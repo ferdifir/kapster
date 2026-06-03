@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/ferdifir/kapster/compare/v1.16.0...v1.17.0) (2026-06-03)
+
+
+### Features
+
+* add SEO migration script for existing posts ([f52b8dd](https://github.com/ferdifir/kapster/commit/f52b8dd0a68addbabf6e535783acc2a1bec3cd6f))
+
 # [1.16.0](https://github.com/ferdifir/kapster/compare/v1.15.0...v1.16.0) (2026-06-03)
 
 
