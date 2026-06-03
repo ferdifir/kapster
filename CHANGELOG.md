@@ -1,3 +1,10 @@
+## [1.17.3](https://github.com/ferdifir/kapster/compare/v1.17.2...v1.17.3) (2026-06-03)
+
+
+### Bug Fixes
+
+* enhance SEO audit with content depth, keywords, H2 substance, schema validation, GSC weighting ([4b79f15](https://github.com/ferdifir/kapster/commit/4b79f15571bc016d27144a6f13a09065fe3b04e0))
+
 ## [1.17.2](https://github.com/ferdifir/kapster/compare/v1.17.1...v1.17.2) (2026-06-03)
 
 
