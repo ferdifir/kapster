@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SYSTEM_WUZAPI_TOKEN } from "@/lib/wuzapi";
 import { handleGroupInfo, handleMessage } from "@/lib/whatsapp-bot";
+import { handleDemoRequest, isPrivateMessage } from "@/lib/demo";
 import { logError } from "@/lib/error-logger";
 
 export async function POST(req: NextRequest) {
@@ -27,9 +28,15 @@ export async function POST(req: NextRequest) {
       logError("webhook_whatsapp_groupinfo", err);
     });
   } else if (type === "Message") {
-    handleMessage(event as Record<string, unknown>).catch((err) => {
-      logError("webhook_whatsapp_message", err);
-    });
+    if (isPrivateMessage(event as Record<string, unknown>)) {
+      handleDemoRequest(event as Record<string, unknown>).catch((err) => {
+        logError("webhook_whatsapp_demo", err);
+      });
+    } else {
+      handleMessage(event as Record<string, unknown>).catch((err) => {
+        logError("webhook_whatsapp_message", err);
+      });
+    }
   } else {
     console.log(`[Webhook] Unknown event type: ${type}`);
   }
