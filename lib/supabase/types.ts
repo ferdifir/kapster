@@ -919,6 +919,7 @@ export type Database = {
         Returns: undefined
       }
       next_queue_number: { Args: { p_queue_id: string }; Returns: number }
+      exec_sql: { Args: { query_text: string }; Returns: Record<string, unknown>[] }
     }
     Enums: {
       booking_status: "pending" | "confirmed" | "cancelled" | "done"
