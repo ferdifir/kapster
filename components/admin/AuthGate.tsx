@@ -7,17 +7,26 @@ export default function AdminAuthGate() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    let attempts = 0;
+    const maxAttempts = 10;
+
     async function verify() {
       try {
         const tg = (window as unknown as Record<string, unknown>).Telegram;
         const initData = (tg as { WebApp?: { initData?: string } } | undefined)?.WebApp?.initData;
 
         if (!initData) {
+          if (attempts < maxAttempts) {
+            attempts++;
+            setTimeout(verify, 500);
+            return;
+          }
           setStatus("error");
           const hasTg = !!tg;
           const hasWebApp = !!(tg as { WebApp?: unknown } | undefined)?.WebApp;
+          const isTg = typeof (window as unknown as Record<string, unknown>).Telegram;
           setError(
-            `Halaman ini hanya bisa dibuka dari Telegram. (tg=${hasTg}, webapp=${hasWebApp}, initData=${typeof initData})`
+            `Halaman ini hanya bisa dibuka dari Telegram. (tg=${hasTg}, webapp=${hasWebApp}, initData=${typeof initData}, typeof=${isTg})`
           );
           return;
         }
