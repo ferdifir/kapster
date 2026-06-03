@@ -128,6 +128,8 @@ export async function claimFromNotified(
 ): Promise<{ id: string; expires_at: string }> {
   const admin = createAdminClient();
 
+  const session = await createSession(phone, password);
+
   const { error: delErr } = await admin
     .from("demo_waitlist")
     .delete()
@@ -136,7 +138,7 @@ export async function claimFromNotified(
 
   if (delErr) logError("claimFromNotified delete", delErr);
 
-  return createSession(phone, password);
+  return session;
 }
 
 export async function sendWaMessage(phone: string, message: string): Promise<void> {
@@ -159,38 +161,51 @@ export function formatEta(expiresAt: string): string {
 
 export async function expireSession(sessionId: string): Promise<void> {
   const admin = createAdminClient();
-
   const newPassword = generatePassword();
-  await setDemoPassword(newPassword);
 
   const { error } = await admin
     .from("demo_sessions")
     .update({ status: "expired", temp_password: newPassword })
     .eq("id", sessionId);
 
-  if (error) logError("expireSession", error);
+  if (error) {
+    logError("expireSession", error);
+    return;
+  }
+
+  await setDemoPassword(newPassword);
 }
 
 export async function processWaitlist(): Promise<void> {
   const admin = createAdminClient();
 
-  const { data: expiredSessions } = await admin
+  const { data: expiredSessions, error: fetchError } = await admin
     .from("demo_sessions")
     .select("id")
     .eq("status", "active")
     .lt("expires_at", new Date().toISOString());
+
+  if (fetchError) {
+    logError("processWaitlist fetchSessions", fetchError);
+    return;
+  }
 
   if (expiredSessions && expiredSessions.length > 0) {
     for (const session of expiredSessions) {
       await expireSession(session.id);
     }
 
-    const { data: nextInLine } = await admin
+    const { data: nextInLine, error: waitlistFetchError } = await admin
       .from("demo_waitlist")
       .select("id, phone")
       .eq("status", "waiting")
       .order("created_at")
       .limit(1);
+
+    if (waitlistFetchError) {
+      logError("processWaitlist fetchWaitlist", waitlistFetchError);
+      return;
+    }
 
     if (nextInLine && nextInLine.length > 0) {
       const entry = nextInLine[0];
@@ -213,11 +228,15 @@ export async function processWaitlist(): Promise<void> {
     Date.now() - WAITLIST_CLAIM_MINUTES * 60 * 1000
   ).toISOString();
 
-  await admin
+  const { error: cleanupError } = await admin
     .from("demo_waitlist")
     .update({ status: "expired" })
     .eq("status", "notified")
     .lt("notified_at", cutoff);
+
+  if (cleanupError) {
+    logError("processWaitlist cleanup", cleanupError);
+  }
 }
 
 async function removeFromWaitlist(phone: string): Promise<void> {
