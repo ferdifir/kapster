@@ -1,3 +1,10 @@
+## [1.17.2](https://github.com/ferdifir/kapster/compare/v1.17.1...v1.17.2) (2026-06-03)
+
+
+### Bug Fixes
+
+* multi-model fallback for SEO audit LLM calls ([d0e12d5](https://github.com/ferdifir/kapster/commit/d0e12d570afca40c5a7a51908087787035f44be1))
+
 ## [1.17.1](https://github.com/ferdifir/kapster/compare/v1.17.0...v1.17.1) (2026-06-03)
 
 
