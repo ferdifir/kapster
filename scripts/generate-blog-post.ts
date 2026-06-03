@@ -123,13 +123,13 @@ SETELAH artikel (di baris terakhir), sertakan metadata:
   const wordCount = contentHtml.replace(/<[^>]*>/g, "").split(/\s+/).length;
   if (wordCount < 3000) {
     console.log(`[blog-gen] Word count ${wordCount}, extending article...`);
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
       const lastPara = contentHtml.match(/<p>[^<]*<\/p>\s*$/);
-      const preview = lastPara ? `Akhir artikel sejauh ini:\n...${lastPara[0]}\n\nLANJUTKAN DARI SINI dengan sub-bab <h2> baru (2000+ kata):` : "Tulis konten baru 2000+ kata dengan sub-bab <h2>:";
-      const continuePrompt = `Kamu adalah penulis konten ahli. LANJUTKAN artikel berikut. Ini WAJIB: tulis MINIMAL 1000+ KATA BARU. Jangan ulang konten yang sudah ada. Tambahkan sub-bab baru yang mendalam dengan contoh nyata, studi kasus, atau data.
+      const preview = lastPara ? `Akhir artikel sejauh ini:\n...${lastPara[0]}\n\nLANJUTKAN DARI SINI dengan sub-bab <h2> baru. INI WAJIB: tambahkan minimal 1000+ KATA BARU:` : "Tulis konten baru 1000+ kata dengan sub-bab <h2>. JANGAN KURANG:";
+      const continuePrompt = `Kamu adalah penulis konten ahli. INI WAJIB: tulis MINIMAL 1000+ KATA BARU. Jangan ulang konten sebelumnya.
 
 STRUKTUR W AJIB:
-- Setiap sub-bab: <h2> judul baru → <p> konten mendalam → <h3> sub-bab → <p> detail
+- Setiap sub-bab: <h2> judul → <p> konten → <h3> sub-bab → <p> detail
 - Minimal 2 <h2> baru
 - Gunakan <ul>, <ol>, <blockquote>, <table>
 - JANGAN markdown, JANGAN <h1>
@@ -146,9 +146,63 @@ ${preview}`;
     }
   }
 
+  // Phase 2.8: SEO enrichment — internal links + schema + metadata
+  const rawText = contentHtml.replace(/<[^>]*>/g, "").trim();
+  const articleSlug = seoData.slug || topicData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+  // Internal links: fetch related published posts
+  const { data: relatedPosts } = await supabase
+    .from("blog_posts")
+    .select("slug, title")
+    .neq("slug", articleSlug)
+    .eq("status", "published")
+    .order("created_at", { ascending: false })
+    .limit(3);
+  if (relatedPosts && relatedPosts.length >= 2) {
+    const relatedLinks = relatedPosts
+      .slice(0, 2)
+      .map((p: any) => `<li><a href="/blog/${p.slug}">${p.title}</a></li>`)
+      .join("\n");
+    contentHtml += `\n<h2>Baca Juga</h2>\n<ul>${relatedLinks}\n</ul>`;
+  }
+
+  // Schema JSON-LD
+  const schemaJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: topicData.title,
+    description: seoData.meta_description || rawText.slice(0, 160),
+    author: { "@type": "Organization", name: "Kapster" },
+    publisher: { "@type": "Organization", name: "Kapster", url: SITE_URL },
+    datePublished: new Date().toISOString(),
+    dateModified: new Date().toISOString(),
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/blog/${articleSlug}` },
+    wordCount: rawText.split(/\s+/).length,
+  };
+  contentHtml += `\n<script type="application/ld+json">${JSON.stringify(schemaJsonLd)}</script>`;
+
+  // SEO metadata via LLM
+  if (topicData.title) {
+    const metaPrompt = `Berdasarkan artikel berikut, buat SEO metadata dalam Bahasa Indonesia untuk blog barbershop.
+
+Judul: "${topicData.title}"
+
+${rawText.slice(0, 3000)}
+
+Output JSON SAJA:
+{"excerpt": "excerpt 150-200 karakter menggambarkan isi artikel", "meta_description": "meta description 150-160 karakter untuk SEO"}`
+    try {
+      const metaResponse = await callLLM(metaPrompt, 0.3, 500);
+      const metaJson = JSON.parse(metaResponse.replace(/^```(?:json)?\s*|\s*```$/g, "").trim());
+      if (metaJson.excerpt && metaJson.excerpt.length > 80) seoData.excerpt = metaJson.excerpt;
+      if (metaJson.meta_description && metaJson.meta_description.length > 80) seoData.meta_description = metaJson.meta_description;
+    } catch {
+      // fallback to raw text truncation below
+    }
+  }
+
   // Phase 3: Save as Draft
   console.log("[blog-gen] Phase 3: Saving draft...");
-  const rawText = contentHtml.replace(/<[^>]*>/g, "").trim();
   if (!seoData.excerpt || seoData.excerpt.length < 80) {
     seoData.excerpt = rawText.slice(0, 200).replace(/^["'\s]+|["'\s]+$/g, "");
   }
