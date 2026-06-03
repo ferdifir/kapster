@@ -5,6 +5,7 @@ export type InlineKeyboardButton = {
   text: string;
   callback_data?: string;
   url?: string;
+  web_app?: { url: string };
 };
 
 export async function sendTelegramNotification(text: string): Promise<void> {

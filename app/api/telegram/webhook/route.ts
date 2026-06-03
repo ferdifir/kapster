@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
         "🔐 <b>Admin Panel</b>\n\nKlik tombol di bawah untuk membuka panel admin:",
         {
           inline_keyboard: [[
-            { text: "🚀 Buka Admin Panel", url: `${appUrl}/admin` },
+            { text: "🚀 Buka Admin Panel", web_app: { url: `${appUrl}/admin` } },
           ]],
         }
       );
