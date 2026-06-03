@@ -841,6 +841,60 @@ export type Database = {
         }
         Relationships: []
       }
+      demo_sessions: {
+        Row: {
+          id: string
+          phone: string
+          temp_password: string
+          expires_at: string
+          status: string
+          created_at: string
+          claimed_at: string
+        }
+        Insert: {
+          id?: string
+          phone: string
+          temp_password: string
+          expires_at: string
+          status?: string
+          created_at?: string
+          claimed_at?: string
+        }
+        Update: {
+          id?: string
+          phone?: string
+          temp_password?: string
+          expires_at?: string
+          status?: string
+          created_at?: string
+          claimed_at?: string
+        }
+        Relationships: []
+      }
+      demo_waitlist: {
+        Row: {
+          id: string
+          phone: string
+          notified_at: string | null
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          phone: string
+          notified_at?: string | null
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          phone?: string
+          notified_at?: string | null
+          status?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
