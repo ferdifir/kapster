@@ -1,9 +1,9 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { recordMetric } from "@/lib/metrics";
 import { sendTelegramMessage } from "@/lib/telegram";
+import { askOpenRouter, askOllamaWithSystem } from "@/lib/ollama";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_MODEL = "llama-3.3-70b-versatile";
 const SITE_URL = "https://kapster.my.id";
 
 interface PageAudit {
@@ -311,7 +311,7 @@ RESPON JSON SAJA (tanpa markdown):
 }`;
 
   try {
-    const raw = await callGroq(prompt, 0.3, 2000);
+    const raw = await callLLM(prompt, 0.3, 2000);
     const cleaned = raw.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "").trim();
     return JSON.parse(cleaned);
   } catch {
@@ -324,21 +324,53 @@ RESPON JSON SAJA (tanpa markdown):
 }
 
 async function callGroq(prompt: string, temperature = 0.3, maxTokens = 4096): Promise<string> {
-  if (!process.env.GROQ_API_KEY) throw new Error("GROQ_API_KEY not set");
-  const res = await fetch(GROQ_API_URL, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: GROQ_MODEL,
-      messages: [{ role: "system", content: "Kamu adalah asisten SEO Kapster. Jawab dalam Bahasa Indonesia." }, { role: "user", content: prompt }],
-      max_tokens: maxTokens,
-      temperature,
-    }),
-    signal: AbortSignal.timeout(120000),
-  });
-  if (!res.ok) throw new Error(`Groq API error ${res.status}`);
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content ?? "";
+  const models = ["llama-3.3-70b-versatile", "meta-llama/llama-4-scout-17b-16e-instruct"];
+  if (prompt.length < 3000) models.push("llama-3.1-8b-instant");
+  for (const model of models) {
+    const res = await fetch(GROQ_API_URL, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: "system", content: "Kamu adalah asisten SEO Kapster. Jawab dalam Bahasa Indonesia." }, { role: "user", content: prompt }],
+        max_tokens: maxTokens,
+        temperature,
+      }),
+      signal: AbortSignal.timeout(120000),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.choices?.[0]?.message?.content ?? "";
+    }
+    if (res.status !== 429) throw new Error(`Groq ${model} error ${res.status}`);
+  }
+  throw new Error("All Groq models rate limited");
+}
+
+async function callLLM(prompt: string, temperature = 0.3, maxTokens = 4096): Promise<string> {
+  const providers: { name: string; call: () => Promise<string> }[] = [
+    { name: "groq", call: () => callGroq(prompt, temperature, maxTokens) },
+  ];
+  if (process.env.OPENROUTER_API_KEY) {
+    const orModels = ["openai/gpt-oss-120b:free", "google/gemma-2-9b-it:free"];
+    providers.push({
+      name: "openrouter",
+      call: async () => {
+        for (const m of orModels) { try { return await askOpenRouter(prompt, { temperature, max_tokens: maxTokens, model: m }); } catch {} }
+        throw new Error("All OpenRouter models failed");
+      },
+    });
+  }
+  if (process.env.OLLAMA_API_KEY) {
+    providers.push({
+      name: "ollama",
+      call: () => askOllamaWithSystem(prompt, undefined, { temperature, max_tokens: maxTokens }),
+    });
+  }
+  for (const p of providers) {
+    try { const r = await p.call(); if (r) return r; } catch (err: any) { console.warn(`[seo-audit] ${p.name} failed: ${err.message}`); }
+  }
+  throw new Error("All LLM providers failed");
 }
 
 main().catch((err) => {
