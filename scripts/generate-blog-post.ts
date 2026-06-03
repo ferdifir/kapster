@@ -78,12 +78,18 @@ SETELAH artikel, di baris terakhir:
   const fullResponse = await callGroq(contentPrompt, 0.8, 8192);
 
   // Split article and metadata
-  const metaSplit = fullResponse.split("---METADATA");
-  let contentHtml = metaSplit[0]?.trim() || fullResponse;
-  let seoData: any;
-  try {
-    seoData = JSON.parse(metaSplit[1]?.trim() || "{}");
-  } catch {
+  const metaMatch = fullResponse.match(/---+\s*METADATA\s*\n({[\s\S]*})/i);
+  let contentHtml = fullResponse;
+  let seoData: any = {};
+  if (metaMatch) {
+    contentHtml = fullResponse.slice(0, metaMatch.index).trim();
+    try {
+      seoData = JSON.parse(metaMatch[1].trim());
+    } catch {
+      seoData = {};
+    }
+  }
+  if (!seoData.slug) {
     const text = contentHtml.replace(/<[^>]*>/g, "");
     seoData = {
       excerpt: text.slice(0, 200),
@@ -107,12 +113,13 @@ SETELAH artikel, di baris terakhir:
     console.log(`[blog-gen] QA score ${qaResult.score}/5, regenerating with fix notes...`);
     const fixedPrompt = contentPrompt + `\n\nQA REVIEW NOTES (PERBAIKI):\n${qaResult.notes}`;
     const fixedResponse = await callGroq(fixedPrompt, 0.8, 8192);
-    const fixedMetaSplit = fixedResponse.split("---METADATA");
-    const fixedContent = fixedMetaSplit[0]?.trim() || fixedResponse;
-    let fixedSeo: any;
-    try { fixedSeo = JSON.parse(fixedMetaSplit[1]?.trim() || "{}"); } catch { fixedSeo = seoData; }
-    contentHtml = fixedContent;
-    seoData = fixedSeo;
+    const fixedMetaMatch = fixedResponse.match(/---+\s*METADATA\s*\n({[\s\S]*})/i);
+    if (fixedMetaMatch) {
+      contentHtml = fixedResponse.slice(0, fixedMetaMatch.index).trim();
+      try { seoData = JSON.parse(fixedMetaMatch[1].trim()); } catch {}
+    } else {
+      contentHtml = fixedResponse.trim();
+    }
     console.log(`[blog-gen] Regenerated: ${contentHtml.length} chars`);
     await recordMetric(supabase, "qa_regen_rate", 1, { title: topicData.title });
   }
