@@ -22,11 +22,20 @@ export default async function AdminBarbershopDetailPage({
     .select("*", { count: "exact", head: true })
     .eq("barbershop_id", id);
 
-  const { count: totalCustomers } = await supabase
-    .from("queue_entries")
-    .select("*", { count: "exact", head: true })
-    .eq("barbershop_id", id)
-    .eq("status", "done");
+  const { data: barbershopQueues } = await supabase
+    .from("queues")
+    .select("id")
+    .eq("barbershop_id", id);
+
+  const queueIds = barbershopQueues?.map(q => q.id) ?? [];
+
+  const { count: totalCustomers } = queueIds.length > 0
+    ? await supabase
+        .from("queue_entries")
+        .select("*", { count: "exact", head: true })
+        .in("queue_id", queueIds)
+        .eq("status", "done")
+    : { count: 0 };
 
   const { data: subscription } = await supabase
     .from("subscriptions")
