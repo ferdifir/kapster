@@ -1,3 +1,10 @@
+## [1.18.1](https://github.com/ferdifir/kapster/compare/v1.18.0...v1.18.1) (2026-06-03)
+
+
+### Bug Fixes
+
+* **admin:** add exec_sql to Supabase types ([52821af](https://github.com/ferdifir/kapster/commit/52821af513a0760ca7a38702e60459d17f2c05cf))
+
 # [1.18.0](https://github.com/ferdifir/kapster/compare/v1.17.3...v1.18.0) (2026-06-03)
 
 
