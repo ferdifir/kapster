@@ -1,3 +1,10 @@
+## [1.18.9](https://github.com/ferdifir/kapster/compare/v1.18.8...v1.18.9) (2026-06-03)
+
+
+### Bug Fixes
+
+* **admin:** remove X-Frame-Options DENY for Mini App compat ([776c5d6](https://github.com/ferdifir/kapster/commit/776c5d6bddb37a18e57f2d2386002881cd72f9ff))
+
 ## [1.18.8](https://github.com/ferdifir/kapster/compare/v1.18.7...v1.18.8) (2026-06-03)
 
 
