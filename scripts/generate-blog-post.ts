@@ -1,7 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendTelegramInlineKeyboard } from "@/lib/telegram";
 import { recordMetric, checkQualityAlerts } from "@/lib/metrics";
-import { askOpenRouter } from "@/lib/ollama";
+import { askOpenRouter, askOllamaWithSystem } from "@/lib/ollama";
 import { spawn } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -483,6 +483,13 @@ async function callLLM(prompt: string, temperature = 0.7, maxTokens = 4096): Pro
     providers.push({
       name: "openrouter",
       call: () => askOpenRouter(prompt, { temperature, max_tokens: maxTokens, model: "openai/gpt-oss-120b:free" }),
+    });
+  }
+  const ollamaKey = process.env.OLLAMA_API_KEY;
+  if (ollamaKey) {
+    providers.push({
+      name: "ollama",
+      call: () => askOllamaWithSystem(prompt, "Kamu adalah asisten konten Kapster. Jawab dalam Bahasa Indonesia. Output informatif dan mendalam.", { temperature, max_tokens: maxTokens }),
     });
   }
   for (const p of providers) {
