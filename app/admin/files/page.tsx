@@ -36,11 +36,11 @@ export default function AdminFilesPage() {
   useEffect(() => { loadFiles("."); }, []);
 
   const readFile = async (name: string) => {
-    const fullPath = `${process.cwd()}${currentPath === "/" ? "" : currentPath}/${name}`;
-    const res = await fetch(`/admin/api/files/read?path=${encodeURIComponent(fullPath)}`);
+    const relativePath = `${currentPath === "/" ? "" : currentPath}/${name}`;
+    const res = await fetch(`/admin/api/files/read?path=${encodeURIComponent(relativePath)}`);
     const json = await res.json();
     if (json.error) { alert(json.error); return; }
-    setSelectedFile({ path: fullPath, content: json.content });
+    setSelectedFile({ path: relativePath, content: json.content });
     setEditContent(json.content);
   };
 
