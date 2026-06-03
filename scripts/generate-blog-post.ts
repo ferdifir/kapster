@@ -123,9 +123,18 @@ SETELAH artikel (di baris terakhir), sertakan metadata:
   const wordCount = contentHtml.replace(/<[^>]*>/g, "").split(/\s+/).length;
   if (wordCount < 3000) {
     console.log(`[blog-gen] Word count ${wordCount}, extending article...`);
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 3; i++) {
       const lastPara = contentHtml.match(/<p>[^<]*<\/p>\s*$/);
-      const continuePrompt = `LANJUTKAN artikel berikut. Tambahkan 2000+ KATA BARU setelah bagian terakhir. Jangan ulang konten sebelumnya.\n\nLANJUTKAN DENGAN STRUKTUR:\n- Gunakan <h2> dan <h3> untuk sub-bab baru\n- Gunakan <p>, <ul>, <ol>, <blockquote>, <table> untuk konten\n- JANGAN markdown, JANGAN <h1>\n- Minimal 3 sub-bab <h2> baru dengan konten mendalam masing-masing 400+ kata\n\n${lastPara ? `Akhir dari artikel sejauh ini:\n...${lastPara[0]}\n\nLANJUTKAN DARI SINI dengan sub-bab <h2> baru (2000+ kata):` : "Tulis konten baru 2000+ kata dengan sub-bab <h2>:"}`;
+      const preview = lastPara ? `Akhir artikel sejauh ini:\n...${lastPara[0]}\n\nLANJUTKAN DARI SINI dengan sub-bab <h2> baru (2000+ kata):` : "Tulis konten baru 2000+ kata dengan sub-bab <h2>:";
+      const continuePrompt = `Kamu adalah penulis konten ahli. LANJUTKAN artikel berikut. Ini WAJIB: tulis MINIMAL 1000+ KATA BARU. Jangan ulang konten yang sudah ada. Tambahkan sub-bab baru yang mendalam dengan contoh nyata, studi kasus, atau data.
+
+STRUKTUR W AJIB:
+- Setiap sub-bab: <h2> judul baru → <p> konten mendalam → <h3> sub-bab → <p> detail
+- Minimal 2 <h2> baru
+- Gunakan <ul>, <ol>, <blockquote>, <table>
+- JANGAN markdown, JANGAN <h1>
+
+${preview}`;
       const moreContent = await callGroq(continuePrompt, 0.8, 8192);
       const cleanMore = moreContent.replace(/---+\s*METADATA\s*\n{[\s\S]*}/i, "").trim();
       if (cleanMore.length > 200) {
@@ -158,7 +167,8 @@ SETELAH artikel (di baris terakhir), sertakan metadata:
     .maybeSingle();
 
   if (existingSlug) {
-    slug = `${slug}-${Date.now().toString(36)}`;
+    const rand = Math.random().toString(36).slice(2, 6);
+    slug = `${slug}-${rand}`;
   }
 
   const { data: draft, error: insertError } = await supabase.from("blog_posts").insert({
