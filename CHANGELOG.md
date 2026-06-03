@@ -1,3 +1,10 @@
+## [1.18.10](https://github.com/ferdifir/kapster/compare/v1.18.9...v1.18.10) (2026-06-03)
+
+
+### Bug Fixes
+
+* **admin:** add retry for Telegram.WebApp injection ([86b528a](https://github.com/ferdifir/kapster/commit/86b528a6cd6cb608d1c7abb25c4601135042938d))
+
 ## [1.18.9](https://github.com/ferdifir/kapster/compare/v1.18.8...v1.18.9) (2026-06-03)
 
 
