@@ -1,3 +1,10 @@
+## [1.18.8](https://github.com/ferdifir/kapster/compare/v1.18.7...v1.18.8) (2026-06-03)
+
+
+### Bug Fixes
+
+* **admin:** add debug logging for Telegram WebApp initData ([8940913](https://github.com/ferdifir/kapster/commit/89409139e60e76f5c83eb2d7a468f226b0b66f6e))
+
 ## [1.18.7](https://github.com/ferdifir/kapster/compare/v1.18.6...v1.18.7) (2026-06-03)
 
 
