@@ -1,3 +1,10 @@
+## [1.18.4](https://github.com/ferdifir/kapster/compare/v1.18.3...v1.18.4) (2026-06-03)
+
+
+### Bug Fixes
+
+* **admin:** server action must return void for form action ([02de433](https://github.com/ferdifir/kapster/commit/02de4332d5413817b5cb54f3131d9db0c775d4dd))
+
 ## [1.18.3](https://github.com/ferdifir/kapster/compare/v1.18.2...v1.18.3) (2026-06-03)
 
 
