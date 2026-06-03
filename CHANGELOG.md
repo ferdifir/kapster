@@ -1,3 +1,10 @@
+## [1.18.11](https://github.com/ferdifir/kapster/compare/v1.18.10...v1.18.11) (2026-06-03)
+
+
+### Bug Fixes
+
+* **admin:** add Telegram WebApp script fallback and fix CSP ([b9af8b4](https://github.com/ferdifir/kapster/commit/b9af8b4ebf905d9a907e2f9d889e574dfe640f6c))
+
 ## [1.18.10](https://github.com/ferdifir/kapster/compare/v1.18.9...v1.18.10) (2026-06-03)
 
 
