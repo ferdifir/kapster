@@ -101,6 +101,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
+    // Handle /admin command — open mini app
+    if (body.message?.text === "/admin") {
+      const chatId = body.message.chat.id;
+      const adminIds = (process.env.ADMIN_TELEGRAM_IDS || "").split(",").map((s: string) => s.trim());
+      const userId = body.message.from?.id?.toString();
+
+      if (!userId || !adminIds.includes(userId)) {
+        await sendTelegramMessage("⛔ Akses ditolak. Anda bukan admin.");
+        return NextResponse.json({ ok: true });
+      }
+
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://kapster.my.id";
+      await sendTelegramMessage(
+        "🔐 <b>Admin Panel</b>\n\nKlik tombol di bawah untuk membuka panel admin:",
+        {
+          inline_keyboard: [[
+            { text: "🚀 Buka Admin Panel", url: `${appUrl}/admin` },
+          ]],
+        }
+      );
+
+      return NextResponse.json({ ok: true });
+    }
+
     if (body.message?.text && body.message?.reply_to_message) {
       const repliedMsgId = body.message.reply_to_message.message_id;
       const { data: post, error } = await createAdminClient()
