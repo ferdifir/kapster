@@ -1,3 +1,10 @@
+## [1.18.2](https://github.com/ferdifir/kapster/compare/v1.18.1...v1.18.2) (2026-06-03)
+
+
+### Bug Fixes
+
+* **admin:** queue_entries query via queue_ids, no barbershop_id col ([dff68db](https://github.com/ferdifir/kapster/commit/dff68db6b9292922d6ae637f6443ca847406b94b))
+
 ## [1.18.1](https://github.com/ferdifir/kapster/compare/v1.18.0...v1.18.1) (2026-06-03)
 
 
