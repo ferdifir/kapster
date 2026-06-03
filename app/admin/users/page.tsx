@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import type { Database } from "@/lib/supabase/types";
 
 export default async function AdminUsersPage({
   searchParams,
@@ -14,7 +15,7 @@ export default async function AdminUsersPage({
     .order("created_at", { ascending: false })
     .limit(50);
 
-  if (params.role) query = query.eq("role", params.role);
+  if (params.role) query = query.eq("role", params.role as Database["public"]["Enums"]["user_role"]);
   if (params.q) query = query.ilike("full_name", `%${params.q}%`);
 
   const { data: users } = await query;
