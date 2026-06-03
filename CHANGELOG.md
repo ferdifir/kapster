@@ -1,3 +1,10 @@
+## [1.18.5](https://github.com/ferdifir/kapster/compare/v1.18.4...v1.18.5) (2026-06-03)
+
+
+### Bug Fixes
+
+* **admin:** cast role param to user_role enum for type safety ([f98d2fd](https://github.com/ferdifir/kapster/commit/f98d2fd0a7c0c92c25b6be40d76f96ae50e687e8))
+
 ## [1.18.4](https://github.com/ferdifir/kapster/compare/v1.18.3...v1.18.4) (2026-06-03)
 
 
