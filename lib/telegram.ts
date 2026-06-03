@@ -3,7 +3,8 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID!;
 
 export type InlineKeyboardButton = {
   text: string;
-  callback_data: string;
+  callback_data?: string;
+  url?: string;
 };
 
 export async function sendTelegramNotification(text: string): Promise<void> {
