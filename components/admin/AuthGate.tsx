@@ -9,14 +9,16 @@ export default function AdminAuthGate() {
   useEffect(() => {
     async function verify() {
       try {
-        const webapp = (window as unknown as Record<string, unknown>).Telegram as
-          | { WebApp: { initData: string } }
-          | undefined;
-        const initData = webapp?.WebApp?.initData;
+        const tg = (window as unknown as Record<string, unknown>).Telegram;
+        const initData = (tg as { WebApp?: { initData?: string } } | undefined)?.WebApp?.initData;
 
         if (!initData) {
           setStatus("error");
-          setError("Halaman ini hanya bisa dibuka dari Telegram.");
+          const hasTg = !!tg;
+          const hasWebApp = !!(tg as { WebApp?: unknown } | undefined)?.WebApp;
+          setError(
+            `Halaman ini hanya bisa dibuka dari Telegram. (tg=${hasTg}, webapp=${hasWebApp}, initData=${typeof initData})`
+          );
           return;
         }
 
