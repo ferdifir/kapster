@@ -45,46 +45,31 @@ async function main() {
   console.log("[blog-gen] Phase 2: Generating article...");
   const contentPrompt = `Kamu adalah penulis konten ahli untuk blog kapster.my.id — platform manajemen antrian digital untuk barbershop Indonesia.
 
-TUGAS: Tulis artikel BLOG SANGAT MENDALAM (3000-5000 kata) dalam Bahasa Indonesia.
+TUGAS: Tulis artikel BLOG SANGAT MENDALAM (3000-5000 kata) dalam Bahasa Indonesia yang benar-benar menjawab judulnya.
 
 Judul: "${topicData.title}"
 
 Target pembaca: pemilik barbershop, barberman, dan pria Indonesia yang peduli penampilan.
 Gaya: Seperti tulisan MAJALAH — natural, engaging, kadang ada celotehan atau humor ringan. BUKAN kaku seperti buku teks.
 
-PANDUAN STRUKTUR:
+PANDUAN KONTEN (prioritas utama):
 
-1. Pendahuluan (200-300 kata) — Variatif tiap artikel:
-   - Bisa hook, data statistik, pertanyaan retoris, analogi, kutipan, atau cerita pendek
-   - JANGAN mulai dengan "Dalam era digital..." atau "Di Indonesia..."
+1. JAWAB PERTANYAAN di judul. Setiap sub-bab harus memberikan informasi konkret yang berguna, bukan sekadar basa-basi.
 
-2. 5-7 sub-bab (masing-masing 300-600 kata):
-   - JANGAN semua sub-bab dimulai dengan <p>
-   - Setiap sub-bab harus punya kalimat transisi dari sub-bab sebelumnya
-   - Variasi panjang: ada yang pendek (200), ada yang panjang (600)
-   - JANGAN gunakan pola tag berulang — variasi tiap section
+2. SETIAP sub-bab harus punya: contoh nyata, studi kasus, data spesifik, atau cerita yang relevan. JANGAN menulis saran generik seperti "pastikan pelanggan nyaman" tanpa contoh konkret.
 
-3. Kesimpulan (150-200 kata) — JANGAN "Kesimpulan" sebagai heading. Pakai <h2> yang engaging
+3. Variasikan panjang sub-bab (200-600 kata). JANGAN semua sub-bab seragam.
 
-4. CTA di akhir:
+4. Gunakan bahasa sehari-hari yang natural — bayangkan kamu jelasin ke teman yang punya barbershop. Boleh pake istilah gaul Indonesia yang relevan.
+
+ATURAN FORMAT:
+- Format HTML: h2, h3, p, strong, em, ul, ol, li, blockquote, table, thead, tbody, tr, th, td, a
+- JANGAN markdown. JANGAN <h1>
+- Minimal 1 <ul>, 1 <ol>, 1 <blockquote>, 1 <table>
+- Gunakan <strong> untuk keyword penting
+
+CTA di akhir (wajib disertakan):
 <p>Kalau kamu ingin fokus mengembangkan bisnis barbershop tanpa pusing urus antrian, coba deh pakai Kapster. Sistem antrian digital yang bikin pelanggan puas dan operasional makin rapi. Cuma Rp10.000/bulan. Mulai gratis di ${SITE_URL}!</p>
-
-ATURAN FORMAT WAJIB:
-- Setiap artikel WAJIB memiliki MINIMAL: 1 <ul>, 1 <ol>, 1 <blockquote>, 1 <table>
-- Dua sub-bab berturut-turut TIDAK BOLEH punya pola tag pertama sama
-- Gunakan <strong> untuk kata kunci (min 5)
-- Gunakan <em> untuk istilah asing (min 2)
-- <table> untuk perbandingan atau data (min 1 jika relevan)
-- Jika topik cocok, pakai satu sub-bab dengan struktur Q&A
-
-CONTOH VARIASI POLA (bukan daftar harus, tapi inspirasi):
-Section 1: <h2> → <blockquote> → <p> → <strong> → <p> → <p> → <ul>
-Section 2: <h2> → <p> → <h3> → <p> → <h3> → <p> → <ol>
-Section 3: <h2> → <p> → <table> → <p> → <ol>
-Section 4: <h2> → <p> → <blockquote> → <p> → <ul>
-Section 5: <h2> → <p> → <h3> → <p> → <ol> → <h3> → <blockquote>
-
-FORMAT OUTPUT: HTML murni. Hanya tag: h2, h3, p, strong, em, ul, ol, li, blockquote, table, thead, tbody, tr, th, td, a. JANGAN markdown. JANGAN <h1>.
 
 SETELAH artikel, di baris terakhir:
 ---METADATA
@@ -263,14 +248,15 @@ JUDUL YANG SUDAH DIBUAT:
 ${existingTitles.join(", ") || "(belum ada)"}
 
 Aturan topik:
-1. Bisa radius dari barbershop (tidak harus langsung). Contoh: "Sejarah Kursi" → dikaitkan ke kursi barbershop, "Psikologi Gaya Rambut" → self-esteem → Kapster
-2. Belum pernah dibahas
-3. Punya celah SEO (GSC gaps prioritas)
-4. Natural mengarah ke CTA Kapster
-5. Layak artikel MENDALAM (3000+ kata)
+1. Prioritaskan keyword dari GSC keyword gaps jika ada — itu bukti orang sudah mencari topik tersebut.
+2. JANGAN pilih judul generik dengan kata "optimalkan", "maksimalkan", "tingkatkan", "tips", "cara mudah", "panduan lengkap". Pilih judul spesifik yang menjawab pertanyaan nyata.
+3. Bisa radius dari barbershop. Contoh: "Cara Hitung Kebutuhan Staf Barbershop per Shift" lebih spesifik dari "Optimalkan Staf Barbershop".
+4. Pertimbangkan tambahkan sinyal SEO untuk varian ejaan: "kapaster" sebagai alternatif pencarian dari "kapster".
+5. Layak artikel MENDALAM (3000+ kata) dengan contoh dan data konkret.
+6. Natural mengarah ke CTA Kapster.
 
 Beri output JSON SAJA (tanpa markdown formatting):
-{"topic": "nama topik singkat", "title": "judul artikel max 60 karakter", "reasoning": "mengapa topik ini dipilih (kaitkan ke SEO)", "seo_keywords": ["kw1", "kw2", "kw3"]}`;
+{"topic": "nama topik singkat", "title": "judul artikel max 60 karakter (spesifik, bukan generik)", "reasoning": "mengapa topik ini dipilih (kaitkan ke SEO dan data GSC)", "seo_keywords": ["kw1", "kw2", "kw3", "kapaster"]}`;
 
   const topicResponse = await callGroq(topicPrompt, 0.7, 500);
   let topicData: { topic: string; title: string; reasoning: string; seo_keywords: string[] };
@@ -390,20 +376,23 @@ async function runTrendPulse(): Promise<string> {
 }
 
 async function reviewBlogContent(html: string, title: string): Promise<{ score: number; notes: string }> {
-  const text = html.replace(/<[^>]*>/g, "").slice(0, 3000);
+  const fullText = html.replace(/<[^>]*>/g, "").slice(0, 5000);
+  const h2Count = (html.match(/<h2/g) || []).length;
   const prompt = `Kamu adalah QA reviewer konten blog. Review artikel berikut dan beri score 1-5.
 
 KRITERIA PENILAIAN:
-1. Hook spesifik (2 points): Apakah pendahuluan engaging, bukan generik?
-2. Format variety (1 point): Apakah ada bullet list, numbering, tabel, blockquote?
-3. No fake claims (1 point): Apakah ada klaim tanpa data?
+1. Konten depth (2 points): Apakah artikel benar-benar menjawab judul "${title}" dengan contoh nyata, data, atau studi kasus? Atau cuma saran generik?
+2. Struktur konten (1 point): Minimal 3 <h2> substantive. Apakah alur logis dan informatif?
+3. No fake claims (1 point): Apakah ada klaim tanpa data atau testimoni palsu?
 4. Tone natural (1 point): Apakah mengalir kayak majalah? Atau kaku kayak buku teks?
 
+DATA: Artikel memiliki ${h2Count} sub-bab (<h2>).
+
 FORMAT RESPON (JSON SAJA, tanpa markdown):
-{"score": 4, "notes": "Pendahuluan hook bagus tapi kurang variasi tabel"}
+{"score": 4, "notes": "Penjelasan spesifik apa yang perlu diperbaiki"}
 
 ARTIKEL:
-${text}`;
+${fullText}`;
 
   const apis = ["openrouter", "groq"] as const;
   for (const api of apis) {
