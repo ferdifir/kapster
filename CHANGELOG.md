@@ -1,3 +1,30 @@
+# [1.16.0](https://github.com/ferdifir/kapster/compare/v1.15.0...v1.16.0) (2026-06-03)
+
+
+### Bug Fixes
+
+* 3-loop continuation with better prompt + shorter slug suffix ([fb4ce54](https://github.com/ferdifir/kapster/commit/fb4ce545877b2bd25bc7104ff76eaae0c275bc03))
+* add POST handler to cron + unique index to prevent race conditions ([0ec0546](https://github.com/ferdifir/kapster/commit/0ec05464af97d8f20703a870c0ae7016e7d4e0f1))
+* address code review issues in demo.ts ([1afa3af](https://github.com/ferdifir/kapster/commit/1afa3af1324fee5687fec8335e0b4d2d963c610c))
+* continuation prompt with heading structure + excerpt fallback ([59aa1ca](https://github.com/ferdifir/kapster/commit/59aa1ca40860f93ae4e71b7959286650f1656fe5))
+* enforce 3000+ word blog articles with continuation retry ([683aa60](https://github.com/ferdifir/kapster/commit/683aa605c4eda25626b914f3c6a36b86bbf65072))
+* robust metadata parsing - handle ---\nMETADATA format ([4382e5e](https://github.com/ferdifir/kapster/commit/4382e5e7c920b21cf0b50061a7d9d60a6316139f))
+* update Groq model list, remove small TPM models from generation ([effa5c1](https://github.com/ferdifir/kapster/commit/effa5c1b15b66400844946f9cd08bdf8b852638b))
+
+
+### Features
+
+* add core demo logic (lib/demo.ts) ([4551c24](https://github.com/ferdifir/kapster/commit/4551c241e464f855204a9d8afa45dea720c27dda))
+* add cron endpoint for demo session cleanup ([34b5239](https://github.com/ferdifir/kapster/commit/34b5239c9776cb4fff2e3cd9b3577fbfe54c05cc))
+* add demo_sessions and demo_waitlist tables ([e69d176](https://github.com/ferdifir/kapster/commit/e69d1768cc79045177467cf6e41d551b0cf2389c))
+* add Ollama Cloud as 3rd LLM fallback provider ([14d091e](https://github.com/ferdifir/kapster/commit/14d091e9327221446cf10d62ccb6accf4f160e8d))
+* add private message handler for demo requests ([383f3d2](https://github.com/ferdifir/kapster/commit/383f3d291ee05f1c8be43fc83d139ada3fc4f26e))
+* enrich SEO - schema, internal links, LLM metadata, 4-loop continuation ([0a1548d](https://github.com/ferdifir/kapster/commit/0a1548d31e2d237a4c85c7a08bc22429d26e1c66))
+* improve blog content prompts for SEO - specificity, depth, misspelling coverage ([66a164f](https://github.com/ferdifir/kapster/commit/66a164fdcb0f049b892b65c7b4d8e20611c1515c))
+* multi-model fallback per provider (4 Groq + 3 OpenRouter models) ([638ad2d](https://github.com/ferdifir/kapster/commit/638ad2d05252bffc21d1e197ed523f24266761ec))
+* multi-provider LLM with Groq→OpenRouter fallback ([87dad07](https://github.com/ferdifir/kapster/commit/87dad0712b0625ac183357426e92f539f2c13080))
+* schedule demo cleanup cron every 60s ([91a1ff7](https://github.com/ferdifir/kapster/commit/91a1ff768db06dcc75f4fe2f36ffb2c3b5b4d6ea))
+
 # [1.15.0](https://github.com/ferdifir/kapster/compare/v1.14.1...v1.15.0) (2026-06-02)
 
 
