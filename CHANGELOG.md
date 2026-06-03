@@ -1,3 +1,10 @@
+## [1.17.1](https://github.com/ferdifir/kapster/compare/v1.17.0...v1.17.1) (2026-06-03)
+
+
+### Bug Fixes
+
+* self-contained migration script, prevent main() on import ([72c6f46](https://github.com/ferdifir/kapster/commit/72c6f46e0fb7d5c62918330cc039027cb2f0c58d))
+
 # [1.17.0](https://github.com/ferdifir/kapster/compare/v1.16.0...v1.17.0) (2026-06-03)
 
 
