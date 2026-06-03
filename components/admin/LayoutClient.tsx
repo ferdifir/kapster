@@ -9,7 +9,7 @@ export default function AdminLayoutClient({
   user,
 }: {
   children: React.ReactNode;
-  user: { email: string; full_name: string | null };
+  user: { first_name: string; username?: string };
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 

@@ -1,27 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-
 export default function AdminHeader({
   user,
   onMenuToggle,
 }: {
-  user: { email: string; full_name: string | null };
+  user: { first_name: string; username?: string };
   onMenuToggle?: () => void;
 }) {
-  const router = useRouter();
-  const supabase = createClient();
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
-    router.refresh();
-  };
-
-  const initials = user.full_name
-    ? user.full_name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
-    : user.email[0].toUpperCase();
+  const initials = user.first_name.charAt(0).toUpperCase();
 
   return (
     <header className="h-14 border-b border-dark-800/50 bg-dark-900/50 backdrop-blur-sm flex items-center justify-between px-6 shrink-0">
@@ -38,15 +24,10 @@ export default function AdminHeader({
 
       <div className="flex items-center gap-3">
         <div className="text-right hidden sm:block">
-          <p className="text-white text-sm font-medium leading-none">{user.full_name ?? user.email}</p>
-          <p className="text-dark-500 text-xs mt-0.5">{user.email}</p>
+          <p className="text-white text-sm font-medium leading-none">{user.first_name}</p>
+          {user.username && <p className="text-dark-500 text-xs mt-0.5">@{user.username}</p>}
         </div>
         <div className="w-8 h-8 rounded-full gold-gradient flex items-center justify-center text-dark-900 text-sm font-bold">{initials}</div>
-        <button onClick={handleSignOut} className="p-2 rounded-lg text-dark-400 hover:text-white hover:bg-dark-800 transition-colors" title="Keluar">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-        </button>
       </div>
     </header>
   );

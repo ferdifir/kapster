@@ -1,74 +1,62 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createHmac } from "crypto";
 import { cookies } from "next/headers";
-import { NextRequest } from "next/server";
 
-const ADMIN_TELEGRAM_IDS = (process.env.ADMIN_TELEGRAM_IDS || "").split(",").map((s) => s.trim());
+const ADMIN_IDS = (process.env.ADMIN_TELEGRAM_IDS || "").split(",").map((s) => s.trim());
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
 
-export async function verifySuperAdmin(userId: string): Promise<boolean> {
-  const supabase = createAdminClient();
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, telegram_id")
-    .eq("id", userId)
-    .single();
-  return profile?.role === "superadmin";
-}
+export type AdminUser = {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+};
 
-export async function getSuperAdminFromTelegram(
-  telegramId: string
-): Promise<{ id: string; full_name: string | null } | null> {
-  if (!ADMIN_TELEGRAM_IDS.includes(telegramId)) return null;
-  const supabase = createAdminClient();
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id, full_name")
-    .eq("telegram_id", telegramId)
-    .single();
-  return profile;
-}
-
-export function verifyTelegramInitData(initData: string): { telegram_id: string } | null {
+export function verifyTelegramInitData(initData: string): AdminUser | null {
   try {
     const params = new URLSearchParams(initData);
     const hash = params.get("hash");
     if (!hash) return null;
+
     const dataCheckString = Array.from(params.entries())
       .filter(([k]) => k !== "hash")
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([k, v]) => `${k}=${v}`)
       .join("\n");
-    const secretKey = crypto.subtle
-      ? new TextEncoder().encode(process.env.TELEGRAM_BOT_TOKEN)
-      : null;
-    if (!secretKey) return null;
+
+    const secret = createHmac("sha256", "WebAppData").update(BOT_TOKEN).digest();
+    const expectedHash = createHmac("sha256", secret).update(dataCheckString).digest("hex");
+
+    if (expectedHash !== hash) return null;
 
     const userStr = params.get("user");
     if (!userStr) return null;
-    const user = JSON.parse(userStr);
-    return { telegram_id: String(user.id) };
+
+    const user: AdminUser = JSON.parse(userStr);
+    if (!ADMIN_IDS.includes(String(user.id))) return null;
+
+    return user;
   } catch {
     return null;
   }
 }
 
-// For cookie-based auth fallback
-export async function getSuperAdminSession() {
-  const supabase = createAdminClient();
+export async function verifyAdminSession(): Promise<AdminUser | null> {
   const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get("admin_session");
-  if (!sessionCookie) return null;
-  const userId = sessionCookie.value;
-  const isAdmin = await verifySuperAdmin(userId);
-  if (!isAdmin) return null;
-  return { id: userId };
+  const session = cookieStore.get("admin_session");
+  if (!session) return null;
+  try {
+    return JSON.parse(Buffer.from(session.value, "base64").toString());
+  } catch {
+    return null;
+  }
 }
 
-export async function setSuperAdminSession(userId: string) {
+export async function setAdminSession(user: AdminUser) {
   const cookieStore = await cookies();
-  cookieStore.set("admin_session", userId, {
+  cookieStore.set("admin_session", Buffer.from(JSON.stringify(user)).toString("base64"), {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
-    maxAge: 60 * 60 * 24, // 24 hours
+    maxAge: 60 * 60 * 24,
   });
 }
