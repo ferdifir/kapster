@@ -644,7 +644,10 @@ async function callMCPTool(toolName: string, args: Record<string, unknown>) {
   });
 }
 
-main().catch((err) => {
-  console.error("[blog-gen] Fatal:", err);
-  process.exit(1);
-});
+const isMainModule = process.argv[1]?.endsWith("/generate-blog-post.ts");
+if (isMainModule) {
+  main().catch((err) => {
+    console.error("[blog-gen] Fatal:", err);
+    process.exit(1);
+  });
+}
