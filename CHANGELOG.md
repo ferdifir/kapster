@@ -1,3 +1,10 @@
+## [1.18.3](https://github.com/ferdifir/kapster/compare/v1.18.2...v1.18.3) (2026-06-03)
+
+
+### Bug Fixes
+
+* **admin:** remove email from profiles select, no such column ([ccd7672](https://github.com/ferdifir/kapster/commit/ccd767244c620fa86477c843a1202ba54abec50a))
+
 ## [1.18.2](https://github.com/ferdifir/kapster/compare/v1.18.1...v1.18.2) (2026-06-03)
 
 
