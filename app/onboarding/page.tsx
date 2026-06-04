@@ -35,6 +35,7 @@ export default function OnboardingPage() {
   const [slugEdited, setSlugEdited] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [referralCode, setReferralCode] = useState("");
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -48,6 +49,16 @@ export default function OnboardingPage() {
         router.push("/auth/register?phone_unverified=true");
       }
     });
+  }, []);
+
+  useEffect(() => {
+    const cookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("referrer_code="));
+    if (cookie) {
+      const code = decodeURIComponent(cookie.split("=")[1]);
+      setReferralCode(code);
+    }
   }, []);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,6 +142,14 @@ export default function OnboardingPage() {
       notifyNewRegistration(form.name, currentUser.email, form.city);
     }
 
+    if (referralCode) {
+      const { applyReferral } = await import("@/app/onboarding/actions");
+      const result = await applyReferral(shop.id, referralCode);
+      if (result.error) {
+        console.error("Failed to apply referral:", result.error);
+      }
+    }
+
     router.push("/dashboard");
   };
 
@@ -160,6 +179,14 @@ export default function OnboardingPage() {
             />
           ))}
         </div>
+
+        {referralCode && (
+          <div className="p-4 rounded-xl bg-barber-400/5 border border-barber-400/15 text-center mb-8">
+            <p className="text-barber-400 font-semibold text-sm">
+              🎉 Kamu diundang! Diskon 25% bulan pertama — bayar Rp7.500 saja!
+            </p>
+          </div>
+        )}
 
         <form
           onSubmit={handleSubmit}
