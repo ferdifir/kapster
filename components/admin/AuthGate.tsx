@@ -50,11 +50,7 @@ export default function AdminAuthGate() {
           }
 
           setStatus("error");
-          const hasTg = hasTelegramWebApp();
-          const hasWebApp = !!(window as unknown as { Telegram?: { WebApp?: unknown } } | undefined)?.Telegram?.WebApp;
-          setError(
-            `Halaman ini hanya bisa dibuka dari Telegram. (tg=${hasTg}, webapp=${hasWebApp}, initData=${typeof initData})`
-          );
+          setError("Halaman ini hanya bisa dibuka dari aplikasi Telegram.");
           return;
         }
 
