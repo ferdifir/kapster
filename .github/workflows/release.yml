@@ -45,6 +45,7 @@ jobs:
           script: |
             cd /var/www/kapster
             git pull
-            npm ci
+            npm ci --no-optional
+            npm install --no-save lightningcss-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu
             npm run build
-            pm2 restart kapster
+            pm2 startOrReload ecosystem.config.js --update-env
