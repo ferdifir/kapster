@@ -213,7 +213,10 @@ export async function processWaitlist(): Promise<void> {
     for (const session of expiredSessions) {
       await expireSession(session.id);
     }
+  }
 
+  const activeSession = await getActiveSession();
+  if (!activeSession) {
     const { data: nextInLine, error: waitlistFetchError } = await admin
       .from("demo_waitlist")
       .select("id, phone")
