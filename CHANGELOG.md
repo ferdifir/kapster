@@ -1,3 +1,10 @@
+## [1.20.3](https://github.com/ferdifir/kapster/compare/v1.20.2...v1.20.3) (2026-06-04)
+
+
+### Bug Fixes
+
+* adapt webhook handler to WuzAPI payload format ([83eef62](https://github.com/ferdifir/kapster/commit/83eef62066f9a40682d2ca8430714b035a7c4dc0))
+
 ## [1.20.2](https://github.com/ferdifir/kapster/compare/v1.20.1...v1.20.2) (2026-06-04)
 
 
