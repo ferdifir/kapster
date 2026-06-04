@@ -65,19 +65,19 @@ export default function HeroSection() {
               </a>
             </div>
 
-            <div className="grid grid-cols-2 xs:flex xs:flex-wrap items-center gap-y-4 gap-x-6 sm:gap-x-8 justify-center lg:justify-start">
+            <div className="flex flex-row flex-nowrap items-center gap-3 sm:gap-6 lg:gap-8 justify-center lg:justify-start">
               {[
                 { value: "500+", label: "Salon Pria" },
                 { value: "Ribuan", label: "Pelanggan" },
                 { value: "Terpercaya", label: "Indonesia" },
               ].map((stat, i) => (
-                <div key={stat.label} className="flex items-center gap-4 sm:gap-8">
-                  {i > 0 && <div className="hidden sm:block w-px h-12 bg-dark-700" />}
+                <div key={stat.label} className="flex items-center gap-3 sm:gap-6 lg:gap-8">
+                  {i > 0 && <div className="w-px h-10 sm:h-12 bg-dark-700" />}
                   <div>
-                    <div className="font-display text-xl sm:text-3xl font-bold text-gold-gradient whitespace-nowrap">
+                    <div className="font-display text-lg sm:text-2xl lg:text-3xl font-bold text-gold-gradient whitespace-nowrap">
                       {stat.value}
                     </div>
-                    <div className="text-dark-400 text-[11px] sm:text-sm mt-0.5 sm:mt-1 whitespace-nowrap">{stat.label}</div>
+                    <div className="text-dark-400 text-[10px] sm:text-xs lg:text-sm mt-0.5 whitespace-nowrap">{stat.label}</div>
                   </div>
                 </div>
               ))}
