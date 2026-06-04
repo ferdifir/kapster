@@ -1,3 +1,10 @@
+## [1.18.14](https://github.com/ferdifir/kapster/compare/v1.18.13...v1.18.14) (2026-06-04)
+
+
+### Bug Fixes
+
+* **admin:** remove debug info from AuthGate error message ([44a057a](https://github.com/ferdifir/kapster/commit/44a057a66236e955b56f5a6b1bd362d3da6ba76f))
+
 ## [1.18.13](https://github.com/ferdifir/kapster/compare/v1.18.12...v1.18.13) (2026-06-04)
 
 
