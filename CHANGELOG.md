@@ -1,3 +1,26 @@
+# [1.19.0](https://github.com/ferdifir/kapster/compare/v1.18.14...v1.19.0) (2026-06-04)
+
+
+### Bug Fixes
+
+* add type casts for new referral tables in auto-generated types ([53ce238](https://github.com/ferdifir/kapster/commit/53ce23832b68e02bf4fa234e79a90cc9a831b69f))
+
+
+### Features
+
+* add admin referral management page ([aab3505](https://github.com/ferdifir/kapster/commit/aab3505dfc269297cd0656056491b33f1ad5fcd7))
+* add barbershop owner referral page in dashboard ([b1af47c](https://github.com/ferdifir/kapster/commit/b1af47caad07bbad0f7e9ed6975dd52c1d3aff60))
+* add lightweight referrer registration page ([2946c98](https://github.com/ferdifir/kapster/commit/2946c98b96d8ca1373e1b1e098815f963f083ed1))
+* add referral cookie check and discount banner to onboarding ([be27cf2](https://github.com/ferdifir/kapster/commit/be27cf22e735d708ec80a52d14b3b8c1e325cdc9))
+* add referral link to dashboard sidebar ([fb9d80b](https://github.com/ferdifir/kapster/commit/fb9d80b050476948fb942351da3dba0a7bd0aa8d))
+* add referral server utilities and types ([996220a](https://github.com/ferdifir/kapster/commit/996220a1f733563c1771c8e6911c60bfab3ba937))
+* add referral server utilities and types ([1752fad](https://github.com/ferdifir/kapster/commit/1752fad1f048300b173f384bf1f316764ae5bf9d))
+* add referral system database tables ([9c9d6eb](https://github.com/ferdifir/kapster/commit/9c9d6ebc9fa2381d10a22c47f48c3d4803398e1e))
+* add referral system database tables ([a9068c5](https://github.com/ferdifir/kapster/commit/a9068c5603a0360f85542f95d53f3ff4e3eb844f))
+* add ReferralCookieSetter component for tracking referral source ([7384343](https://github.com/ferdifir/kapster/commit/73843438817679c817e938991b4359da52b50ae2))
+* add referrer performance page (token-gated) ([8b6ad73](https://github.com/ferdifir/kapster/commit/8b6ad7391c2db74a36cae49cb6e1439e42db7c1c))
+* credit referral commission on first payment via Pakasir webhook ([c2f5ebe](https://github.com/ferdifir/kapster/commit/c2f5ebe72ebcd8cd90d9f99f65fa94f7c16d68e1))
+
 ## [1.18.14](https://github.com/ferdifir/kapster/compare/v1.18.13...v1.18.14) (2026-06-04)
 
 
