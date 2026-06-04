@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useTransition, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import { updateBarbershopSettings, updateBarbershopLocation, updateBookingMaxDays, updateBarbershopAbout } from "@/app/dashboard/settings/actions";
-import MapPicker from "@/components/MapPicker";
+
+const MapPicker = dynamic(() => import("@/components/MapPicker"), { ssr: false });
 import LogoUploader from "@/components/dashboard/LogoUploader";
 import CoverImageUploader from "@/components/dashboard/CoverImageUploader";
 import GalleryManager from "@/components/dashboard/GalleryManager";
