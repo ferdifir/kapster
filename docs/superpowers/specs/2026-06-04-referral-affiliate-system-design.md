@@ -3,7 +3,8 @@
 ## Business Context
 
 - Subscription: Rp10.000/month per barbershop (flat)
-- Payment gateway: Pakasir (est. ~Rp2.000/tx fee)
+- Payment gateway: **Pakasir** — QRIS: 0.7% + Rp310 (< Rp105k), VA BRI/BNI: Rp3.500 flat
+- Most common method: QRIS (fee = Rp380 for Rp10k, Rp363 for Rp7.5k)
 - Fixed cost: Rp60.000/month (VPS)
 - Status: Pre-launch (0 active barbershops)
 - Goal: Acquisition strategy from zero with sustainable unit economics
@@ -17,12 +18,14 @@
 | Minimum withdrawal | Rp25.000 |
 | Cookie duration | 45 days |
 
-### Unit Economics per Referred Shop
+### Unit Economics per Referred Shop (QRIS — default method)
 
 | Period | Revenue | Pakasir | Commission | Kapster |
 |---|---|---|---|---|
-| Month 1 | Rp7.500 | (Rp2.000) | (Rp3.500) | **Rp2.000** |
-| Month 2+ | Rp10.000 | (Rp2.000) | Rp0 | **Rp8.000** |
+| Month 1 | Rp7.500 | (Rp363) | (Rp3.500) | **Rp3.637** |
+| Month 2+ | Rp10.000 | (Rp380) | Rp0 | **Rp9.620** |
+
+VPS break-even: ~17 referred shops in month 1 (vs. 120 with original Rp5k proposal).
 
 ## Referral Flow
 
