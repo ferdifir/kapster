@@ -1,3 +1,10 @@
+## [1.20.5](https://github.com/ferdifir/kapster/compare/v1.20.4...v1.20.5) (2026-06-04)
+
+
+### Bug Fixes
+
+* process waitlist even without newly expired sessions ([cae9f3a](https://github.com/ferdifir/kapster/commit/cae9f3ae750993f35e3c4b8c44409b181c2640e7))
+
 ## [1.20.4](https://github.com/ferdifir/kapster/compare/v1.20.3...v1.20.4) (2026-06-04)
 
 
