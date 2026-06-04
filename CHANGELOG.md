@@ -1,3 +1,10 @@
+# [1.21.0](https://github.com/ferdifir/kapster/compare/v1.20.5...v1.21.0) (2026-06-04)
+
+
+### Features
+
+* tab navigation for dashboard settings page ([6c10fc3](https://github.com/ferdifir/kapster/commit/6c10fc350bc0976171ba35e698daa4b29db377d6))
+
 ## [1.20.5](https://github.com/ferdifir/kapster/compare/v1.20.4...v1.20.5) (2026-06-04)
 
 
