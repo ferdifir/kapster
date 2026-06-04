@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/ferdifir/kapster/compare/v1.19.2...v1.20.0) (2026-06-04)
+
+
+### Features
+
+* change Lihat Demo to Request Demo with WhatsApp link ([5cf9045](https://github.com/ferdifir/kapster/commit/5cf9045570d07bc9d1e09fb1cb93a47d1ee61d7e))
+
 ## [1.19.2](https://github.com/ferdifir/kapster/compare/v1.19.1...v1.19.2) (2026-06-04)
 
 
