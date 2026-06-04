@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Script from "next/script";
 import { Playfair_Display, Inter } from "next/font/google";
+import ReferralCookieSetter from "@/components/ReferralCookieSetter";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -210,6 +212,9 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        <Suspense fallback={null}>
+          <ReferralCookieSetter />
+        </Suspense>
         {children}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-XR7645C8QP"
