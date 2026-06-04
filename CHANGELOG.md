@@ -1,3 +1,20 @@
+# [1.22.0](https://github.com/ferdifir/kapster/compare/v1.21.0...v1.22.0) (2026-06-04)
+
+
+### Bug Fixes
+
+* add marketing subtitle, remove redundant updated_at in actions ([b97044a](https://github.com/ferdifir/kapster/commit/b97044a8efb848442b65db8b84f411e42bb4bcc0))
+* update Supabase types and fix type compatibility for marketing tables ([5fbc5fa](https://github.com/ferdifir/kapster/commit/5fbc5fad0ea081f53d3fd89b2a7713ae892d7dbb))
+
+
+### Features
+
+* add marketing lead types and server actions ([c841d11](https://github.com/ferdifir/kapster/commit/c841d119d963f8a1f5ba8002c2b980ed0f409529))
+* add marketing manager client component ([4377694](https://github.com/ferdifir/kapster/commit/43776942e52670d06113cb3d3562642fc77ed7f1))
+* add marketing sidebar nav and server page ([a13fbfa](https://github.com/ferdifir/kapster/commit/a13fbfa5a05f0f0d70f7a552384c579015ed31bc))
+* add marketing_leads and marketing_lead_activities tables ([bf22f80](https://github.com/ferdifir/kapster/commit/bf22f80b373a95b3a162d1eec699438a9d5d0a9a))
+* seed 28 marketing leads from OSINT research ([3f33a0b](https://github.com/ferdifir/kapster/commit/3f33a0b44cb5f4dfc2064e9c198b09e150ba1f3e))
+
 # [1.21.0](https://github.com/ferdifir/kapster/compare/v1.20.5...v1.21.0) (2026-06-04)
 
 
