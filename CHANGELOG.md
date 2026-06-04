@@ -1,3 +1,10 @@
+## [1.18.13](https://github.com/ferdifir/kapster/compare/v1.18.12...v1.18.13) (2026-06-04)
+
+
+### Bug Fixes
+
+* **admin:** improve mobile responsiveness for Telegram mini app ([9a62520](https://github.com/ferdifir/kapster/commit/9a62520f687e6113d057afca9ddf7adcd89b2f4c))
+
 ## [1.18.12](https://github.com/ferdifir/kapster/compare/v1.18.11...v1.18.12) (2026-06-03)
 
 
