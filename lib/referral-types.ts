@@ -27,7 +27,7 @@ export interface PayoutRequestRow {
   referral_code_id: string;
   amount: number;
   method: string | null;
-  bank_info: Record<string, string> | null;
+  bank_info: Record<string, unknown> | null;
   status: "pending" | "paid" | "cancelled";
   notes: string | null;
   requested_at: string;

@@ -1,12 +1,18 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logError } from "@/lib/error-logger";
 import type { ReferralCodeRow, ReferralRow } from "@/lib/referral-types";
 
 export async function lookupReferralCode(code: string) {
   const supabase = createAdminClient();
 
-  const { data } = await supabase.rpc("lookup_referral_code", {
+  const { data, error } = await supabase.rpc("lookup_referral_code", {
     p_code: code,
   });
+
+  if (error) {
+    logError("referral/lookupReferralCode", error, { code });
+    return null;
+  }
 
   if (!data || !Array.isArray(data) || data.length === 0) return null;
   return data[0] as { id: string; code: string; profile_id: string | null; name: string | null };
