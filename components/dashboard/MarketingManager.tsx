@@ -182,7 +182,10 @@ export default function MarketingManager({
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-white">Marketing</h1>
+        <div>
+          <h1 className="font-display text-2xl font-bold text-white mb-1">Marketing</h1>
+          <p className="text-dark-400 text-sm">Kelola leads & outreach barbershop</p>
+        </div>
         <button
           onClick={() => setShowAddModal(true)}
           className="px-4 py-2.5 rounded-xl bg-barber-400 text-dark-900 font-medium"

@@ -10,7 +10,6 @@ export async function updateLeadStatus(leadId: string, status: string) {
     .update({
       status,
       last_contacted_at: status === "contacted" ? new Date().toISOString() : undefined,
-      updated_at: new Date().toISOString(),
     })
     .eq("id", leadId);
   if (error) throw new Error(error.message);
