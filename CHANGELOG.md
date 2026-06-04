@@ -1,3 +1,10 @@
+## [1.20.1](https://github.com/ferdifir/kapster/compare/v1.20.0...v1.20.1) (2026-06-04)
+
+
+### Bug Fixes
+
+* keep stats row single line on all screen sizes ([5785a5d](https://github.com/ferdifir/kapster/commit/5785a5d4a67e10e840e7ceedf1395b45ea9b7721))
+
 # [1.20.0](https://github.com/ferdifir/kapster/compare/v1.19.2...v1.20.0) (2026-06-04)
 
 
