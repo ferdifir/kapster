@@ -1,3 +1,10 @@
+## [1.22.1](https://github.com/ferdifir/kapster/compare/v1.22.0...v1.22.1) (2026-06-04)
+
+
+### Bug Fixes
+
+* move marketing CRM from dashboard to admin section ([842aea8](https://github.com/ferdifir/kapster/commit/842aea8ef3878f9999b1c707a9c5798aa203423d))
+
 # [1.22.0](https://github.com/ferdifir/kapster/compare/v1.21.0...v1.22.0) (2026-06-04)
 
 
