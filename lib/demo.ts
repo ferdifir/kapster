@@ -38,14 +38,33 @@ function extractJidPhone(jid: string): string {
 
 export function getSenderPhone(event: Record<string, unknown>): string | null {
   const info = event.Info as Record<string, unknown> | undefined;
-  const sender = info?.Sender as string | undefined;
+  if (!info) return null;
+
+  const senderAlt = info.SenderAlt as string | undefined;
+  if (senderAlt) return extractJidPhone(senderAlt);
+
+  const sender = info.Sender as string | undefined;
   if (!sender) return null;
   return extractJidPhone(sender);
 }
 
 export function getChatJid(event: Record<string, unknown>): string | null {
   const info = event.Info as Record<string, unknown> | undefined;
-  return (info?.Chat as string) || null;
+  if (!info) return null;
+
+  const chat = info.Chat as string | undefined;
+  if (!chat) return null;
+
+  // WuzAPI may send @lid format; prefer @s.whatsapp.net for replies
+  if (chat.includes("@lid")) {
+    const senderAlt = info.SenderAlt as string | undefined;
+    if (senderAlt) {
+      const phone = extractJidPhone(senderAlt);
+      return `${phone}@s.whatsapp.net`;
+    }
+  }
+
+  return chat;
 }
 
 export async function setDemoPassword(password: string): Promise<void> {
