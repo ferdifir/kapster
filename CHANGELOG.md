@@ -1,3 +1,10 @@
+## [1.20.4](https://github.com/ferdifir/kapster/compare/v1.20.3...v1.20.4) (2026-06-04)
+
+
+### Bug Fixes
+
+* handle WuzAPI [@lid](https://github.com/lid) JID format in chat reply ([4d6bb15](https://github.com/ferdifir/kapster/commit/4d6bb15d4b2cc27a2d66fe636bd9222223d42362))
+
 ## [1.20.3](https://github.com/ferdifir/kapster/compare/v1.20.2...v1.20.3) (2026-06-04)
 
 
