@@ -1,3 +1,10 @@
+## [1.19.1](https://github.com/ferdifir/kapster/compare/v1.19.0...v1.19.1) (2026-06-04)
+
+
+### Bug Fixes
+
+* optimize release workflow for low-memory VPS ([ec48a8c](https://github.com/ferdifir/kapster/commit/ec48a8caa6fbd170347ca8ea16061eee25b0a621))
+
 # [1.19.0](https://github.com/ferdifir/kapster/compare/v1.18.14...v1.19.0) (2026-06-04)
 
 
