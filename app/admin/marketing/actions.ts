@@ -1,10 +1,10 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 
 export async function updateLeadStatus(leadId: string, status: string) {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { error } = await supabase
     .from("marketing_leads")
     .update({
@@ -29,11 +29,11 @@ export async function updateLeadStatus(leadId: string, status: string) {
     description: `Status berubah: ${statusLabels[status] || status}`,
   });
 
-  revalidatePath("/dashboard/marketing");
+  revalidatePath("/admin/marketing");
 }
 
 export async function addLeadNote(leadId: string, note: string) {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { error: updateError } = await supabase
     .from("marketing_leads")
@@ -48,7 +48,7 @@ export async function addLeadNote(leadId: string, note: string) {
   });
   if (error) throw new Error(error.message);
 
-  revalidatePath("/dashboard/marketing");
+  revalidatePath("/admin/marketing");
 }
 
 export async function createLead(data: {
@@ -60,7 +60,7 @@ export async function createLead(data: {
   priority: string;
   notes?: string;
 }) {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { error } = await supabase.from("marketing_leads").insert({
     name: data.name,
     contact: data.contact,
@@ -72,15 +72,15 @@ export async function createLead(data: {
     status: "new",
   });
   if (error) throw new Error(error.message);
-  revalidatePath("/dashboard/marketing");
+  revalidatePath("/admin/marketing");
 }
 
 export async function deleteLead(leadId: string) {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { error } = await supabase
     .from("marketing_leads")
     .delete()
     .eq("id", leadId);
   if (error) throw new Error(error.message);
-  revalidatePath("/dashboard/marketing");
+  revalidatePath("/admin/marketing");
 }

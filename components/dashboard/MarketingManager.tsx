@@ -7,7 +7,7 @@ import {
   addLeadNote,
   createLead,
   deleteLead,
-} from "@/app/dashboard/marketing/actions";
+} from "@/app/admin/marketing/actions";
 
 const STATUS_LABELS: Record<string, string> = {
   new: "Baru",
