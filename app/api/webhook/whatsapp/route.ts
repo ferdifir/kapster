@@ -4,6 +4,43 @@ import { handleGroupInfo, handleMessage } from "@/lib/whatsapp-bot";
 import { handleDemoRequest, isPrivateMessage } from "@/lib/demo";
 import { logError } from "@/lib/error-logger";
 
+function parseBody(
+  body: Record<string, unknown>
+): { type: string; event: Record<string, unknown> } | null {
+  // WuzAPI global webhook format: { instanceName, jsonData, userID }
+  if (typeof body.jsonData === "string") {
+    try {
+      const parsed = JSON.parse(body.jsonData) as Record<string, unknown>;
+      if (
+        typeof parsed.type === "string" &&
+        parsed.event &&
+        typeof parsed.event === "object"
+      ) {
+        return {
+          type: parsed.type,
+          event: parsed.event as Record<string, unknown>,
+        };
+      }
+    } catch {
+      return null;
+    }
+  }
+
+  // Legacy format: { type, event, token }
+  if (
+    typeof body.type === "string" &&
+    body.event &&
+    typeof body.event === "object"
+  ) {
+    return {
+      type: body.type,
+      event: body.event as Record<string, unknown>,
+    };
+  }
+
+  return null;
+}
+
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>;
   try {
@@ -13,27 +50,32 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
 
-  const { type, event, token } = body;
+  const { token } = body;
+  const isInternal = req.headers.get("host")?.includes("localhost");
 
-  if (token !== SYSTEM_WUZAPI_TOKEN) {
+  // Only check token for external requests (per-session webhook from WuzAPI)
+  if (!isInternal && token !== SYSTEM_WUZAPI_TOKEN) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  if (!event || typeof event !== "object") {
+  const parsed = parseBody(body);
+  if (!parsed) {
     return NextResponse.json({ error: "invalid event" }, { status: 400 });
   }
 
+  const { type, event } = parsed;
+
   if (type === "GroupInfo") {
-    handleGroupInfo(event as Record<string, unknown>).catch((err) => {
+    handleGroupInfo(event).catch((err) => {
       logError("webhook_whatsapp_groupinfo", err);
     });
   } else if (type === "Message") {
-    if (isPrivateMessage(event as Record<string, unknown>)) {
-      handleDemoRequest(event as Record<string, unknown>).catch((err) => {
+    if (isPrivateMessage(event)) {
+      handleDemoRequest(event).catch((err) => {
         logError("webhook_whatsapp_demo", err);
       });
     } else {
-      handleMessage(event as Record<string, unknown>).catch((err) => {
+      handleMessage(event).catch((err) => {
         logError("webhook_whatsapp_message", err);
       });
     }
