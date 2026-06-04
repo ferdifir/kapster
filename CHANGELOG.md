@@ -1,3 +1,10 @@
+## [1.19.2](https://github.com/ferdifir/kapster/compare/v1.19.1...v1.19.2) (2026-06-04)
+
+
+### Bug Fixes
+
+* use pm2 restart kapster instead of missing ecosystem.config.js ([bb63dba](https://github.com/ferdifir/kapster/commit/bb63dba3d2e3c2174343d186f32200a7ff7d67f7))
+
 ## [1.19.1](https://github.com/ferdifir/kapster/compare/v1.19.0...v1.19.1) (2026-06-04)
 
 
