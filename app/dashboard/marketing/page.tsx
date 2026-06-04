@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import type { MarketingLeadActivity } from "@/lib/marketing-types";
 import MarketingManager from "@/components/dashboard/MarketingManager";
 
 export const dynamic = "force-dynamic";
@@ -21,11 +22,16 @@ export default async function MarketingPage() {
     .select("*")
     .order("created_at", { ascending: false });
 
-  const activitiesByLead: Record<string, typeof activities> = {};
+  const activitiesByLead: Record<string, MarketingLeadActivity[]> = {};
   if (activities) {
     for (const a of activities) {
-      if (!activitiesByLead[a.lead_id]) activitiesByLead[a.lead_id] = [];
-      activitiesByLead[a.lead_id].push(a);
+      const item = a as MarketingLeadActivity;
+      const list = activitiesByLead[item.lead_id];
+      if (list) {
+        list.push(item);
+      } else {
+        activitiesByLead[item.lead_id] = [item];
+      }
     }
   }
 

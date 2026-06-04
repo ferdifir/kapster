@@ -11,8 +11,8 @@ export interface MarketingLead {
   branches: string | null;
   city: string | null;
   instagram: string | null;
-  priority: LeadPriority;
-  status: LeadStatus;
+  priority: string;
+  status: string;
   notes: string | null;
   last_contacted_at: string | null;
   created_at: string;

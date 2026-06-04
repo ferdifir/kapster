@@ -898,6 +898,75 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_leads: {
+        Row: {
+          id: string
+          name: string
+          contact: string
+          branches: string | null
+          city: string | null
+          instagram: string | null
+          priority: string
+          status: string
+          notes: string | null
+          last_contacted_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          contact: string
+          branches?: string | null
+          city?: string | null
+          instagram?: string | null
+          priority?: string
+          status?: string
+          notes?: string | null
+          last_contacted_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          contact?: string
+          branches?: string | null
+          city?: string | null
+          instagram?: string | null
+          priority?: string
+          status?: string
+          notes?: string | null
+          last_contacted_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      marketing_lead_activities: {
+        Row: {
+          id: string
+          lead_id: string
+          activity_type: string
+          description: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          lead_id: string
+          activity_type: string
+          description: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          lead_id?: string
+          activity_type?: string
+          description?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
