@@ -24,7 +24,7 @@ export default async function ReferralCodePage({ params, searchParams }: PagePro
     );
   }
 
-  const supabase = createAdminClient();
+  const supabase = createAdminClient() as any;
 
   const { data: rc } = await (supabase
     .from("referral_codes")

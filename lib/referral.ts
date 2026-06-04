@@ -3,7 +3,7 @@ import { logError } from "@/lib/error-logger";
 import type { ReferralCodeRow, ReferralRow } from "@/lib/referral-types";
 
 export async function lookupReferralCode(code: string) {
-  const supabase = createAdminClient();
+  const supabase = createAdminClient() as any;
 
   const { data, error } = await supabase.rpc("lookup_referral_code", {
     p_code: code,
@@ -24,7 +24,7 @@ export async function createReferralCode(input: {
   name?: string;
   waNumber?: string;
 }) {
-  const supabase = createAdminClient();
+  const supabase = createAdminClient() as any;
 
   const { data, error } = (await supabase
     .from("referral_codes")
@@ -45,7 +45,7 @@ export async function createReferralRecord(
   referralCodeId: string,
   barbershopId: string
 ) {
-  const supabase = createAdminClient();
+  const supabase = createAdminClient() as any;
 
   const { data, error } = (await supabase
     .from("referrals")
@@ -65,7 +65,7 @@ export async function createReferralRecord(
 }
 
 export async function creditReferralCommission(barbershopId: string) {
-  const supabase = createAdminClient();
+  const supabase = createAdminClient() as any;
 
   const { data: referral } = (await supabase
     .from("referrals")
@@ -114,7 +114,7 @@ export async function creditReferralCommission(barbershopId: string) {
 }
 
 export async function createReferralCodeForProfile(profileId: string) {
-  const supabase = createAdminClient();
+  const supabase = createAdminClient() as any;
 
   const { data: existing } = (await supabase
     .from("referral_codes")
@@ -157,7 +157,7 @@ export async function createReferralCodeForProfile(profileId: string) {
 }
 
 export async function getReferralStats(referralCodeId: string) {
-  const supabase = createAdminClient();
+  const supabase = createAdminClient() as any;
 
   const { data: referrer } = (await supabase
     .from("referral_codes")

@@ -34,3 +34,17 @@ jobs:
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 109.111.53.58
+          port: 38954
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/kapster
+            git pull
+            npm ci
+            npm run build
+            pm2 restart kapster

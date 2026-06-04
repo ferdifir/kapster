@@ -70,7 +70,7 @@ export async function daftarReferrer(formData: FormData) {
   const code = generateCode(name.trim());
   const access_token = randomUUID();
 
-  const supabase = createAdminClient();
+  const supabase = createAdminClient() as any;
 
   const { data, error } = (await supabase
     .from("referral_codes")
@@ -134,7 +134,7 @@ export async function requestPayout(formData: FormData) {
     return { error: "Minimum penarikan adalah Rp25.000." };
   }
 
-  const supabase = createAdminClient();
+  const supabase = createAdminClient() as any;
 
   const { data: codeRow } = (await supabase
     .from("referral_codes")
