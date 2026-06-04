@@ -30,49 +30,51 @@ export default async function AdminBarbershopsPage({
         <h1 className="font-display text-2xl font-bold text-white">Barbershops</h1>
       </div>
 
-      <form className="flex gap-3">
-        <input name="q" defaultValue={params.q} placeholder="Cari barbershop..." className="flex-1 px-4 py-2 rounded-xl bg-dark-800 border border-dark-700 text-white placeholder:text-dark-500 text-sm focus:outline-none focus:border-barber-400/50" />
-        <button type="submit" className="px-4 py-2 rounded-xl bg-barber-400/10 text-barber-400 border border-barber-400/20 text-sm hover:bg-barber-400/20 transition-all">Cari</button>
+      <form className="flex flex-col sm:flex-row gap-3">
+        <input name="q" defaultValue={params.q} placeholder="Cari barbershop..." className="w-full sm:flex-1 px-4 py-2 rounded-xl bg-dark-800 border border-dark-700 text-white placeholder:text-dark-500 text-sm focus:outline-none focus:border-barber-400/50" />
+        <button type="submit" className="w-full sm:w-auto px-4 py-2 rounded-xl bg-barber-400/10 text-barber-400 border border-barber-400/20 text-sm hover:bg-barber-400/20 transition-all">Cari</button>
       </form>
 
       <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-dark-700/30 text-left text-dark-400 text-sm">
-              <th className="p-4 font-medium">Nama</th>
-              <th className="p-4 font-medium">Pemilik</th>
-              <th className="p-4 font-medium">Kota</th>
-              <th className="p-4 font-medium">Status</th>
-              <th className="p-4 font-medium">Dibuat</th>
-              <th className="p-4 font-medium" />
-            </tr>
-          </thead>
-          <tbody>
-            {barbershops?.map((bs) => {
-              const subStatus = subMap.get(bs.id);
-              const profile = bs.profiles as { full_name: string | null; phone: string | null } | null;
-              return (
-                <tr key={bs.id} className="border-b border-dark-700/20 hover:bg-dark-700/20 transition-colors">
-                  <td className="p-4 text-white font-medium">{bs.name}</td>
-                  <td className="p-4 text-dark-300">{profile?.full_name ?? "-"}</td>
-                  <td className="p-4 text-dark-300">{bs.city ?? "-"}</td>
-                  <td className="p-4">
-                    <span className={`px-2 py-1 rounded-lg text-xs font-medium ${subStatus === "active" ? "bg-green-500/10 text-green-400" : "bg-dark-700/50 text-dark-400"}`}>
-                      {subStatus === "active" ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-                  <td className="p-4 text-dark-400 text-sm">{new Date(bs.created_at).toLocaleDateString("id-ID")}</td>
-                  <td className="p-4">
-                    <Link href={`/admin/barbershops/${bs.id}`} className="text-barber-400 text-sm hover:underline">Detail</Link>
-                  </td>
-                </tr>
-              );
-            })}
-            {(!barbershops || barbershops.length === 0) && (
-              <tr><td colSpan={6} className="p-8 text-center text-dark-500">Tidak ada barbershop ditemukan</td></tr>
-            )}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[500px]">
+            <thead>
+              <tr className="border-b border-dark-700/30 text-left text-dark-400 text-sm">
+                <th className="p-4 font-medium whitespace-nowrap">Nama</th>
+                <th className="p-4 font-medium whitespace-nowrap hidden sm:table-cell">Pemilik</th>
+                <th className="p-4 font-medium whitespace-nowrap">Kota</th>
+                <th className="p-4 font-medium whitespace-nowrap">Status</th>
+                <th className="p-4 font-medium whitespace-nowrap hidden md:table-cell">Dibuat</th>
+                <th className="p-4 font-medium whitespace-nowrap" />
+              </tr>
+            </thead>
+            <tbody>
+              {barbershops?.map((bs) => {
+                const subStatus = subMap.get(bs.id);
+                const profile = bs.profiles as { full_name: string | null; phone: string | null } | null;
+                return (
+                  <tr key={bs.id} className="border-b border-dark-700/20 hover:bg-dark-700/20 transition-colors">
+                    <td className="p-4 text-white font-medium whitespace-nowrap">{bs.name}</td>
+                    <td className="p-4 text-dark-300 whitespace-nowrap hidden sm:table-cell">{profile?.full_name ?? "-"}</td>
+                    <td className="p-4 text-dark-300 whitespace-nowrap">{bs.city ?? "-"}</td>
+                    <td className="p-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 rounded-lg text-xs font-medium ${subStatus === "active" ? "bg-green-500/10 text-green-400" : "bg-dark-700/50 text-dark-400"}`}>
+                        {subStatus === "active" ? "Active" : "Inactive"}
+                      </span>
+                    </td>
+                    <td className="p-4 text-dark-400 text-sm whitespace-nowrap hidden md:table-cell">{new Date(bs.created_at).toLocaleDateString("id-ID")}</td>
+                    <td className="p-4 whitespace-nowrap">
+                      <Link href={`/admin/barbershops/${bs.id}`} className="text-barber-400 text-sm hover:underline">Detail</Link>
+                    </td>
+                  </tr>
+                );
+              })}
+              {(!barbershops || barbershops.length === 0) && (
+                <tr><td colSpan={6} className="p-8 text-center text-dark-500">Tidak ada barbershop ditemukan</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

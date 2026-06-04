@@ -41,9 +41,9 @@ export default function AdminSqlPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <h1 className="font-display text-2xl font-bold text-white">SQL Query</h1>
-        <label className="flex items-center gap-2 text-sm text-dark-400 cursor-pointer">
+        <label className="flex items-center gap-2 text-sm text-dark-400 cursor-pointer shrink-0">
           <input type="checkbox" checked={allowWrite} onChange={(e) => setAllowWrite(e.target.checked)} className="rounded border-dark-600 bg-dark-700" />
           Izinkan INSERT/UPDATE/DELETE
         </label>

@@ -64,7 +64,7 @@ export default function AdminTerminalPage() {
           <span className="text-dark-500 text-xs ml-2 font-mono">admin@kapster:{cwd}</span>
         </div>
 
-        <div ref={outputRef} className="p-4 h-96 overflow-y-auto font-mono text-sm space-y-2" onClick={() => inputRef.current?.focus()}>
+        <div ref={outputRef} className="p-4 h-64 sm:h-96 overflow-y-auto font-mono text-sm space-y-2" onClick={() => inputRef.current?.focus()}>
           {commands.length === 0 && (
             <div className="text-dark-500">
               <p className="mb-2">🚀 Kapster Admin Terminal</p>

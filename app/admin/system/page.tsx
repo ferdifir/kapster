@@ -49,8 +49,8 @@ export default async function AdminSystemPage() {
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-6">
-            <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6">
+          <div className="grid lg:grid-cols-2 gap-3 sm:gap-6">
+            <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-4 sm:p-6">
               <h2 className="font-semibold text-white mb-4">Database</h2>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
@@ -60,7 +60,7 @@ export default async function AdminSystemPage() {
               </div>
             </div>
 
-            <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6">
+            <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-4 sm:p-6">
               <h2 className="font-semibold text-white mb-4">WhatsApp Gateway</h2>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
@@ -71,7 +71,7 @@ export default async function AdminSystemPage() {
             </div>
           </div>
 
-          <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6">
+          <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-4 sm:p-6">
             <h2 className="font-semibold text-white mb-4">Cron Jobs</h2>
             <div className="space-y-3">
               {[

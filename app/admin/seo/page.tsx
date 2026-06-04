@@ -25,27 +25,29 @@ export default async function AdminSeoPage() {
       </div>
 
       <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-dark-700/30 text-left text-dark-400 text-sm">
-              <th className="p-4 font-medium">Metric</th>
-              <th className="p-4 font-medium">Value</th>
-              <th className="p-4 font-medium">Tanggal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {metrics?.map((m) => (
-              <tr key={m.id} className="border-b border-dark-700/20 hover:bg-dark-700/20 transition-colors">
-                <td className="p-4 text-white">{m.metric_name}</td>
-                <td className="p-4 text-dark-200">{m.metric_value}</td>
-                <td className="p-4 text-dark-400 text-sm">{new Date(m.metric_date).toLocaleDateString("id-ID")}</td>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[400px]">
+            <thead>
+              <tr className="border-b border-dark-700/30 text-left text-dark-400 text-sm">
+                <th className="p-4 font-medium whitespace-nowrap">Metric</th>
+                <th className="p-4 font-medium whitespace-nowrap">Value</th>
+                <th className="p-4 font-medium whitespace-nowrap hidden sm:table-cell">Tanggal</th>
               </tr>
-            ))}
-            {(!metrics || metrics.length === 0) && (
-              <tr><td colSpan={3} className="p-8 text-center text-dark-500">Belum ada data audit</td></tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {metrics?.map((m) => (
+                <tr key={m.id} className="border-b border-dark-700/20 hover:bg-dark-700/20 transition-colors">
+                  <td className="p-4 text-white whitespace-nowrap">{m.metric_name}</td>
+                  <td className="p-4 text-dark-200 whitespace-nowrap">{m.metric_value}</td>
+                  <td className="p-4 text-dark-400 text-sm whitespace-nowrap hidden sm:table-cell">{new Date(m.metric_date).toLocaleDateString("id-ID")}</td>
+                </tr>
+              ))}
+              {(!metrics || metrics.length === 0) && (
+                <tr><td colSpan={3} className="p-8 text-center text-dark-500">Belum ada data audit</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

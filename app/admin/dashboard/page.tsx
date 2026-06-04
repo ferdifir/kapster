@@ -38,7 +38,7 @@ export default async function AdminDashboardPage() {
         <p className="text-dark-400 text-sm">{today}</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <StatCard label="Total Barbershops" value={totalShops ?? 0} accent />
         <StatCard label="Pelanggan Selesai" value={totalCustomers ?? 0} sub="semua waktu" />
         <StatCard label="Subscriber Aktif" value={activeSubs ?? 0} sub={`dari ${totalShops ?? 0} barbershop`} />

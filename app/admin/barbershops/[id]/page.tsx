@@ -64,9 +64,9 @@ export default async function AdminBarbershopDetailPage({
         </div>
       </div>
 
-      <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6 space-y-4">
+      <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-4 sm:p-6 space-y-4">
         <h2 className="font-semibold text-white">Informasi</h2>
-        <div className="grid grid-cols-2 gap-4 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
           <div><span className="text-dark-400">Pemilik:</span> <span className="text-white ml-2">{profile?.full_name ?? "-"}</span></div>
           <div><span className="text-dark-400">Telepon:</span> <span className="text-white ml-2">{barbershop.phone ?? "-"}</span></div>
           <div><span className="text-dark-400">Kota:</span> <span className="text-white ml-2">{barbershop.city ?? "-"}</span></div>

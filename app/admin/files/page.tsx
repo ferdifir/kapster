@@ -77,12 +77,12 @@ export default function AdminFilesPage() {
       </div>
 
       <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-dark-700/30 flex items-center gap-2 text-sm">
-          <button onClick={() => loadFiles(".")} className="text-dark-400 hover:text-white">📁 /kapster</button>
+        <div className="px-4 py-3 border-b border-dark-700/30 flex items-center gap-1 sm:gap-2 text-sm overflow-x-auto">
+          <button onClick={() => loadFiles(".")} className="text-dark-400 hover:text-white shrink-0">📁 /kapster</button>
           {currentPath.split("/").filter(Boolean).map((part, i, arr) => (
-            <span key={i} className="text-dark-600">/<button onClick={() => loadFiles("/" + arr.slice(0, i + 1).join("/"))} className="text-dark-400 hover:text-white ml-1">{part}</button></span>
+            <span key={i} className="text-dark-600 shrink-0">/<button onClick={() => loadFiles("/" + arr.slice(0, i + 1).join("/"))} className="text-dark-400 hover:text-white ml-1">{part}</button></span>
           ))}
-          <button onClick={goUp} className="ml-auto text-dark-400 hover:text-white text-xs px-2 py-1 rounded bg-dark-700/50">▲ Naik</button>
+          <button onClick={goUp} className="ml-auto text-dark-400 hover:text-white text-xs px-2 py-1 rounded bg-dark-700/50 shrink-0">▲ Naik</button>
         </div>
 
         <div className="divide-y divide-dark-700/20">
@@ -93,13 +93,13 @@ export default function AdminFilesPage() {
           ) : (
             files.map((file) => (
               <div key={file.name} className="flex items-center px-4 py-2.5 hover:bg-dark-700/20 transition-colors text-sm">
-                <button onClick={() => file.isDir ? navigateTo(file.name) : readFile(file.name)} className="flex items-center gap-3 flex-1 text-left">
-                  <span className="text-lg">{file.isDir ? "📁" : "📄"}</span>
-                  <span className="text-white">{file.name}</span>
+                <button onClick={() => file.isDir ? navigateTo(file.name) : readFile(file.name)} className="flex items-center gap-3 flex-1 text-left min-w-0">
+                  <span className="text-lg shrink-0">{file.isDir ? "📁" : "📄"}</span>
+                  <span className="text-white truncate">{file.name}</span>
                 </button>
-                <span className="text-dark-500 w-20 text-right">{file.size}</span>
-                <span className="text-dark-500 w-36 text-right">{file.date}</span>
-                <span className="text-dark-600 w-24 text-right font-mono text-xs">{file.perms}</span>
+                <span className="text-dark-500 w-20 text-right shrink-0 hidden sm:block">{file.size}</span>
+                <span className="text-dark-500 w-36 text-right shrink-0 hidden md:block">{file.date}</span>
+                <span className="text-dark-600 w-24 text-right font-mono text-xs shrink-0 hidden lg:block">{file.perms}</span>
               </div>
             ))
           )}
