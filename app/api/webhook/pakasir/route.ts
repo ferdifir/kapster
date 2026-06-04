@@ -111,6 +111,19 @@ export async function POST(request: Request) {
       ].join("\n");
 
       sendTelegramNotification(text);
+
+      // Credit referral commission on first payment only
+      if (!isRenewal) {
+        const { creditReferralCommission } = await import("@/lib/referral");
+        try {
+          const result = await creditReferralCommission(payment.barbershop_id);
+          if (result) {
+            console.log(`Referral commission credited: Rp${result.commission} for barbershop ${payment.barbershop_id}`);
+          }
+        } catch (err) {
+          console.error("Failed to credit referral commission:", err);
+        }
+      }
     }
 
     return NextResponse.json({ message: "Subscription activated" }, { status: 200 });
