@@ -1,3 +1,10 @@
+## [1.26.2](https://github.com/ferdifir/kapster/compare/v1.26.1...v1.26.2) (2026-06-05)
+
+
+### Bug Fixes
+
+* generate random referral codes instead of name-based ([683009e](https://github.com/ferdifir/kapster/commit/683009e2a06d6bb767ad3d268e8e0ae85743e41d))
+
 ## [1.26.1](https://github.com/ferdifir/kapster/compare/v1.26.0...v1.26.1) (2026-06-05)
 
 
