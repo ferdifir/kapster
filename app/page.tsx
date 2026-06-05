@@ -7,6 +7,7 @@ import Testimonials from "@/components/Testimonials";
 import FAQSection from "@/components/FAQSection";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
+import AffiliateFloatingBadge from "@/components/AffiliateFloatingBadge";
 
 const cvStyle = { contentVisibility: "auto" } as React.CSSProperties;
 
@@ -23,6 +24,7 @@ export default function Home() {
         <div style={cvStyle}><FAQSection /></div>
         <div style={cvStyle}><CTASection /></div>
       </main>
+      <AffiliateFloatingBadge />
       <Footer />
     </>
   );
