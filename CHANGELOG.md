@@ -1,3 +1,10 @@
+# [1.23.0](https://github.com/ferdifir/kapster/compare/v1.22.1...v1.23.0) (2026-06-05)
+
+
+### Features
+
+* redesign landing page layout to match tes.html layout ([26dd6f3](https://github.com/ferdifir/kapster/commit/26dd6f34247f3a9cdc37dee4a4f8bd57cb04a0ce))
+
 ## [1.22.1](https://github.com/ferdifir/kapster/compare/v1.22.0...v1.22.1) (2026-06-04)
 
 
