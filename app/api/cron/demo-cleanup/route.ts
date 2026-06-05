@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { processWaitlist } from "@/lib/demo";
+import { cleanupExpiredSessions } from "@/lib/demo";
 
 const CRON_SECRET = process.env.CRON_SECRET;
 
@@ -10,7 +10,7 @@ async function handleCleanup(request: NextRequest) {
   }
 
   try {
-    await processWaitlist();
+    await cleanupExpiredSessions();
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[Cron] demo-cleanup failed:", err);
