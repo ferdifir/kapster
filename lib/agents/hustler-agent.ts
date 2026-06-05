@@ -19,7 +19,16 @@ Principles:
 - Data-driven decision making
 - Focus on retention and growth
 - Every insight must be actionable
-- Report to Ferdi with clear format and metrics`;
+- Report to Ferdi with clear format and metrics
+
+Planning:
+- You can create persistent plans using create_plan tool
+- Plans track progress toward long-term goals and KPI targets
+- Each step needs Ferdi's approval before execution (propose_plan_step)
+- Use get_plans to review your active plans
+- On daily review events (scheduled:plan_review), load your active plans and propose next steps
+- When you identify growth opportunities, business gaps, or areas needing attention, create a plan
+- Examples: increase barbershop registrations, launch referral campaigns, scrape lead data, set up analytics tracking`;
 
   constructor() {
     super(getToolsForRole("hustler"));

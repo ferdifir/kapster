@@ -68,8 +68,42 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // --- NEW: Agent feedback handler ---
+      // --- Plan step approval callback ---
       const parsed = parseCallbackData(data || "");
+      if (parsed.action === "plan_approve" || parsed.action === "plan_reject") {
+        const stepId = parsed.payload.step_id;
+        const planId = parsed.payload.plan_id;
+        const supabase = createAdminClient();
+        const anyDB = supabase as unknown as { from: (t: string) => { update: (v: Record<string, unknown>) => { eq: (c: string, v: string) => Promise<{ error: { message: string } | null }> }; insert: (v: Record<string, unknown>) => Promise<{ error: { message: string } | null }> } };
+
+        await anyDB.from("agent_plan_steps").update({
+          status: parsed.action === "plan_approve" ? "approved" : "skipped",
+          approved_by: body.callback_query.from?.username || "unknown",
+          approved_at: new Date().toISOString(),
+        }).eq("id", stepId);
+
+        await anyDB.from("agent_events").insert({
+          event_type: "telegram_feedback",
+          source: "telegram",
+          payload: {
+            action: parsed.action,
+            step_id: stepId,
+            plan_id: planId,
+            user: body.callback_query.from?.username || body.callback_query.from?.id?.toString(),
+          },
+          priority: 1,
+          target_agent: null,
+          notes: `Plan step ${parsed.action === "plan_approve" ? "approved" : "skipped"} by ${body.callback_query.from?.username || "unknown"}`,
+        } as Record<string, unknown>);
+
+        const feedbackText = parsed.action === "plan_approve" ? "✅ Step disetujui, agent akan mengeksekusi" : "⏭️ Step dilewati";
+        await answerTelegramCallback(callbackId, feedbackText);
+        if (message?.message_id) {
+          await editTelegramMessage(message.chat.id, message.message_id, `${feedbackText} — Step ID: ${stepId.slice(0, 8)}`);
+        }
+        return NextResponse.json({ ok: true });
+      }
+
       if (parsed.action === "agent_approve" || parsed.action === "agent_reject" || parsed.action === "ferdi_done") {
         const eventId = parsed.payload.event_id;
         const supabase = createAdminClient();

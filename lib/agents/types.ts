@@ -64,6 +64,37 @@ export type ToolDefinition = {
   handler: (params: Record<string, unknown>) => Promise<ToolResult>;
 };
 
+export type PlanStatus = "active" | "paused" | "completed" | "cancelled";
+export type PlanStepStatus = "pending" | "awaiting_approval" | "approved" | "in_progress" | "completed" | "skipped";
+
+export interface Plan {
+  id: string;
+  agent_role: AgentRole;
+  title: string;
+  description?: string | null;
+  status: PlanStatus;
+  metrics: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+  completed_at?: string | null;
+}
+
+export interface PlanStep {
+  id: string;
+  plan_id: string;
+  step_order: number;
+  title: string;
+  description?: string | null;
+  status: PlanStepStatus;
+  action_type: string;
+  action_config: Record<string, unknown>;
+  result?: Record<string, unknown> | null;
+  approved_by?: string | null;
+  created_at: string;
+  approved_at?: string | null;
+  completed_at?: string | null;
+}
+
 export type AgentDecision = {
   reasoning: string;
   action: string;

@@ -1,6 +1,7 @@
 import type { ToolDefinition, ToolResult } from "../types";
 import { sendTelegramInlineKeyboard, sendTelegramMessage } from "@/lib/telegram";
 import { modifyCodeTool } from "./modify-code";
+import { createPlanTools } from "./plan-tools";
 
 export function createSharedTools(): Map<string, ToolDefinition> {
   const tools = new Map<string, ToolDefinition>();
@@ -157,6 +158,11 @@ export function createSharedTools(): Map<string, ToolDefinition> {
   });
 
   tools.set("modify_code", modifyCodeTool);
+
+  const planTools = createPlanTools();
+  for (const [name, tool] of planTools) {
+    tools.set(name, tool);
+  }
 
   return tools;
 }

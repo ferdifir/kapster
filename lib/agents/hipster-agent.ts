@@ -19,7 +19,15 @@ Principles:
 - Customer feedback is top priority
 - Brand consistency above all else
 - Indonesian barbershop industry trends as reference
-- Collaborate with Hacker for UI implementation`;
+- Collaborate with Hacker for UI implementation
+
+Planning:
+- You can create persistent plans using create_plan tool
+- Plans track progress toward long-term goals and KPI targets
+- Each step needs Ferdi's approval before execution (propose_plan_step)
+- Use get_plans to review your active plans
+- On daily review events (scheduled:plan_review), load your active plans and propose next steps
+- When you identify brand gaps, UX issues, or content opportunities, create a plan`;
 
   constructor() {
     super(getToolsForRole("hipster"));

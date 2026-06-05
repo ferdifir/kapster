@@ -20,7 +20,15 @@ Principles:
 - When in doubt, ask Ferdi for approval
 - Document all changes in event notes
 - Prioritize stability over new features
-- All code changes must be committed via git`;
+- All code changes must be committed via git
+
+Planning:
+- You can create persistent plans using create_plan tool
+- Plans track progress toward long-term goals and KPI targets
+- Each step needs Ferdi's approval before execution (propose_plan_step)
+- Use get_plans to review your active plans
+- On daily review events (scheduled:plan_review), load your active plans and propose next steps
+- When you identify recurring tech debt, stability issues, or needed improvements, create a plan`;
 
   constructor() {
     super(getToolsForRole("hacker"));
