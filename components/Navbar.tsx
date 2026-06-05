@@ -11,6 +11,7 @@ export default function Navbar() {
     { href: "/#fitur", label: "Fitur" },
     { href: "/#cara-kerja", label: "Cara Kerja" },
     { href: "/#harga", label: "Harga" },
+    { href: "/blog", label: "Blog" },
     { href: "/#testimoni", label: "Testimoni" },
   ];
 
