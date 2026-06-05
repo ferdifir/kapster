@@ -85,7 +85,7 @@ Agent {
 
 | Agent | Tools |
 |---|---|
-| **Hacker** | `exec_sql`, `exec_command`, `read_logs`, `check_metrics`, `manage_cron`, `trigger_deploy`, `restart_service`, `generate_tool` |
+| **Hacker** | `exec_sql`, `exec_command`, `read_logs`, `check_metrics`, `manage_cron`, `trigger_deploy`, `restart_service`, `generate_tool`, `modify_code`, `run_migration`, `verify_build` |
 | **Hipster** | `send_whatsapp`, `edit_template`, `generate_content`, `read_feedback`, `check_brand_consistency`, `search_trends` |
 | **Hustler** | `send_wa_promo`, `get_analytics`, `track_referrals`, `get_customer_stats`, `send_engagement`, `search_web` |
 
@@ -100,6 +100,7 @@ Agent {
 - `search_web` — web search untuk riset
 - `generate_tool` — Hacker bisa bikin tool baru untuk agent lain
 - `send_telegram` — kirim pesan ke Telegram (report, tanya keputusan)
+- `modify_code` — Hacker mengubah kode aplikasi (file write, auto-commit, build verify)
 
 ### Dynamic Tool Generation
 
@@ -270,7 +271,49 @@ Existing code that feeds into `agent_events`:
 | `lib/agents/self-improve.ts` | Retrospective & self-improvement logic |
 | `lib/agents/llm.ts` | LLM client wrapper (Groq + OpenRouter) |
 
-### Self-Improvement System
+### Code Modification by Agent
+
+Agent harus bisa ngubah kode aplikasi itu sendiri — bukan cuma operasional. Contoh: Hipster minta tambah field input di registrasi → Hacker harus ubah kode.
+
+**Tool `modify_code`:**
+1. Hacker generate perubahan (file diff / full file write)
+2. Terapkan perubahan ke filesystem
+3. Verifikasi: `npm run build` (type check + compilation)
+4. Jika gagal → Hacker fix dan ulang
+5. Jika berhasil → Hacker buat git commit
+6. Lapor ke Ferdi via Telegram dengan diff summary
+
+**Safety layer — approval required untuk perubahan tertentu:**
+| Jenis Perubahan | Butuh Approval Ferdi? | Alasan |
+|---|---|---|
+| Update UI component (existing file) | Tidak | Rendah risiko, gampang di-rollback |
+| Buat file baru | Tidak | Tidak ngaruh ke existing |
+| Database migration | **Ya** | Potensi data loss / downtime |
+| Modifikasi migration existing | **Ya** | Sangat berbahaya |
+| Ganti dependency / package.json | **Ya** | Bisa broken production |
+| Hapus file | **Ya** | Riskan |
+| Ubah env / konfigurasi | **Ya** | Bisa ngebreak koneksi |
+
+**Flow perubahan kode:**
+```
+Hipster: "Registrasi butuh field nomor WA"
+Hacker analyze → bikin migration → modify komponen → build → success
+→ commit → push → GitHub Actions deploy
+→ Report ke Ferdi: "✅ Field WA added to registration, deployed"
+```
+
+Atau kalo butuh migration:
+```
+Hacker: "Perlu tambah kolom phone ke profiles"
+→ Generate migration SQL
+→ Lapor ke Ferdi: "⚠️ Migration: add phone to profiles. Approve?"
+→ Ferdi klik ✅ → Hacker apply migration → lanjut modify code → deploy
+```
+
+**Rollback:**
+- Kalo perubahan (setelah approval) bermasalah → Ferdi reply `rollback` ke laporan
+- Hacker jalanin `git revert` + deploy ulang
+- Migration rollback via migration baru (no destructive rollback)
 
 Agent harus bisa improve diri sendiri tanpa campur tangan manusia.
 
