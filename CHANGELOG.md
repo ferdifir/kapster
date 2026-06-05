@@ -1,3 +1,10 @@
+## [1.26.4](https://github.com/ferdifir/kapster/compare/v1.26.3...v1.26.4) (2026-06-05)
+
+
+### Bug Fixes
+
+* validate referral code before showing banner, surface errors to user ([feb5d71](https://github.com/ferdifir/kapster/commit/feb5d716de666869e7477a97f60c2b36ee7b92cd))
+
 ## [1.26.3](https://github.com/ferdifir/kapster/compare/v1.26.2...v1.26.3) (2026-06-05)
 
 
