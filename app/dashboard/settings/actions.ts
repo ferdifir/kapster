@@ -56,7 +56,6 @@ export async function updateBookingMaxDays(
 ) {
   const supabase = await createClient();
 
-  // Verify ownership
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Unauthorized" };
 
@@ -107,7 +106,6 @@ export async function updateBarbershopLogo(
 
   if (!barbershop) return { error: "Unauthorized" };
 
-  // Delete old logo from storage if it exists and is different
   if (barbershop.logo_url && barbershop.logo_url !== logoUrl) {
     try {
       const oldUrl = new URL(barbershop.logo_url);
@@ -118,7 +116,6 @@ export async function updateBarbershopLogo(
         await admin.storage.from("logos").remove([oldPath]);
       }
     } catch {
-      // Silently ignore cleanup errors — old logo will remain orphaned
     }
   }
 
@@ -156,7 +153,6 @@ export async function updateBarbershopCoverImage(
 
   if (!barbershop) return { error: "Unauthorized" };
 
-  // Delete old cover image from storage if it exists and is different
   if (barbershop.cover_image_url && barbershop.cover_image_url !== coverImageUrl) {
     try {
       const oldUrl = new URL(barbershop.cover_image_url);
@@ -167,7 +163,6 @@ export async function updateBarbershopCoverImage(
         await admin.storage.from("cover-images").remove([oldPath]);
       }
     } catch {
-      // Silently ignore cleanup errors
     }
   }
 
@@ -238,7 +233,7 @@ export async function updateBarbershopGallery(
   if (!barbershop) return { error: "Unauthorized" };
 
   const settings = (barbershop.settings_json as Record<string, unknown>) ?? {};
-  settings.gallery_images = galleryImages.slice(0, 12); // Max 12 images
+  settings.gallery_images = galleryImages.slice(0, 12);
 
   const { error } = await supabase
     .from("barbershops")
@@ -275,7 +270,7 @@ export async function addGalleryImage(
 
   const settings = (barbershop.settings_json as Record<string, unknown>) ?? {};
   const currentImages = (settings.gallery_images as string[]) ?? [];
-  
+
   if (currentImages.length >= 12) {
     return { error: "Maksimal 12 gambar galeri." };
   }
@@ -322,7 +317,6 @@ export async function removeGalleryImage(
 
   settings.gallery_images = updatedImages;
 
-  // Delete from storage
   try {
     const url = new URL(imageUrl);
     const pathParts = url.pathname.split("/storage/v1/object/public/gallery-images/");
@@ -331,7 +325,6 @@ export async function removeGalleryImage(
       await admin.storage.from("gallery-images").remove([path]);
     }
   } catch {
-    // Silently ignore cleanup errors
   }
 
   const { error } = await supabase
@@ -345,4 +338,41 @@ export async function removeGalleryImage(
   revalidatePath("/q/[slug]", "page");
 
   return {};
+}
+
+export async function saveWaTemplates(
+  barbershopId: string,
+  templates: Record<string, string>
+) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { error } = await supabase
+    .from("barbershops")
+    .update({ wa_templates: templates as Json })
+    .eq("id", barbershopId)
+    .eq("owner_id", user.id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/settings");
+  return { success: true };
+}
+
+export async function resetWaTemplates(barbershopId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { error } = await supabase
+    .from("barbershops")
+    .update({ wa_templates: null as Json })
+    .eq("id", barbershopId)
+    .eq("owner_id", user.id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/settings");
+  return { success: true };
 }

@@ -20,10 +20,9 @@ export async function enqueueWANotification(
   try {
     const supabase = createAdminClient();
 
-    // Fetch barbershop name
     const { data: barbershop } = await supabase
       .from("barbershops")
-      .select("name")
+      .select("name, wa_templates")
       .eq("id", barbershopId)
       .single();
 
@@ -33,7 +32,7 @@ export async function enqueueWANotification(
       name: customerName,
       barbershop: barbershop.name,
       ...context,
-    });
+    }, barbershop.wa_templates as Record<string, string> | null);
 
     await supabase.from("wa_notifications").insert({
       barbershop_id: barbershopId,
