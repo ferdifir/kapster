@@ -1,3 +1,10 @@
+# [1.24.0](https://github.com/ferdifir/kapster/compare/v1.23.0...v1.24.0) (2026-06-05)
+
+
+### Features
+
+* per-user demo accounts with dedup by phone + retry ([db9d480](https://github.com/ferdifir/kapster/commit/db9d4804071ff1096a1adaeed4fc007cf0cfa730))
+
 # [1.23.0](https://github.com/ferdifir/kapster/compare/v1.22.1...v1.23.0) (2026-06-05)
 
 
