@@ -1,13 +1,16 @@
 import type { ToolDefinition } from "../types";
 import { createSharedTools } from "./shared-tools";
+import { createHackerTools } from "./hacker-tools";
+import { createHipsterTools } from "./hipster-tools";
+import { createHustlerTools } from "./hustler-tools";
 import type { AgentRole } from "../types";
 
 const shared = createSharedTools();
 
 const roleTools: Record<AgentRole, Map<string, ToolDefinition>> = {
-  hacker: new Map(),
-  hipster: new Map(),
-  hustler: new Map(),
+  hacker: createHackerTools(),
+  hipster: createHipsterTools(),
+  hustler: createHustlerTools(),
 };
 
 export function getToolsForRole(role: AgentRole): Map<string, ToolDefinition> {
