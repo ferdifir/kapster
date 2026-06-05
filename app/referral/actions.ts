@@ -32,7 +32,7 @@ async function sendWaNotification(
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://kapster.my.id";
   const referralLink = `${baseUrl}?ref=${code}`;
-  const performanceLink = `${baseUrl}/referral/performaku?token=${token}`;
+  const performanceLink = `${baseUrl}/referral/${code}?t=${token}`;
 
   const message = [
     `Halo ${name}!`,

@@ -38,7 +38,7 @@ export default function DaftarReferralPage() {
 
   if (success) {
     const referralLink = `${baseUrl}?ref=${success.code}`;
-    const performanceLink = `${baseUrl}/referral/performaku?token=${success.token}`;
+    const performanceLink = `${baseUrl}/referral/${success.code}?t=${success.token}`;
 
     return (
       <div className="min-h-screen bg-dark-950 flex items-center justify-center px-4">
