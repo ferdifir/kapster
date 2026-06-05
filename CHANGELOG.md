@@ -1,3 +1,10 @@
+# [1.27.0](https://github.com/ferdifir/kapster/compare/v1.26.5...v1.27.0) (2026-06-05)
+
+
+### Features
+
+* floating affiliate badge on landing page ([f48ca9a](https://github.com/ferdifir/kapster/commit/f48ca9a8c8e5bc7f033bad30158f78e5bf5ae9a8))
+
 ## [1.26.5](https://github.com/ferdifir/kapster/compare/v1.26.4...v1.26.5) (2026-06-05)
 
 
