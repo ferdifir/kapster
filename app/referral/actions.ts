@@ -6,13 +6,8 @@ import { logError } from "@/lib/error-logger";
 import { randomUUID } from "crypto";
 import type { ReferralCodeRow } from "@/lib/referral-types";
 
-function generateCode(name: string): string {
-  const base = name
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "")
-    .slice(0, 20);
-  const suffix = Math.random().toString(36).slice(2, 6);
-  return `${base}${suffix}`;
+function generateCode(): string {
+  return Math.random().toString(36).slice(2, 8);
 }
 
 function normalizeWaNumber(wa: string): string {
@@ -67,7 +62,7 @@ export async function daftarReferrer(formData: FormData) {
   }
 
   const normalizedWa = normalizeWaNumber(wa_number);
-  const code = generateCode(name.trim());
+  const code = generateCode();
   const access_token = randomUUID();
 
   const supabase = createAdminClient() as any;
@@ -88,7 +83,7 @@ export async function daftarReferrer(formData: FormData) {
 
   if (error) {
     if (error.code === "23505") {
-      const retryCode = generateCode(name.trim() + Math.random().toString(36).slice(2, 4));
+      const retryCode = generateCode();
       const { data: retryData, error: retryError } = (await supabase
         .from("referral_codes")
         .insert({
