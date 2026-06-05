@@ -1,3 +1,10 @@
+## [1.26.5](https://github.com/ferdifir/kapster/compare/v1.26.4...v1.26.5) (2026-06-05)
+
+
+### Bug Fixes
+
+* prevent duplicate referrer registration by wa_number ([f39abf8](https://github.com/ferdifir/kapster/commit/f39abf8f1357831cdff5b2f5cba6d376c3d54ff2))
+
 ## [1.26.4](https://github.com/ferdifir/kapster/compare/v1.26.3...v1.26.4) (2026-06-05)
 
 
