@@ -76,7 +76,15 @@ export function createSharedTools(): Map<string, ToolDefinition> {
       try {
         const buttons = (params.buttons as { row: number; text: string; callback_data: string }[]) || [];
         const keyboard = buttons.length > 0
-          ? [buttons.map((b) => ({ text: b.text, callback_data: b.callback_data }))]
+          ? (() => {
+              const groups = new Map<number, { text: string; callback_data: string }[]>();
+              for (const b of buttons) {
+                const row = b.row || 0;
+                if (!groups.has(row)) groups.set(row, []);
+                groups.get(row)!.push({ text: b.text, callback_data: b.callback_data });
+              }
+              return [...groups.values()];
+            })()
           : undefined;
         const msgId = keyboard
           ? await sendTelegramInlineKeyboard(String(params.message), keyboard, "HTML")
@@ -121,7 +129,7 @@ export function createSharedTools(): Map<string, ToolDefinition> {
           const { promisify } = await import("util");
           const execAsync = promisify(exec);
           const { stdout, stderr } = await execAsync(
-            `cd /home/ferdifir/development/kapster && npx tsx ${String(params.target)}`,
+            `cd ${process.cwd()} && npx tsx ${String(params.target)}`,
             { timeout: 300000 }
           );
           return { success: true, data: { stdout: stdout.slice(0, 2000), stderr: stderr.slice(0, 2000) } };

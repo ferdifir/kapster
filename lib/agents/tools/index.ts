@@ -4,24 +4,22 @@ import type { AgentRole } from "../types";
 
 const shared = createSharedTools();
 
-const roleTools: Record<AgentRole, () => Map<string, ToolDefinition>> = {
-  hacker: () => new Map(),
-  hipster: () => new Map(),
-  hustler: () => new Map(),
+const roleTools: Record<AgentRole, Map<string, ToolDefinition>> = {
+  hacker: new Map(),
+  hipster: new Map(),
+  hustler: new Map(),
 };
 
 export function getToolsForRole(role: AgentRole): Map<string, ToolDefinition> {
   const tools = new Map(shared);
-  const roleSpecific = roleTools[role]();
-  for (const [name, tool] of roleSpecific) {
+  for (const [name, tool] of roleTools[role]) {
     tools.set(name, tool);
   }
   return tools;
 }
 
 export async function registerTool(role: AgentRole, tool: ToolDefinition): Promise<void> {
-  const existing = roleTools[role]();
-  existing.set(tool.name, tool);
+  roleTools[role].set(tool.name, tool);
   try {
     const { createAdminClient } = await import("@/lib/supabase/admin");
     const supabase = createAdminClient();
@@ -44,13 +42,12 @@ export async function loadCustomTools(): Promise<void> {
     const { data } = await agentTools.from("agent_custom_tools").select("*");
     if (data) {
       for (const row of data) {
-        const r = row as { role: AgentRole; tool_definition: string };
+        const r = row as { role: AgentRole; tool_definition: string | Record<string, unknown> };
         const def = typeof r.tool_definition === "string"
           ? JSON.parse(r.tool_definition) as ToolDefinition
           : r.tool_definition as unknown as ToolDefinition;
-        const existing = roleTools[r.role]();
-        if (existing && def) {
-          existing.set(def.name, def);
+        if (def) {
+          roleTools[r.role].set(def.name, def);
         }
       }
     }
