@@ -142,3 +142,15 @@ export async function sendTelegramMessage(
     return null;
   }
 }
+
+export function parseCallbackData(data: string): { action: string; payload: Record<string, string> } {
+  const parts = data.split(":");
+  const action = parts[0];
+  const payload: Record<string, string> = {};
+  for (let i = 1; i < parts.length; i += 2) {
+    if (parts[i + 1] !== undefined) {
+      payload[parts[i]] = parts[i + 1];
+    }
+  }
+  return { action, payload };
+}
