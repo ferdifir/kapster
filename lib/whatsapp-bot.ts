@@ -73,7 +73,9 @@ export async function handleMessage(event: Record<string, unknown>): Promise<voi
 
     const answer = await askGroq(question);
 
-    await sendTextMessage(token, groupJid, answer);
+    const stanzaId = info?.Id as string | undefined;
+    const replyTo = stanzaId && senderJid ? { stanzaId, participant: senderJid } : undefined;
+    await sendTextMessage(token, groupJid, answer, replyTo);
     console.log(`[WhatsAppBot] Answered in ${groupJid}: "${question.substring(0, 50)}"`);
   } catch (err) {
     logError("handleMessage", err, { event });

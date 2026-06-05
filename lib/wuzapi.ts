@@ -161,11 +161,20 @@ export async function disconnectSession(userToken: string): Promise<boolean> {
 export async function sendTextMessage(
   userToken: string,
   phone: string,
-  body: string
+  body: string,
+  replyTo?: { stanzaId: string; participant: string }
 ): Promise<{ messageId: string; success: boolean; error?: string }> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000);
+
+    const payload: Record<string, unknown> = { Phone: phone, Body: body };
+    if (replyTo) {
+      payload.ContextInfo = {
+        StanzaId: replyTo.stanzaId,
+        Participant: replyTo.participant,
+      };
+    }
 
     const res = await fetch(`${WUZAPI_URL}/chat/send/text`, {
       method: "POST",
@@ -173,7 +182,7 @@ export async function sendTextMessage(
         Token: userToken,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ Phone: phone, Body: body }),
+      body: JSON.stringify(payload),
       signal: controller.signal,
       cache: "no-store",
     });
