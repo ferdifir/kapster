@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { sendTelegramNotification } from "@/lib/telegram";
+import { insertAgentEvent } from "@/lib/events";
 
 export async function submitFeedback(form: {
   barbershopId: string;
@@ -48,6 +49,13 @@ export async function submitFeedback(form: {
   ].join("\n");
 
   sendTelegramNotification(notification);
+
+  insertAgentEvent("complaint", "feedback", {
+    name: form.name,
+    category: form.category,
+    message: form.message.slice(0, 500),
+    barbershopId: form.barbershopId,
+  }, 2, "hustler").catch(() => {});
 
   revalidatePath("/dashboard/feedback");
   return {};

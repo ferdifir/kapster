@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { updateBlogPostStatus } from "@/lib/blog";
-import { answerTelegramCallback, editTelegramMessage, sendTelegramMessage } from "@/lib/telegram";
+import { answerTelegramCallback, editTelegramMessage, sendTelegramMessage, parseCallbackData } from "@/lib/telegram";
 import { revalidatePath } from "next/cache";
 import { spawn } from "child_process";
 import path from "path";
@@ -66,6 +66,61 @@ export async function POST(request: NextRequest) {
             await answerTelegramCallback(callbackId, "❌ Gagal update status.");
           }
         }
+      }
+
+      // --- NEW: Agent feedback handler ---
+      const parsed = parseCallbackData(data || "");
+      if (parsed.action === "agent_approve" || parsed.action === "agent_reject" || parsed.action === "ferdi_done") {
+        const eventId = parsed.payload.event_id;
+        const supabase = createAdminClient();
+        const agentEvents = supabase as unknown as { from: (t: string) => { insert: (v: Record<string, unknown>) => Promise<unknown> } };
+
+        await agentEvents.from("agent_events").insert({
+          event_type: "telegram_feedback",
+          source: "telegram",
+          payload: {
+            callback_data: data,
+            action: parsed.action,
+            event_id: eventId,
+            user: body.callback_query.from?.username || body.callback_query.from?.id?.toString(),
+          },
+          priority: 1,
+          notes: `Telegram callback from ${body.callback_query.from?.username || "unknown"}: ${parsed.action}`,
+        } as Record<string, unknown>);
+
+        const feedbackText = parsed.action === "agent_approve" ? "✅ Disetujui" : parsed.action === "agent_reject" ? "❌ Ditolak" : "✅ Diterima";
+        await answerTelegramCallback(callbackId, feedbackText);
+        if (message?.message_id) {
+          await editTelegramMessage(message.chat.id, message.message_id, `${feedbackText} — Feedback diteruskan ke agent.`);
+        }
+
+        return NextResponse.json({ ok: true });
+      }
+    }
+
+    // --- NEW: Agent command handler ---
+    if (body.message?.text) {
+      const text = body.message.text;
+      const isAgentCmd = text.startsWith("@hacker") || text.startsWith("@hipster") || text.startsWith("@hustler");
+
+      if (isAgentCmd) {
+        const supabase = createAdminClient();
+        const agentEvents = supabase as unknown as { from: (t: string) => { insert: (v: Record<string, unknown>) => Promise<unknown> } };
+
+        await agentEvents.from("agent_events").insert({
+          event_type: "telegram_cmd",
+          source: "telegram",
+          payload: {
+            text,
+            from: body.message.from?.username || body.message.from?.id?.toString(),
+            chat_id: body.message.chat.id,
+          },
+          priority: 2,
+        } as Record<string, unknown>);
+
+        await sendTelegramMessage("📨 Perintah diterima, diteruskan ke agent...");
+
+        return NextResponse.json({ ok: true });
       }
     }
 
