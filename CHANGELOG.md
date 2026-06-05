@@ -1,3 +1,10 @@
+## [1.25.1](https://github.com/ferdifir/kapster/compare/v1.25.0...v1.25.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* switch to webpack to resolve next.js turbopack client manifest bug ([02195ca](https://github.com/ferdifir/kapster/commit/02195cac48b3051170fc1c17b69d68a9c67ae0d4))
+
 # [1.25.0](https://github.com/ferdifir/kapster/compare/v1.24.1...v1.25.0) (2026-06-05)
 
 
