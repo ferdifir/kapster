@@ -48,18 +48,16 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="py-24 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-dark-950 via-dark-900/50 to-dark-950" />
-      <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="faq" className="relative overflow-hidden bg-[#070706] py-20 sm:py-24">
+      <div className="relative mx-auto max-w-3xl px-5 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-barber-400/10 text-barber-400 text-sm font-semibold mb-4">
+          <div className="inline-flex rounded-full border border-barber-300/20 bg-barber-300/10 px-3 py-1.5 text-xs font-semibold text-barber-200">
             Tanya Jawab
-          </span>
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-            Pertanyaan yang
-            <span className="text-gold-gradient"> Sering Diajukan</span>
+          </div>
+          <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-white sm:text-5xl">
+            Pertanyaan yang <span className="text-barber-300">Sering Diajukan</span>
           </h2>
-          <p className="text-dark-300 text-lg max-w-2xl mx-auto">
+          <p className="mt-5 text-sm leading-7 text-dark-400 sm:text-base">
             Masih ragu? Temukan jawaban untuk pertanyaan yang paling sering ditanyakan.
           </p>
         </div>
@@ -70,7 +68,7 @@ export default function FAQSection() {
             return (
               <div
                 key={index}
-                className="rounded-2xl bg-dark-800/50 border border-dark-700/30 overflow-hidden transition-colors duration-200"
+                className="rounded-2xl border border-white/10 bg-white/[0.035] overflow-hidden transition-colors duration-200"
               >
                 <button
                   type="button"
@@ -81,7 +79,7 @@ export default function FAQSection() {
                     {faq.question}
                   </span>
                   <svg
-                    className={`w-5 h-5 text-barber-400 shrink-0 transition-transform duration-200 ${
+                    className={`w-5 h-5 text-barber-300 shrink-0 transition-transform duration-200 ${
                       isOpen ? "rotate-180" : ""
                     }`}
                     fill="none"

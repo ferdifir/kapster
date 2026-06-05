@@ -1,10 +1,8 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import BrandLogos from "@/components/BrandLogos";
 import ProblemSection from "@/components/ProblemSection";
 import FeaturesSection from "@/components/FeaturesSection";
-import HowItWorks from "@/components/HowItWorks";
-import PricingSection from "@/components/PricingSection";
+import HowItWorksPricingSection from "@/components/HowItWorksPricingSection";
 import Testimonials from "@/components/Testimonials";
 import FAQSection from "@/components/FAQSection";
 import CTASection from "@/components/CTASection";
@@ -18,11 +16,9 @@ export default function Home() {
       <Navbar />
       <main id="main-content">
         <HeroSection />
-        <div style={cvStyle}><BrandLogos /></div>
         <div style={cvStyle}><ProblemSection /></div>
         <div style={cvStyle}><FeaturesSection /></div>
-        <div style={cvStyle}><HowItWorks /></div>
-        <div style={cvStyle}><PricingSection /></div>
+        <div style={cvStyle}><HowItWorksPricingSection /></div>
         <div style={cvStyle}><Testimonials /></div>
         <div style={cvStyle}><FAQSection /></div>
         <div style={cvStyle}><CTASection /></div>

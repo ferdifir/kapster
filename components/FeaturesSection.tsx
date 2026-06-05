@@ -1,67 +1,91 @@
 const features = [
   {
-    icon: "M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z",
+    icon: "M6 6h15l-2 8H8L6 3H3M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z",
     title: "Antrian Digital Real-Time",
-    desc: "Pelanggan bisa lihat posisi antrian langsung dari HP. Nggak perlu nongkrong lama.",
+    desc: "Pelanggan bisa lihat posisi antrian langsung dari HP. Nggak perlu nongkrong lama di kursi tunggu.",
   },
   {
-    icon: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9",
+    icon: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM3 12h18M12 3c2.2 2.4 3.4 5.4 3.4 9S14.2 18.6 12 21M12 3c-2.2 2.4-3.4 5.4-3.4 9S9.8 18.6 12 21",
     title: "Booking & Reservasi",
     desc: "Sistem booking online dengan pilihan barber, jadwal, dan layanan yang diinginkan.",
   },
   {
-    icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z",
+    icon: "M4 5h16v10H7l-3 3V5Z",
     title: "Notifikasi WhatsApp",
-    desc: "Otomatis kirim notifikasi ke pelanggan saat gilirannya hampir tiba. Via WhatsApp!",
+    desc: "Otomatis kirim notifikasi ke pelanggan saat gilirannya hampir tiba via WhatsApp!",
   },
   {
-    icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
+    icon: "M4 19V9m5 10V5m5 14v-7m5 7V8M3 19h18",
     title: "Dashboard & Laporan",
-    desc: "Pantau performa barber, pendapatan harian, dan statistik pelanggan dari satu dashboard.",
+    desc: "Pantau performa barber, pendapatan harian, dan statistik pelanggan dari satu layar.",
   },
   {
-    icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z",
+    icon: "M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM16 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM4 20a4 4 0 0 1 8 0M12 20a4 4 0 0 1 8 0",
     title: "Multi-Barber Support",
     desc: "Kelola beberapa barber sekaligus dengan sistem pembagian antrian yang adil dan transparan.",
-  },
-  {
-    icon: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
-    title: "Customer Display",
-    desc: "Tampilkan nomor antrian di TV monitor usahamu. Tampil keren, pelanggan happy.",
   },
 ];
 
 export default function FeaturesSection() {
   return (
-    <section id="fitur" className="py-24 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-dark-950 via-dark-900/50 to-dark-950" />
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-20">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-barber-400/10 text-barber-400 text-sm font-semibold mb-4">
+    <section id="fitur" className="relative overflow-hidden bg-[#090908] py-20 sm:py-24">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_15%,rgba(245,158,11,0.10),transparent_30%)]" />
+
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+        <div className="max-w-3xl">
+          <div className="inline-flex rounded-full border border-barber-300/20 bg-barber-300/10 px-3 py-1.5 text-xs font-semibold text-barber-200">
             Fitur Lengkap
-          </span>
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-            Semua yang Salon Pria
-            <span className="text-gold-gradient"> Butuhkan</span>
+          </div>
+          <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-white sm:text-5xl">
+            Semua yang Salon Pria <span className="text-barber-300">Butuhkan</span>
           </h2>
-          <p className="text-dark-300 text-lg max-w-2xl mx-auto">
-            Dari antrian digital hingga laporan keuangan, semua ada dalam satu platform.
+          <p className="mt-5 max-w-2xl text-sm leading-7 text-dark-400 sm:text-base">
+            Dari antrian digital hingga laporan keuangan, semua ada dalam satu platform yang terasa cepat, rapi, dan siap dipakai tim barber.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((f) => (
-            <div
-              key={f.title}
-              className="card-hover group p-8 rounded-2xl bg-dark-800/50 border border-dark-700/30 hover:border-barber-400/30"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-barber-400/10 flex items-center justify-center mb-6 group-hover:bg-barber-400/20 transition-colors">
-                <svg className="w-7 h-7 text-barber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={f.icon} />
+        <div className="mt-12 grid gap-5 lg:grid-cols-12">
+          <div className="rounded-[2rem] border border-barber-300/15 bg-gradient-to-br from-barber-300/10 to-white/[0.035] p-7 lg:col-span-5">
+            <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-2xl bg-barber-300/10 text-barber-200 ring-1 ring-barber-300/20">
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={features[0].icon} />
+              </svg>
+            </div>
+            <h3 className="font-display text-2xl font-bold text-white">{features[0].title}</h3>
+            <p className="mt-4 text-sm leading-7 text-dark-400">{features[0].desc}</p>
+          </div>
+
+          <div className="rounded-[2rem] border border-white/10 bg-white/[0.035] p-7 lg:col-span-7">
+            <div className="grid gap-6 sm:grid-cols-5">
+              <div className="sm:col-span-3">
+                <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-2xl bg-barber-300/10 text-barber-200 ring-1 ring-barber-300/20">
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={features[1].icon} />
+                  </svg>
+                </div>
+                <h3 className="font-display text-2xl font-bold text-white">{features[1].title}</h3>
+                <p className="mt-4 text-sm leading-7 text-dark-400">{features[1].desc}</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-black/25 p-4 sm:col-span-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-dark-500">Slot Hari Ini</p>
+                <div className="mt-4 space-y-2">
+                  <div className="rounded-xl bg-emerald-400/10 px-3 py-2 text-xs text-emerald-200">10:30 tersedia</div>
+                  <div className="rounded-xl bg-barber-400/10 px-3 py-2 text-xs text-barber-200">14:30 hampir penuh</div>
+                  <div className="rounded-xl bg-white/5 px-3 py-2 text-xs text-dark-400">19:00 premium cut</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {features.slice(2).map((f) => (
+            <div key={f.title} className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-7 lg:col-span-4">
+              <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-2xl bg-barber-300/10 text-barber-200 ring-1 ring-barber-300/20">
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={f.icon} />
                 </svg>
               </div>
-              <h3 className="font-semibold text-white text-xl mb-3">{f.title}</h3>
-              <p className="text-dark-400 leading-relaxed">{f.desc}</p>
+              <h3 className="font-display text-xl font-bold text-white">{f.title}</h3>
+              <p className="mt-4 text-sm leading-7 text-dark-400">{f.desc}</p>
             </div>
           ))}
         </div>

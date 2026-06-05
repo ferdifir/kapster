@@ -1,24 +1,24 @@
 export default function CTASection() {
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="relative overflow-hidden bg-[#090908] py-20 sm:py-24">
       <div className="absolute inset-0">
-        <div className="absolute inset-0 gold-gradient opacity-5" />
+        <div className="absolute inset-0 bg-gradient-to-r from-barber-300/5 to-barber-600/5" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-barber-400/10 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-barber-400/10 border border-barber-400/20 mb-8">
-          <svg className="w-5 h-5 text-barber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="relative z-10 mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 text-center">
+        <div className="inline-flex items-center gap-2 rounded-full border border-barber-300/20 bg-barber-300/10 px-4 py-2">
+          <svg className="w-5 h-5 text-barber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          <span className="text-barber-400 text-sm font-semibold">Setup cuma 5 menit</span>
+          <span className="text-barber-200 text-sm font-semibold">Setup cuma 5 menit</span>
         </div>
 
-        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black mb-6">
+        <h2 className="mt-8 font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black mb-6">
           Siap Bikin Usaha Kamu
-          <span className="text-gold-gradient"> Lebih Profesional</span>?
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-barber-200 via-barber-400 to-barber-500"> Lebih Profesional</span>?
         </h2>
-        <p className="text-dark-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10">
+        <p className="text-dark-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10">
           Bergabung dengan ratusan salon pria yang sudah meningkatkan sistem antriannya.
           Rp10.000/bulan — cancel kapan saja.
         </p>
@@ -26,16 +26,16 @@ export default function CTASection() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
             href="/auth/register"
-            className="group relative inline-flex items-center justify-center gap-2 px-10 py-4 rounded-xl gold-gradient text-dark-900 font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-barber-400/25 hover:-translate-y-0.5"
+            className="group relative inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-barber-300 to-barber-600 px-10 py-4 text-lg font-bold text-dark-950 shadow-2xl shadow-barber-500/20 transition duration-300 hover:-translate-y-1 hover:shadow-barber-500/30"
           >
             Mulai Sekarang
             <svg
-              className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+              className="w-5 h-5 transition duration-300 group-hover:translate-x-1"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14m-6-6 6 6-6 6" />
             </svg>
           </a>
         </div>
