@@ -19,6 +19,28 @@ CREATE TABLE IF NOT EXISTS agent_events (
 CREATE INDEX idx_agent_events_status_priority ON agent_events (status, priority DESC);
 CREATE INDEX idx_agent_events_created_at ON agent_events (created_at DESC);
 
+ALTER TABLE agent_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agent_custom_tools ENABLE ROW LEVEL SECURITY;
+
+-- Superadmin can read all events for monitoring
+CREATE POLICY "superadmin_read_agent_events" ON agent_events
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'superadmin'
+    )
+  );
+
+CREATE POLICY "superadmin_read_agent_custom_tools" ON agent_custom_tools
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'superadmin'
+    )
+  );
+
 CREATE TABLE IF NOT EXISTS agent_custom_tools (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   role TEXT NOT NULL,
