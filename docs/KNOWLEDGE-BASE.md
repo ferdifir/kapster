@@ -191,12 +191,17 @@ Cari barbershop terdekat via OpenStreetMap.
 
 ## Referral / Affiliate
 
-Kapster punya program referral — ajak barbershop lain pakai Kapster, dapat komisi.
+Kapster punya program referral — ajak barbershop lain pakai Kapster, dua-duanya diuntungkan.
+
+### Keuntungan
+- **Untuk yang ajak (referrer):** Dapat komisi **Rp3.500** per referral
+- **Untuk yang daftar (referred):** Dapat **diskon 25%** bulan pertama — bayar **Rp7.500** (biasanya Rp10.000)
 
 ### Cara Kerja
 - Setiap barbershop punya kode referral unik (format: `{slug}-{random4}`)
-- Komisi: **Rp3.500 per referral** (dibayarkan saat pertama kali referral bayar)
-- Minimal payout: **Rp25.000** (kumpulin dulu sampai cukup, baru cairkan)
+- Komisi referrer: **Rp3.500 per referral** (dibayarkan saat pertama kali referral bayar)
+- Diskon referred: **25% bulan pertama** (otomatis terlihat saat onboarding)
+- Minimal payout referrer: **Rp25.000** (kumpulin dulu sampai cukup, baru cairkan)
 - Cookie referral: **45 hari** — kalau dalam 45 hari sejak klik link referral, teman daftar + bayar, referrer dapat komisi
 - Komisi hanya dikreditkan **satu kali** per referral (pembayaran pertama saja)
 
