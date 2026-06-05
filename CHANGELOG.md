@@ -1,3 +1,27 @@
+# [1.28.0](https://github.com/ferdifir/kapster/compare/v1.27.2...v1.28.0) (2026-06-05)
+
+
+### Bug Fixes
+
+* **agents:** address code review issues ([197b9d2](https://github.com/ferdifir/kapster/commit/197b9d227001b00947e45540e4152001e4067a02))
+* **agents:** in-memory tool registration, button row grouping, use cwd() ([a16eb16](https://github.com/ferdifir/kapster/commit/a16eb166847abff373eacddd5652c1f8defa0b99))
+* **agents:** migration naming, RLS, fallback models, tool_calls handling ([7e926f8](https://github.com/ferdifir/kapster/commit/7e926f8402fe7757c208667fdb7df9adc55e8586))
+* **agents:** worker connection pool, abort controller, remove redundant cast ([c4b0406](https://github.com/ferdifir/kapster/commit/c4b0406c92ec5ca8394859ac6e430503976c6ecc))
+
+
+### Features
+
+* **agents:** add agent_events table, types, and LLM client ([d154498](https://github.com/ferdifir/kapster/commit/d154498a811b1cd0482c24d790c5a519b37c3d8b))
+* **agents:** add agent-specific tools for hacker, hipster, hustler roles ([bc9b0a4](https://github.com/ferdifir/kapster/commit/bc9b0a4a70106eafbf959eabc1ee9f982c4d9f27))
+* **agents:** agent implementations - Hacker, Hipster, Hustler ([9dfb524](https://github.com/ferdifir/kapster/commit/9dfb524d427a812024e103c68c205fb6905c91ae))
+* **agents:** base agent class, router, and worker loop ([d8c07bd](https://github.com/ferdifir/kapster/commit/d8c07bd758a10bdb85724e7c389d1f819ac1e721))
+* **agents:** code modification tool, self-improvement, PM2 config, retrospective schedule ([e0be2f8](https://github.com/ferdifir/kapster/commit/e0be2f8f50e66e04356b710669f4e30eb1d2925a))
+* **agents:** event source integrations - error logger, whatsapp, event helper ([fa54da6](https://github.com/ferdifir/kapster/commit/fa54da64e1104dcc824e08c7e31607c53d18e8b3))
+* **agents:** shared tools - search_web, request_ferdi_action, spawn_sub_agent, tool registry ([52f4f1b](https://github.com/ferdifir/kapster/commit/52f4f1b1db80f940a5e6d75afd4c43dcaa8575c3))
+* **agents:** telegram integration - agent commands and inline callback handling ([0b3d8ef](https://github.com/ferdifir/kapster/commit/0b3d8ef47ebbb318bd83de98dc5a902755c78dba))
+* per-barbershop WA template customization ([cc8136f](https://github.com/ferdifir/kapster/commit/cc8136ff2bcc7d9d5e6d848f1724e7f98a6afdf1))
+* per-barbershop WA template customization ([f788243](https://github.com/ferdifir/kapster/commit/f78824369bc6e2fc46feb9dfd07a2c9602e6d952))
+
 ## [1.27.2](https://github.com/ferdifir/kapster/compare/v1.27.1...v1.27.2) (2026-06-05)
 
 
