@@ -1,3 +1,15 @@
+## [1.27.2](https://github.com/ferdifir/kapster/compare/v1.27.1...v1.27.2) (2026-06-05)
+
+
+### Bug Fixes
+
+* zero-downtime deploy - build without removing .next, use pm2 reload ([e92d624](https://github.com/ferdifir/kapster/commit/e92d624b5a70a9dfdb3ffa4908d9ea41529912aa))
+
+
+### Reverts
+
+* Revert "fix: zero-downtime deploy - build without removing .next, use pm2 reload" ([1e3a120](https://github.com/ferdifir/kapster/commit/1e3a120f4e119916e31cc8a0fb0f20fe294c6ad8))
+
 ## [1.27.1](https://github.com/ferdifir/kapster/compare/v1.27.0...v1.27.1) (2026-06-05)
 
 
