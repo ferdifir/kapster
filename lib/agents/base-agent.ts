@@ -17,7 +17,7 @@ export abstract class BaseAgent {
 
     const toolDefs = Array.from(this.tools.values()).map((t) => ({
       type: "function" as const,
-      function: { name: t.name, description: t.description, parameters: t.parameters as Record<string, unknown> },
+      function: { name: t.name, description: t.description, parameters: t.parameters },
     }));
 
     const response = await askAgent(this.role, messages, toolDefs.length > 0 ? toolDefs : undefined);

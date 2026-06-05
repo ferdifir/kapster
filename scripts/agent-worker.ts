@@ -1,25 +1,24 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logError } from "@/lib/error-logger";
-import { sendTelegramMessage } from "@/lib/telegram";
+import { sendTelegramMessage, sendTelegramInlineKeyboard } from "@/lib/telegram";
 import { routeEvent } from "@/lib/agents/router";
+import { getAgent } from "@/lib/agents/base-agent";
 import type { AgentEvent, AgentRole } from "@/lib/agents/types";
 
 const POLL_INTERVAL_MS = 5000;
 const BATCH_SIZE = 5;
 
 let running = true;
+let abortController = new AbortController();
 
-process.on("SIGTERM", () => { running = false; });
-process.on("SIGINT", () => { running = false; });
+process.on("SIGTERM", () => { running = false; abortController.abort(); });
+process.on("SIGINT", () => { running = false; abortController.abort(); });
 
 function agentEvents(supabase: ReturnType<typeof createAdminClient>) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (supabase as any).from("agent_events");
+  return (supabase as unknown as { from: (t: string) => ReturnType<typeof supabase.from> }).from("agent_events");
 }
 
-async function poll(): Promise<void> {
-  const supabase = createAdminClient();
-
+async function poll(supabase: ReturnType<typeof createAdminClient>): Promise<void> {
   const { data: events, error } = await agentEvents(supabase)
     .select("*")
     .eq("status", "pending")
@@ -33,6 +32,7 @@ async function poll(): Promise<void> {
   }
 
   for (const event of (events || []) as AgentEvent[]) {
+    if (!running) break;
     await processEvent(supabase, event);
   }
 }
@@ -59,14 +59,12 @@ async function processEvent(
   }
 
   try {
-    const { getAgent } = await import("@/lib/agents/base-agent");
     const agent = getAgent(targetAgent as AgentRole);
     const decision = await agent.processEvent(event);
 
     const elapsed = Date.now() - startTime;
 
     if (decision.needs_approval) {
-      const { sendTelegramInlineKeyboard } = await import("@/lib/telegram");
       await sendTelegramInlineKeyboard(
         `🤖 <b>${targetAgent.charAt(0).toUpperCase() + targetAgent.slice(1)} Agent</b> — ⚠️ Butuh Keputusan\n\n${decision.report_message || decision.reasoning}`,
         [[
@@ -113,13 +111,18 @@ async function processEvent(
 }
 
 async function main() {
+  const supabase = createAdminClient();
+
   while (running) {
     try {
-      await poll();
+      await poll(supabase);
     } catch (err) {
+      if (!running) break;
       logError("agent-worker", err instanceof Error ? err : new Error(String(err)));
     }
-    await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+    if (running) {
+      await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+    }
   }
 }
 
