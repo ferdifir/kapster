@@ -1,9 +1,11 @@
 import { logError } from "@/lib/error-logger";
+import { retrieve } from "@/lib/knowledge-base";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.3-70b-versatile";
 
-const SYSTEM_PROMPT = `You are KapsterBot, an AI assistant for the Kapster community WhatsApp group. Kapster is a digital queue management system for Indonesian barbershops.
+function buildSystemPrompt(context: string): string {
+  return `You are KapsterBot, an AI assistant for the Kapster community WhatsApp group. Kapster is a digital queue management system for Indonesian barbershops.
 
 RULES:
 - ONLY answer questions related to Kapster (features, pricing, registration, business logic, feature requests)
@@ -12,21 +14,11 @@ RULES:
 - Keep answers concise (max 200 words), suitable for WhatsApp
 - Answer in Indonesian
 - Be friendly and helpful
+- Use the KNOWLEDGE BASE below to answer accurately. If the knowledge base doesn't have the answer, say you don't know.
 
-KAPSTER FACTS:
-- Price: Rp10.000 per month (flat, all features included)
-- No free trial available
-- Features: digital queue management, online booking, WhatsApp notifications, multi-barber support, services management, analytics dashboard, TV customer display, public queue page, booking page
-- How to register: go to kapster.my.id, create account, setup barbershop, subscribe
-- Payment via Pakasir (no sensitive data handled by Kapster)
-- Setup takes less than 5 minutes
-- Customers don't need to install any app
-- Queue status flow: waiting → called → serving → done
-- Daily queue limit: 50 entries per day
-- Booking window: default 7 days ahead
-- WhatsApp notifications sent automatically for queue updates
-- 500+ barbershops trust Kapster
-- Contact: hello@kapster.my.id`;
+KNOWLEDGE BASE:
+${context}`;
+}
 
 export async function askGroq(question: string): Promise<string> {
   if (!question || !question.trim()) {
@@ -40,6 +32,9 @@ export async function askGroq(question: string): Promise<string> {
   }
 
   try {
+    const { context } = retrieve(question, 3);
+    const systemPrompt = buildSystemPrompt(context || "Tidak ada informasi spesifik. Jawab berdasarkan pengetahuan umum tentang Kapster.");
+
     const res = await fetch(GROQ_API_URL, {
       method: "POST",
       headers: {
@@ -49,7 +44,7 @@ export async function askGroq(question: string): Promise<string> {
       body: JSON.stringify({
         model: MODEL,
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: systemPrompt },
           { role: "user", content: question },
         ],
         max_tokens: 500,

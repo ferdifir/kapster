@@ -57,7 +57,7 @@ export async function setupPhoneVerification(phone: string) {
       .limit(1)
       .maybeSingle();
 
-    if (lastOtp) {
+    if (lastOtp?.created_at) {
       const elapsed = (Date.now() - new Date(lastOtp.created_at).getTime()) / 1000;
       if (elapsed < 60) {
         console.warn(`[PhoneVerification][RateLimit] Throttled. Elapsed: ${Math.round(elapsed)}s`);
@@ -141,7 +141,7 @@ export async function sendOTP(phone: string, purpose: "registration_verification
     .limit(1)
     .maybeSingle();
 
-  if (lastOtp) {
+  if (lastOtp?.created_at) {
     const elapsed = (Date.now() - new Date(lastOtp.created_at).getTime()) / 1000;
     if (elapsed < 60) return { error: "Tunggu 60 detik sebelum mengirim ulang." };
   }
@@ -214,8 +214,10 @@ export async function verifyOTP(phone: string, code: string, purpose: "registrat
   const { hashOTP: hash } = await import("@/lib/otp");
 
   if (hash(code) !== otpRecord.code_hash) {
-    const newAttempts = otpRecord.attempts + 1;
-    if (newAttempts >= otpRecord.max_attempts) {
+    const currentAttempts = otpRecord.attempts ?? 0;
+    const maxAttempts = otpRecord.max_attempts ?? 3;
+    const newAttempts = currentAttempts + 1;
+    if (newAttempts >= maxAttempts) {
       await admin
         .from("phone_otp_codes")
         .update({ attempts: newAttempts, expires_at: new Date(0).toISOString() })

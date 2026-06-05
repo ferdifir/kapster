@@ -25,7 +25,7 @@ export default async function SettingsPage() {
         <h1 className="font-display text-2xl font-bold text-white mb-1">Pengaturan</h1>
         <p className="text-dark-400 text-sm">Profil dan konfigurasi barbershop Anda</p>
       </div>
-      <SettingsForm barbershop={barbershop} />
+      <SettingsForm barbershop={{ ...barbershop, wa_connected: barbershop.wa_connected ?? false }} />
     </div>
   );
 }
