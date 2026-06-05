@@ -1,3 +1,10 @@
+## [1.26.3](https://github.com/ferdifir/kapster/compare/v1.26.2...v1.26.3) (2026-06-05)
+
+
+### Bug Fixes
+
+* retry loop + longer code to avoid collision ([cc0f925](https://github.com/ferdifir/kapster/commit/cc0f9259facdd3c8196d722f585d528477ecc912))
+
 ## [1.26.2](https://github.com/ferdifir/kapster/compare/v1.26.1...v1.26.2) (2026-06-05)
 
 
