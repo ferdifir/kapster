@@ -1,3 +1,10 @@
+## [1.24.1](https://github.com/ferdifir/kapster/compare/v1.24.0...v1.24.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* resolve typescript errors and add chatbot rag kb ([6c0c11a](https://github.com/ferdifir/kapster/commit/6c0c11a546a41a84f4f0179672d88a22086b4096))
+
 # [1.24.0](https://github.com/ferdifir/kapster/compare/v1.23.0...v1.24.0) (2026-06-05)
 
 
