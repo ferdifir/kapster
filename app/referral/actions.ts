@@ -62,8 +62,19 @@ export async function daftarReferrer(formData: FormData) {
   }
 
   const normalizedWa = normalizeWaNumber(wa_number);
-  const access_token = randomUUID();
   const supabase = createAdminClient() as any;
+
+  const { data: existing } = await (supabase
+    .from("referral_codes")
+    .select("id")
+    .eq("wa_number", normalizedWa)
+    .maybeSingle()) as unknown as { data: { id: string } | null };
+
+  if (existing) {
+    return { error: "Nomor WhatsApp ini sudah terdaftar sebagai referrer." };
+  }
+
+  const access_token = randomUUID();
 
   for (let attempt = 0; attempt < 3; attempt++) {
     const code = generateCode();
