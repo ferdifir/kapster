@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/ferdifir/kapster/compare/v1.24.1...v1.25.0) (2026-06-05)
+
+
+### Features
+
+* bot reply with quote to #ask messages in group ([9fe04a9](https://github.com/ferdifir/kapster/commit/9fe04a96412c885448c7162cc1e23735fd1ee319)), closes [#ask](https://github.com/ferdifir/kapster/issues/ask)
+
 ## [1.24.1](https://github.com/ferdifir/kapster/compare/v1.24.0...v1.24.1) (2026-06-05)
 
 
