@@ -47,5 +47,6 @@ jobs:
             git pull
             npm ci --no-optional
             npm install --no-save lightningcss-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu
+            rm -rf .next
             npm run build
-            pm2 reload kapster --update-env
+            pm2 restart kapster --update-env
