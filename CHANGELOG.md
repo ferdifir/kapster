@@ -1,3 +1,10 @@
+## [1.27.1](https://github.com/ferdifir/kapster/compare/v1.27.0...v1.27.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* clean .next before build in deploy to avoid corrupted artifacts ([758e96b](https://github.com/ferdifir/kapster/commit/758e96b758e20547ccf2e681bd17b6cc45f59472))
+
 # [1.27.0](https://github.com/ferdifir/kapster/compare/v1.26.5...v1.27.0) (2026-06-05)
 
 
