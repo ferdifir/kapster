@@ -9,6 +9,18 @@ export type WAEventType =
   | "registration_otp"
   | "password_reset_otp";
 
+export type WACustomizableEvent = Exclude<WAEventType, "registration_otp" | "password_reset_otp">;
+
+export const CUSTOMIZABLE_EVENTS: WACustomizableEvent[] = [
+  "join_queue",
+  "queue_called",
+  "queue_serving",
+  "queue_done",
+  "queue_number_update",
+  "booking_confirmed",
+  "booking_reminder",
+];
+
 export interface WAEventContext {
   name: string;
   barbershop: string;
@@ -22,7 +34,7 @@ export interface WAEventContext {
   code?: string;
 }
 
-const templates: Record<WAEventType, string> = {
+export const DEFAULT_TEMPLATES: Record<WAEventType, string> = {
   join_queue:
     "Halo {name}! Anda telah terdaftar di antrian *{barbershop}*. Nomor antrian: *#{number}*. Tanggal: {date}. Tunggu konfirmasi dari kami ya!",
   queue_called:
@@ -47,9 +59,10 @@ export const WA_FOOTER = "\n\n> _Sent via kapster.my.id_";
 
 export function renderWATemplate(
   eventType: WAEventType,
-  context: WAEventContext
+  context: WAEventContext,
+  overrideTemplates?: Partial<Record<WAEventType, string>> | null
 ): string {
-  const template = templates[eventType];
+  const template = overrideTemplates?.[eventType] || DEFAULT_TEMPLATES[eventType];
   if (!template) return "";
 
   return (
@@ -61,8 +74,8 @@ export function renderWATemplate(
       .replace("{time}", context.time ?? "")
       .replace("{estimated}", context.estimated ?? "")
       .replace("{position}", String(context.position ?? ""))
-        .replace("{service}", context.service ?? "")
-        .replace("{barber}", context.barber ?? "")
-        .replace("{code}", context.code ?? "") + WA_FOOTER
+      .replace("{service}", context.service ?? "")
+      .replace("{barber}", context.barber ?? "")
+      .replace("{code}", context.code ?? "") + WA_FOOTER
   );
 }

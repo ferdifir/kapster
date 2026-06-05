@@ -134,6 +134,7 @@ export type Database = {
           wa_number: string | null
           wa_pairing_code: string | null
           wa_phone_number: string | null
+          wa_templates: Json | null
           wuzapi_token: string | null
           wuzapi_user_id: string | null
         }
@@ -158,6 +159,7 @@ export type Database = {
           wa_number?: string | null
           wa_pairing_code?: string | null
           wa_phone_number?: string | null
+          wa_templates?: Json | null
           wuzapi_token?: string | null
           wuzapi_user_id?: string | null
         }
@@ -182,6 +184,7 @@ export type Database = {
           wa_number?: string | null
           wa_pairing_code?: string | null
           wa_phone_number?: string | null
+          wa_templates?: Json | null
           wuzapi_token?: string | null
           wuzapi_user_id?: string | null
         }

@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { User, Info, MapPin, MessageCircle } from "lucide-react";
+import { User, Info, MapPin, MessageCircle, FileText } from "lucide-react";
 import ProfilTab from "@/components/dashboard/settings/ProfilTab";
 import InformasiTab from "@/components/dashboard/settings/InformasiTab";
 import LokasiTab from "@/components/dashboard/settings/LokasiTab";
 import WhatsAppTab from "@/components/dashboard/settings/WhatsAppTab";
+import WaTemplateTab from "@/components/dashboard/settings/WaTemplateTab";
 
 type Barbershop = {
   id: string;
@@ -25,15 +26,17 @@ type Barbershop = {
   wuzapi_token: string | null;
   wa_connected: boolean;
   wa_phone_number: string | null;
+  wa_templates: Record<string, string> | null;
 };
 
-type Tab = "profil" | "informasi" | "lokasi" | "whatsapp";
+type Tab = "profil" | "informasi" | "lokasi" | "whatsapp" | "wa-template";
 
 const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
   { key: "profil", label: "Profil", icon: <User size={16} /> },
   { key: "informasi", label: "Informasi", icon: <Info size={16} /> },
   { key: "lokasi", label: "Lokasi", icon: <MapPin size={16} /> },
   { key: "whatsapp", label: "WhatsApp", icon: <MessageCircle size={16} /> },
+  { key: "wa-template", label: "Template WA", icon: <FileText size={16} /> },
 ];
 
 export default function SettingsForm({ barbershop }: { barbershop: Barbershop }) {
@@ -63,6 +66,7 @@ export default function SettingsForm({ barbershop }: { barbershop: Barbershop })
       {activeTab === "informasi" && <InformasiTab barbershop={barbershop} />}
       {activeTab === "lokasi" && <LokasiTab barbershop={barbershop} />}
       {activeTab === "whatsapp" && <WhatsAppTab barbershop={barbershop} />}
+      {activeTab === "wa-template" && <WaTemplateTab barbershop={barbershop} />}
     </div>
   );
 }
