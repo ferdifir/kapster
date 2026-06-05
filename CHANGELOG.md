@@ -1,3 +1,10 @@
+## [1.26.1](https://github.com/ferdifir/kapster/compare/v1.26.0...v1.26.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* correct referral performance url from /referral/performaku to /referral/[code] ([da94162](https://github.com/ferdifir/kapster/commit/da94162df6e00b57869f4e296c3f10e37521d626))
+
 # [1.26.0](https://github.com/ferdifir/kapster/compare/v1.25.1...v1.26.0) (2026-06-05)
 
 
