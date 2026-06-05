@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kapster
 
-## Getting Started
+Queue management SaaS untuk barbershop. Mengelola antrian, booking, barber, dan notifikasi WhatsApp.
 
-First, run the development server:
+## Fitur
+
+- **Antrian Real-time** — Pelanggan join via link, lihat posisi langsung
+- **Booking** — Reservasi jadwal, konfirmasi otomatis
+- **Manajemen Barber** — Assignment, status, pergantian shift
+- **Notifikasi WhatsApp** — OTP, reminder, notifikasi antrian
+- **Dashboard** — Statistik harian, grafik, data analytics
+- **Display TV** — Tampilan antrian di layar monitor
+- **Multi-cabang** — Dukungan multiple barbershop (Enterprise)
+- **Referral / Affiliate** — Program komisi untuk referrer
+- **Blog & SEO** — Blog generator otomatis dengan AI
+
+## Tech Stack
+
+| Layer | Tech |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Database | Supabase (PostgreSQL + Realtime) |
+| Auth | Supabase Auth (email, magic link) |
+| Payment | Pakasir (QRIS, VA) |
+| WA Gateway | WuzAPI |
+| AI | Groq (Llama), Ollama |
+| Deployment | VPS (PM2) + GitHub Actions |
+
+## Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3003](http://localhost:3003).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Script | Keterangan |
+|---|---|
+| `npm run dev` | Dev server port 3003 |
+| `npm run build` | Build production (webpack) |
+| `npm run start` | Start production |
+| `npm run lint` | ESLint |
+| `npm run test:e2e` | Playwright E2E tests |
 
-## Learn More
+## Environment
 
-To learn more about Next.js, take a look at the following resources:
+Salin `.env.example` ke `.env.local` dan isi:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Variable | Keterangan |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role |
+| `NEXT_PUBLIC_BASE_URL` | Base URL (https://kapster.my.id) |
+| `NEXT_PUBLIC_PAKASIR_API_KEY` | Pakasir publishable key |
+| `PAKASIR_SECRET_KEY` | Pakasir secret key |
+| `SYSTEM_WUZAPI_TOKEN` | WuzAPI token untuk sistem |
+| `GROQ_API_KEY` | Groq API key untuk AI |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+CI/CD via GitHub Actions. Push ke `main` → build + deploy ke VPS.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pm2 start ecosystem.config.js
+```
