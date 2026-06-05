@@ -1,3 +1,10 @@
+# [1.26.0](https://github.com/ferdifir/kapster/compare/v1.25.1...v1.26.0) (2026-06-05)
+
+
+### Features
+
+* add blog link to navbar ([609bf64](https://github.com/ferdifir/kapster/commit/609bf6410de4226b618c80348d6d2fb687186d2c))
+
 ## [1.25.1](https://github.com/ferdifir/kapster/compare/v1.25.0...v1.25.1) (2026-06-05)
 
 
