@@ -3,6 +3,11 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { lookupReferralCode, createReferralRecord } from "@/lib/referral";
 
+export async function validateReferralCode(code: string) {
+  const referrer = await lookupReferralCode(code);
+  return { valid: !!referrer };
+}
+
 export async function applyReferral(barbershopId: string, referralCode: string) {
   const referrer = await lookupReferralCode(referralCode);
   if (!referrer) return { error: "Kode referral tidak valid" };

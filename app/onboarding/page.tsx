@@ -57,7 +57,15 @@ export default function OnboardingPage() {
       .find((row) => row.startsWith("referrer_code="));
     if (cookie) {
       const code = decodeURIComponent(cookie.split("=")[1]);
-      setReferralCode(code);
+      import("@/app/onboarding/actions").then(({ validateReferralCode }) => {
+        validateReferralCode(code).then(({ valid }) => {
+          if (valid) {
+            setReferralCode(code);
+          } else {
+            document.cookie = "referrer_code=; path=/; max-age=0";
+          }
+        });
+      });
     }
   }, []);
 
@@ -146,7 +154,9 @@ export default function OnboardingPage() {
       const { applyReferral } = await import("@/app/onboarding/actions");
       const result = await applyReferral(shop.id, referralCode);
       if (result.error) {
-        console.error("Failed to apply referral:", result.error);
+        setError(result.error);
+        setLoading(false);
+        return;
       }
     }
 
