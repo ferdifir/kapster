@@ -19,6 +19,15 @@ CREATE TABLE IF NOT EXISTS agent_events (
 CREATE INDEX idx_agent_events_status_priority ON agent_events (status, priority DESC);
 CREATE INDEX idx_agent_events_created_at ON agent_events (created_at DESC);
 
+CREATE TABLE IF NOT EXISTS agent_custom_tools (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  role TEXT NOT NULL,
+  tool_name TEXT NOT NULL,
+  tool_definition JSONB NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(role, tool_name)
+);
+
 ALTER TABLE agent_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE agent_custom_tools ENABLE ROW LEVEL SECURITY;
 
@@ -40,12 +49,3 @@ CREATE POLICY "superadmin_read_agent_custom_tools" ON agent_custom_tools
       AND profiles.role = 'superadmin'
     )
   );
-
-CREATE TABLE IF NOT EXISTS agent_custom_tools (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  role TEXT NOT NULL,
-  tool_name TEXT NOT NULL,
-  tool_definition JSONB NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE(role, tool_name)
-);

@@ -39,12 +39,27 @@ export function createSharedTools(): Map<string, ToolDefinition> {
     },
     handler: async (params): Promise<ToolResult> => {
       try {
+        const { createAdminClient } = await import("@/lib/supabase/admin");
+        const supabase = createAdminClient();
+        const agentEvents = supabase as unknown as { from: (t: string) => { insert: (v: Record<string, unknown>) => { select: () => { single: () => Promise<{ data: { id: string } | null; error: { message: string } | null }> } } } };
+        const { data: pendingEvent, error: insertError } = await agentEvents.from("agent_events").insert({
+          event_type: "telegram_feedback",
+          source: "agent",
+          payload: { title: params.title, instructions: params.instructions, expected_response: params.expected_response },
+          status: "pending",
+          priority: 1,
+        } as Record<string, unknown>).select().single();
+
+        if (insertError || !pendingEvent) {
+          return { success: false, error: insertError?.message || "Failed to create tracking event" };
+        }
+
         const msgId = await sendTelegramInlineKeyboard(
           `🔑 <b>${params.title}</b>\n\n${params.instructions}\n\n<i>Expected response: ${params.expected_response}</i>`,
-          [[{ text: "✅ Udah dikirim", callback_data: `ferdi_done:event_id:${Date.now().toString()}` }]],
+          [[{ text: "✅ Udah dikirim", callback_data: `ferdi_done:event_id:${pendingEvent.id}` }]],
           "HTML"
         );
-        return { success: true, data: { telegram_message_id: msgId } };
+        return { success: true, data: { telegram_message_id: msgId, tracking_event_id: pendingEvent.id } };
       } catch (err) {
         return { success: false, error: String(err) };
       }

@@ -49,7 +49,7 @@ export async function loadCustomTools(): Promise<void> {
         const def = typeof r.tool_definition === "string"
           ? JSON.parse(r.tool_definition) as ToolDefinition
           : r.tool_definition as unknown as ToolDefinition;
-        if (def) {
+        if (def && !roleTools[r.role].has(def.name)) {
           roleTools[r.role].set(def.name, def);
         }
       }

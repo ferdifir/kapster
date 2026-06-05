@@ -1,5 +1,5 @@
 import type { ToolDefinition, ToolResult } from "../types";
-import { exec } from "child_process";
+import { exec, execFile } from "child_process";
 import { promisify } from "util";
 import * as fs from "fs/promises";
 import * as path from "path";
@@ -62,11 +62,9 @@ export const modifyCodeTool: ToolDefinition = {
       }
 
       if (params.commit_message) {
-        const relativePaths = files.map((f) => f.path).join(" ");
-        await execAsync(
-          `cd ${PROJECT_ROOT} && git add ${relativePaths} && git commit -m "${String(params.commit_message).replace(/"/g, '\\"')}"`,
-          { timeout: 15000 }
-        );
+        const relativePaths = files.map((f) => f.path);
+        await execFile("git", ["add", ...relativePaths], { cwd: PROJECT_ROOT, timeout: 15000 });
+        await execFile("git", ["commit", "-m", String(params.commit_message)], { cwd: PROJECT_ROOT, timeout: 15000 });
         results._commit = String(params.commit_message);
       }
 

@@ -2,7 +2,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { logError } from "@/lib/error-logger";
 import { sendTelegramMessage, sendTelegramInlineKeyboard } from "@/lib/telegram";
 import { routeEvent } from "@/lib/agents/router";
-import { getAgent } from "@/lib/agents/base-agent";
+import { getAgent, registerAgent } from "@/lib/agents/base-agent";
+import { HackerAgent } from "@/lib/agents/hacker-agent";
+import { HipsterAgent } from "@/lib/agents/hipster-agent";
+import { HustlerAgent } from "@/lib/agents/hustler-agent";
 import type { AgentEvent, AgentRole } from "@/lib/agents/types";
 import { runRetrospective } from "@/lib/agents/self-improve";
 
@@ -28,7 +31,7 @@ async function poll(supabase: ReturnType<typeof createAdminClient>): Promise<voi
     .limit(BATCH_SIZE);
 
   if (error) {
-    logError("agent-worker:poll", new Error(error.message));
+    logError("agent-worker:poll", new Error(error.message)).catch(() => {});
     return;
   }
 
@@ -37,6 +40,8 @@ async function poll(supabase: ReturnType<typeof createAdminClient>): Promise<voi
     await processEvent(supabase, event);
   }
 }
+
+const EVENT_TIMEOUT_MS = 300000; // 5 minutes
 
 async function processEvent(
   supabase: ReturnType<typeof createAdminClient>,
@@ -61,7 +66,12 @@ async function processEvent(
 
   try {
     const agent = getAgent(targetAgent as AgentRole);
-    const decision = await agent.processEvent(event);
+    const decision = await Promise.race([
+      agent.processEvent(event),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Event processing timed out after 5 minutes")), EVENT_TIMEOUT_MS)
+      ),
+    ]);
 
     const elapsed = Date.now() - startTime;
 
@@ -95,7 +105,7 @@ async function processEvent(
 
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err);
-    logError("agent-worker:process", err instanceof Error ? err : new Error(String(err)), { eventId: event.id });
+    logError("agent-worker:process", err instanceof Error ? err : new Error(String(err)), { eventId: event.id }).catch(() => {});
 
     await agentEvents(supabase).update({
       status: "failed",
@@ -112,11 +122,16 @@ async function processEvent(
 }
 
 async function main() {
+  // Register agents (each loads its own tools internally)
+  registerAgent("hacker", new HackerAgent());
+  registerAgent("hipster", new HipsterAgent());
+  registerAgent("hustler", new HustlerAgent());
+
   const supabase = createAdminClient();
   let lastRetrospective = Date.now();
   const RETROSPECTIVE_INTERVAL = 7 * 86400000; // 1 week
 
-  while (running) {
+  while (running && !abortController.signal.aborted) {
     try {
       await poll(supabase);
       if (Date.now() - lastRetrospective > RETROSPECTIVE_INTERVAL) {
@@ -124,10 +139,10 @@ async function main() {
         lastRetrospective = Date.now();
       }
     } catch (err) {
-      if (!running) break;
-      logError("agent-worker", err instanceof Error ? err : new Error(String(err)));
+      if (!running || abortController.signal.aborted) break;
+      logError("agent-worker", err instanceof Error ? err : new Error(String(err))).catch(() => {});
     }
-    if (running) {
+    if (running && !abortController.signal.aborted) {
       await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
     }
   }
