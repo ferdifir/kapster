@@ -7,7 +7,7 @@ import { randomUUID } from "crypto";
 import type { ReferralCodeRow } from "@/lib/referral-types";
 
 function generateCode(): string {
-  return Math.random().toString(36).slice(2, 8);
+  return Math.random().toString(36).slice(2, 10);
 }
 
 function normalizeWaNumber(wa: string): string {
@@ -62,57 +62,38 @@ export async function daftarReferrer(formData: FormData) {
   }
 
   const normalizedWa = normalizeWaNumber(wa_number);
-  const code = generateCode();
   const access_token = randomUUID();
-
   const supabase = createAdminClient() as any;
 
-  const { data, error } = (await supabase
-    .from("referral_codes")
-    .insert({
-      name: name.trim(),
-      wa_number: normalizedWa,
-      code,
-      access_token,
-      balance: 0,
-      total_earned: 0,
-      total_withdrawn: 0,
-    })
-    .select()
-    .single()) as unknown as { data: ReferralCodeRow | null; error: any };
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const code = generateCode();
 
-  if (error) {
-    if (error.code === "23505") {
-      const retryCode = generateCode();
-      const { data: retryData, error: retryError } = (await supabase
-        .from("referral_codes")
-        .insert({
-          name: name.trim(),
-          wa_number: normalizedWa,
-          code: retryCode,
-          access_token: randomUUID(),
-          balance: 0,
-          total_earned: 0,
-          total_withdrawn: 0,
-        })
-        .select()
-        .single()) as unknown as { data: ReferralCodeRow | null; error: any };
+    const { data, error } = (await supabase
+      .from("referral_codes")
+      .insert({
+        name: name.trim(),
+        wa_number: normalizedWa,
+        code,
+        access_token,
+        balance: 0,
+        total_earned: 0,
+        total_withdrawn: 0,
+      })
+      .select()
+      .single()) as unknown as { data: ReferralCodeRow | null; error: any };
 
-      if (retryError) {
-        logError("referral/daftarReferrer", retryError, { name, wa_number });
-        return { error: "Gagal mendaftar. Silakan coba lagi." };
-      }
-
-      sendWaNotification(normalizedWa, name.trim(), retryData!.code, retryData!.access_token);
-      return { success: true, code: retryData!.code, token: retryData!.access_token };
+    if (!error) {
+      sendWaNotification(normalizedWa, name.trim(), data!.code, data!.access_token);
+      return { success: true, code: data!.code, token: data!.access_token };
     }
 
-    logError("referral/daftarReferrer", error, { name, wa_number });
-    return { error: "Gagal mendaftar. Silakan coba lagi." };
+    if (error.code !== "23505") {
+      logError("referral/daftarReferrer", error, { name, wa_number });
+      return { error: "Gagal mendaftar. Silakan coba lagi." };
+    }
   }
 
-  sendWaNotification(normalizedWa, name.trim(), data!.code, data!.access_token);
-  return { success: true, code: data!.code, token: data!.access_token };
+  return { error: "Gagal membuat kode unik. Silakan coba lagi." };
 }
 
 export async function requestPayout(formData: FormData) {
