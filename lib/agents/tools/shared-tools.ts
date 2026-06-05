@@ -1,5 +1,6 @@
 import type { ToolDefinition, ToolResult } from "../types";
 import { sendTelegramInlineKeyboard, sendTelegramMessage } from "@/lib/telegram";
+import { modifyCodeTool } from "./modify-code";
 
 export function createSharedTools(): Map<string, ToolDefinition> {
   const tools = new Map<string, ToolDefinition>();
@@ -139,6 +140,8 @@ export function createSharedTools(): Map<string, ToolDefinition> {
       }
     },
   });
+
+  tools.set("modify_code", modifyCodeTool);
 
   return tools;
 }

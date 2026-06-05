@@ -4,6 +4,7 @@ import { sendTelegramMessage, sendTelegramInlineKeyboard } from "@/lib/telegram"
 import { routeEvent } from "@/lib/agents/router";
 import { getAgent } from "@/lib/agents/base-agent";
 import type { AgentEvent, AgentRole } from "@/lib/agents/types";
+import { runRetrospective } from "@/lib/agents/self-improve";
 
 const POLL_INTERVAL_MS = 5000;
 const BATCH_SIZE = 5;
@@ -112,10 +113,16 @@ async function processEvent(
 
 async function main() {
   const supabase = createAdminClient();
+  let lastRetrospective = Date.now();
+  const RETROSPECTIVE_INTERVAL = 7 * 86400000; // 1 week
 
   while (running) {
     try {
       await poll(supabase);
+      if (Date.now() - lastRetrospective > RETROSPECTIVE_INTERVAL) {
+        await runRetrospective();
+        lastRetrospective = Date.now();
+      }
     } catch (err) {
       if (!running) break;
       logError("agent-worker", err instanceof Error ? err : new Error(String(err)));
