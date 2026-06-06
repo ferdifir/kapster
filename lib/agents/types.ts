@@ -12,7 +12,8 @@ export type EventType =
   | "scheduled"
   | "tool_call"
   | "code_change"
-  | "retrospective";
+  | "retrospective"
+  | "daily_standup";
 
 export type EventSource =
   | "system"

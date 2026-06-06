@@ -6,6 +6,7 @@ interface Chunk {
   heading: string;
   content: string;
   keywords: string[];
+  isInternal: boolean;
 }
 
 let chunksCache: Chunk[] | null = null;
@@ -45,6 +46,10 @@ function extractKeywords(text: string): string[] {
     .map(([w]) => w);
 }
 
+function isInternalContent(lines: string[]): boolean {
+  return lines.some((l) => l.includes("<!-- internal -->"));
+}
+
 function chunkKB(kb: string): Chunk[] {
   if (chunksCache) return chunksCache;
 
@@ -65,6 +70,7 @@ function chunkKB(kb: string): Chunk[] {
             heading: currentHeading,
             content,
             keywords: extractKeywords(currentHeading + " " + content),
+            isInternal: isInternalContent(currentContent),
           });
         }
       }
@@ -83,6 +89,7 @@ function chunkKB(kb: string): Chunk[] {
         heading: currentHeading,
         content,
         keywords: extractKeywords(currentHeading + " " + content),
+        isInternal: isInternalContent(currentContent),
       });
     }
   }
@@ -126,13 +133,13 @@ export interface RetrievalResult {
   context: string;
 }
 
-export function retrieve(question: string, topN = 3): RetrievalResult {
+export function retrieve(question: string, topN = 3, includeInternal = false): RetrievalResult {
   const kb = loadKB();
   if (!kb) {
     return { chunks: [], context: "" };
   }
 
-  const chunks = chunkKB(kb);
+  const chunks = chunkKB(kb).filter((c) => includeInternal || !c.isInternal);
   const scored = chunks
     .map((chunk) => ({ chunk, score: scoreRelevance(question, chunk) }))
     .filter((s) => s.score > 0)

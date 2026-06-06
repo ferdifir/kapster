@@ -6,8 +6,10 @@ import { getAgent, registerAgent } from "@/lib/agents/base-agent";
 import { HackerAgent } from "@/lib/agents/hacker-agent";
 import { HipsterAgent } from "@/lib/agents/hipster-agent";
 import { HustlerAgent } from "@/lib/agents/hustler-agent";
-import type { AgentEvent, AgentRole } from "@/lib/agents/types";
+import type { AgentEvent, AgentRole, AgentDecision } from "@/lib/agents/types";
 import { runRetrospective } from "@/lib/agents/self-improve";
+
+const STADUP_ORDER: AgentRole[] = ["hustler", "hipster", "hacker"];
 
 const POLL_INTERVAL_MS = 5000;
 const BATCH_SIZE = 5;
@@ -103,6 +105,10 @@ async function processEvent(
       report_sent: true,
     }).eq("id", event.id);
 
+    if (event.event_type === "daily_standup" && targetAgent) {
+      await chainStandup(supabase, event, targetAgent as AgentRole, decision);
+    }
+
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err);
     logError("agent-worker:process", err instanceof Error ? err : new Error(String(err)), { eventId: event.id }).catch(() => {});
@@ -115,6 +121,46 @@ async function processEvent(
 
     await sendTelegramMessage(
       `⚠️ <b>Agent Worker</b>\n├ Event: ${event.event_type} (${event.id.slice(0, 8)})\n├ Error: ${errorMsg}\n└ Status: failed`,
+      undefined,
+      "HTML"
+    );
+  }
+}
+
+const STANDUP_NEXT: Record<AgentRole, AgentRole | null> = {
+  hustler: "hipster",
+  hipster: "hacker",
+  hacker: null,
+};
+
+async function chainStandup(
+  supabase: ReturnType<typeof createAdminClient>,
+  event: AgentEvent,
+  agent: AgentRole,
+  decision: AgentDecision
+): Promise<void> {
+  const meetingId = event.payload?.meeting_id as string;
+  if (!meetingId) return;
+
+  const transcript = (event.payload?.transcript as Array<{ agent: string; statement: string; timestamp: string }>) || [];
+  const statement = decision.report_message || decision.reasoning || "(no statement)";
+  transcript.push({ agent, statement, timestamp: new Date().toISOString() });
+
+  const nextAgent = STANDUP_NEXT[agent];
+  if (nextAgent) {
+    await agentEvents(supabase).insert({
+      event_type: "daily_standup",
+      source: "agent",
+      target_agent: nextAgent,
+      payload: { meeting_id: meetingId, round: transcript.length + 1, transcript },
+      priority: 1,
+    } as Record<string, unknown>);
+  } else {
+    const lines = transcript.map(
+      (t) => `🎙 <b>${t.agent.charAt(0).toUpperCase() + t.agent.slice(1)}</b>\n${t.statement}`
+    );
+    await sendTelegramMessage(
+      `☀️ <b>Daily Standup — Selesai</b>\n\n${lines.join("\n\n─────────────\n\n")}`,
       undefined,
       "HTML"
     );

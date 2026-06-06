@@ -43,7 +43,7 @@ export function createPlanTools(): Map<string, ToolDefinition> {
         if (params.deadline) metrics.deadline = params.deadline;
 
         const { data, error } = await s().from("agent_plans").insert({
-          agent_role: "hustler",
+          agent_role: String(params._agent_role || "hustler"),
           title: String(params.title),
           description: params.description ? String(params.description) : null,
           metrics: Object.keys(metrics).length > 0 ? metrics : {},
@@ -141,6 +141,71 @@ export function createPlanTools(): Map<string, ToolDefinition> {
         );
 
         return { success: true, data: { step_id: step.id, telegram_message_id: msgId } };
+      } catch (err) {
+        return { success: false, error: String(err) };
+      }
+    },
+  });
+
+  tools.set("update_plan_step", {
+    name: "update_plan_step",
+    description: "Update status step dari plan. Gunakan setelah step selesai dieksekusi untuk mark sebagai 'completed', atau ubah ke 'in_progress' saat mulai eksekusi.",
+    parameters: {
+      type: "object",
+      properties: {
+        step_id: { type: "string", description: "ID step yang ingin diupdate" },
+        status: { type: "string", enum: ["in_progress", "completed", "skipped"], description: "Status baru step" },
+        result: { type: "object", description: "Hasil eksekusi step (opsional)" },
+      },
+      required: ["step_id", "status"],
+    },
+    handler: async (params): Promise<ToolResult> => {
+      try {
+        const updateData: Record<string, unknown> = { status: String(params.status) };
+        if (params.status === "completed") updateData.completed_at = new Date().toISOString();
+        if (params.result) updateData.result = params.result;
+        const { error } = await s().from("agent_plan_steps").update(updateData).eq("id", String(params.step_id));
+        if (error) return { success: false, error: error.message };
+        return { success: true, data: { message: `Step ${params.status}` } };
+      } catch (err) {
+        return { success: false, error: String(err) };
+      }
+    },
+  });
+
+  tools.set("update_plan", {
+    name: "update_plan",
+    description: "Update status atau metrics dari plan. Gunakan untuk mark plan sebagai 'completed' atau update progres KPI.",
+    parameters: {
+      type: "object",
+      properties: {
+        plan_id: { type: "string", description: "ID plan" },
+        status: { type: "string", enum: ["active", "paused", "completed", "cancelled"], description: "Status baru plan" },
+        current_value: { type: "number", description: "Nilai KPI terkini (opsional)" },
+      },
+      required: ["plan_id"],
+    },
+    handler: async (params): Promise<ToolResult> => {
+      try {
+        const updateData: Record<string, unknown> = { updated_at: new Date().toISOString() };
+        if (params.status) {
+          updateData.status = String(params.status);
+          if (params.status === "completed") updateData.completed_at = new Date().toISOString();
+        }
+        if (params.current_value !== undefined) {
+          const fetchDB = s() as unknown as { from: (t: string) => { select: (c: string) => { eq: (c: string, v: string) => Promise<{ data: Record<string, unknown> | null; error: { message: string } | null }> } } };
+          const anyDB = s() as unknown as { from: (t: string) => { update: (v: Record<string, unknown>) => { eq: (c: string, v: string) => Promise<{ error: { message: string } | null }> } } };
+          const { data: plan } = await fetchDB.from("agent_plans").select("metrics").eq("id", String(params.plan_id));
+          const metrics = ((plan || {}) as Record<string, unknown>).metrics || {};
+          (metrics as Record<string, unknown>).current = params.current_value;
+          updateData.metrics = metrics;
+          const { error } = await anyDB.from("agent_plans").update(updateData).eq("id", String(params.plan_id));
+          if (error) return { success: false, error: error.message };
+        } else {
+          const { error } = await s().from("agent_plans").update(updateData).eq("id", String(params.plan_id));
+          if (error) return { success: false, error: error.message };
+        }
+        return { success: true, data: { message: `Plan updated${params.status ? ` to ${params.status}` : ""}` } };
       } catch (err) {
         return { success: false, error: String(err) };
       }

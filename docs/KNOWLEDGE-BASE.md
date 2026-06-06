@@ -295,6 +295,7 @@ Kapster punya program referral — ajak barbershop lain pakai Kapster, dua-duany
 ---
 
 ## Database Notes
+<!-- internal -->
 - Supabase (PostgreSQL)
 - Realtime via `postgres_changes`
 - Cron jobs via `pg_cron`
@@ -302,6 +303,7 @@ Kapster punya program referral — ajak barbershop lain pakai Kapster, dua-duany
 - File storage: Supabase Storage
 
 ## Teknis
+<!-- internal -->
 - **Frontend:** Next.js (App Router), TypeScript, Tailwind CSS
 - **Backend:** Supabase (Auth, DB, Storage, Edge Functions, Realtime)
 - **AI:** Groq (llama-3.3-70b-versatile), OpenRouter, Ollama

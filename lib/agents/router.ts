@@ -13,10 +13,11 @@ const ROUTE_RULES: Partial<Record<EventType, AgentRole>> = {
 export function routeEvent(event: AgentEvent): AgentRole | null {
   if (event.target_agent) return event.target_agent;
 
-  // scheduled events always have target_agent set by the cron endpoint
   if (event.event_type === "scheduled") {
     return (event.payload?.target_role as AgentRole) || null;
   }
+
+
 
   const rule = ROUTE_RULES[event.event_type];
   if (rule) return rule;

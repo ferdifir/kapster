@@ -40,7 +40,7 @@ export abstract class BaseAgent {
         let lastError: string | undefined;
         for (let attempt = 1; attempt <= 3; attempt++) {
           try {
-            const result = await tool.handler(call.params);
+            const result = await tool.handler({ ...call.params, _agent_role: this.role });
             results.push(result);
             messages.push({ role: "assistant", content: JSON.stringify({ tool: call.name, result }) });
             lastError = undefined;
