@@ -1,3 +1,11 @@
+# [1.29.0](https://github.com/ferdifir/kapster/compare/v1.28.0...v1.29.0) (2026-06-06)
+
+
+### Features
+
+* **agents:** planning layer - persistent plans, daily review, Ferdi approval ([58401bb](https://github.com/ferdifir/kapster/commit/58401bb5f2c16d944094ae5d1f9c18fd083bc63b))
+* daily standup cron + agent meeting + prompt injection hardening ([a3a9043](https://github.com/ferdifir/kapster/commit/a3a9043f5acd15971121f854ea6e5c3f328f1c35))
+
 # [1.28.0](https://github.com/ferdifir/kapster/compare/v1.27.2...v1.28.0) (2026-06-05)
 
 
