@@ -1,3 +1,11 @@
+## [1.30.1](https://github.com/ferdifir/kapster/compare/v1.30.0...v1.30.1) (2026-06-07)
+
+
+### Bug Fixes
+
+* **agents:** pm2-tools silent fail when PM2 not found, no Telegram spam ([e7b4a2d](https://github.com/ferdifir/kapster/commit/e7b4a2ddb2b1305f7b47ec8899080b08e870ac1e))
+* **agents:** sub-agent registry use COO memory consistently + restore user-profile.md ([c5059a4](https://github.com/ferdifir/kapster/commit/c5059a4f02ad0f872d711e4512624eae424d8fb9))
+
 # [1.30.0](https://github.com/ferdifir/kapster/compare/v1.29.0...v1.30.0) (2026-06-07)
 
 
