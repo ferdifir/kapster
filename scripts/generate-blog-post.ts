@@ -18,9 +18,19 @@ const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const PUTER_AUTH_TOKEN = process.env.PUTER_AUTH_TOKEN;
 const TREND_PULSE_PATH = process.env.TREND_PULSE_PATH || "/var/www/kapster/.venv/bin/trend-pulse";
 
+interface ScientificRef {
+  title: string;
+  doi: string;
+  authors: string[];
+  year: number;
+  journal: string;
+  citedBy: number;
+}
+
 interface ResearchResult {
   topicData: { topic: string; title: string; reasoning: string; seo_keywords: string[] };
   webResearchData: string;
+  scientificRefs: ScientificRef[];
   planId: string;
   brief: string;
 }
@@ -38,35 +48,56 @@ async function main() {
     return;
   }
 
-  const { topicData, webResearchData, planId } = research;
+  const { topicData, webResearchData, scientificRefs, planId } = research;
   console.log(`[blog-gen] Topic: ${topicData.title} (${topicData.reasoning})`);
+  console.log(`[blog-gen] Scientific refs: ${scientificRefs.length} papers from OpenAlex`);
 
   // Phase 2: Content Generation + SEO Metadata (merged)
   console.log("[blog-gen] Phase 2: Generating article...");
-  const contentPrompt = `Kamu adalah penulis konten ahli untuk blog kapster.my.id — platform manajemen antrian digital untuk barbershop Indonesia.
+
+  const refsText = scientificRefs.length > 0
+    ? scientificRefs.map((r, i) =>
+        `[${i + 1}] "${r.title}" — ${r.authors.slice(0, 3).join(", ")}${r.authors.length > 3 ? " et al." : ""} (${r.year}), ${r.journal}. DOI: ${r.doi}`
+      ).join("\n")
+    : "(Tidak ada referensi ilmiah dari OpenAlex)";
+
+  const contentPrompt = `Kamu adalah penulis sains populer untuk blog kapster.my.id — platform manajemen antrian digital untuk barbershop Indonesia.
 
 Judul: "${topicData.title}"
 
-[WAJIB] Artikel HARUS MINIMAL 3000 KATA. Target 5000+ kata. Jangan berhenti sampai mencapai target panjang ini. Tulis panjang, mendalam, dan komprehensif.
+REFERENSI ILMIAH (WAJIB gunakan sebagai dasar artikel):
+${refsText}
 
-GAYA: Seperti tulisan MAJALAH — natural, engaging, dengan celotehan atau humor ringan. Bayangkan kamu jelasin ke teman yang punya barbershop.
+[WAJIB] Artikel HARUS MINIMAL 3000 KATA. Target 5000+ kata.
 
-PANDUAN KONTEN:
-1. Jawab judul dengan contoh nyata, studi kasus, data spesifik, atau cerita — bukan saran generik
-2. Minimal 5 sub-bab <h2>, masing-masing 400-800 kata, dengan variasi panjang
-3. Per sub-bab: minimal 200 kata konten informatif (bukan format HTML kosong)
-4. Semakin panjang semakin bagus. Artikel 5000+ kata jauh lebih bernilai dari 3000 kata
+FORMAT KONTEN (WAJIB):
+- 90% artikel: Konten ilmiah populer berdasarkan referensi di atas. Jelaskan fenomena/teori/temuan dari artikel ilmiah dengan bahasa yang mudah dipahami. Gunakan kutipan dari referensi dengan format [1], [2], dst.
+- 10% sisanya: Jembatan (bridging) dari konten ilmiah ke konteks barbershop, lalu kalimat CTA untuk Kapster.
+
+STRUKTUR:
+1. Pembuka (1-2 paragraf) — hook dengan fenomena ilmiah yang menarik
+2. Isi (90% artikel) — jelaskan sains di balik topik, gunakan referensi [1], [2], [3], dst. Minimal 5 sub-bab <h2>
+3. Bridging (1-2 paragraf) — kaitkan temuan ilmiah dengan dunia barbershop
+4. CTA Kapster
+
+GAYA: Seperti artikel National Geographic atau The Conversation — ilmiah, akurat, tapi tetap engaging. Bukan tutorial atau tips & tricks.
 
 ATURAN FORMAT:
-- HTML: h2, h3, p, strong, em, ul, ol, li, blockquote, table, thead, tbody, tr, th, td, a
+- HTML: h2, h3, p, strong, em, ul, ol, li, blockquote
 - JANGAN markdown. JANGAN <h1>
-- Minimal 1 <ul>, 1 <ol>, 1 <blockquote>, 1 <table>
-- Gunakan <strong> untuk keyword penting
+- Gunakan <strong> untuk istilah ilmiah penting
+- Cantumkan referensi dengan format <sup>[1]</sup> <sup>[2]</sup> di dalam teks
 
-CTA di akhir:
+DAFTAR REFERENSI di akhir artikel (sebelum metadata):
+<h2>Referensi</h2>
+<ol>
+${scientificRefs.map((r, i) => `<li>${r.authors.slice(0, 3).join(", ")}${r.authors.length > 3 ? " et al." : ""} (${r.year}). ${r.title}. <em>${r.journal}</em>. DOI: ${r.doi}</li>`).join("\n")}
+</ol>
+
+CTA di akhir (setelah bridging, sebelum referensi):
 <p>Kalau kamu ingin fokus mengembangkan bisnis barbershop tanpa pusing urus antrian, coba deh pakai Kapster. Sistem antrian digital yang bikin pelanggan puas dan operasional makin rapi. Cuma Rp10.000/bulan. Mulai gratis di ${SITE_URL}!</p>
 
-SETELAH artikel (di baris terakhir), sertakan metadata:
+SETELAH artikel (di baris terakhir, SETELAH referensi), sertakan metadata:
 ---METADATA
 {"excerpt": "ringkasan artikel 150-200 karakter (bukan judul ulang)", "meta_description": "meta description 150-160 karakter untuk SEO", "slug": "url-slug-pendek-dan-relevan", "keywords": ["kw1","kw2","kw3","kw4","kw5","kapaster"], "topics": ["topik1"], "seo_score": 85}`;
 
@@ -106,7 +137,7 @@ SETELAH artikel (di baris terakhir), sertakan metadata:
 
   if (qaResult.score < 4) {
     console.log(`[blog-gen] QA score ${qaResult.score}/5, regenerating with fix notes...`);
-    const fixedPrompt = contentPrompt + `\n\nQA REVIEW NOTES (PERBAIKI):\n${qaResult.notes}`;
+    const fixedPrompt = contentPrompt + `\n\nQA REVIEW NOTES (WAJIB PERBAIKI):\n${qaResult.notes}\n\nINGAT: 90% artikel harus konten ilmiah dengan referensi [1], [2], dst. Hanya 10% untuk bridging dan CTA.`;
     const fixedResponse = await callLLM(fixedPrompt, 0.8, 8192);
     const fixedMetaMatch = fixedResponse.match(/---+\s*METADATA\s*\n({[\s\S]*})/i);
     if (fixedMetaMatch) {
@@ -128,13 +159,14 @@ SETELAH artikel (di baris terakhir), sertakan metadata:
       if (newCount >= 3000) break;
       const lastPara = contentHtml.match(/<p>[^<]*<\/p>\s*$/);
       const preview = lastPara ? `Akhir artikel:\n...${lastPara[0].slice(0, 200)}\n\nLANJUTKAN DARI SINI. WAJIB: tambah 1000+ KATA BARU:` : "Tulis konten baru 1000+ kata. WAJIB:";
-      const continuePrompt = `Kamu penulis konten ahli. INI WAJIB: tulis MINIMAL 1000+ KATA BARU, jangan ulang konten sebelumnya.
+      const continuePrompt = `Kamu penulis sains populer. INI WAJIB: tulis MINIMAL 1000+ KATA BARU tentang konten ilmiah, jangan ulang.
 
 STRUKTUR:
-- <h2> judul → <p> isi → <h3> sub-bab → detail
-- Minimal 2 <h2> baru
-- Pakai <ul>, <ol>, <blockquote>, <table>
+- <h2> judul ilmiah → <p> penjelasan dengan referensi [n] → detail
+- Minimal 2 <h2> baru dengan konten ilmiah
+- Pakai <sup>[n]</sup> untuk sitasi
 - JANGAN markdown, JANGAN <h1>
+- 90% konten ilmiah, sisanya bridging ke barbershop
 
 ${preview}`;
       const moreContent = await callLLM(continuePrompt, 0.8, 8192);
@@ -342,11 +374,12 @@ ${existingTitles.join(", ") || "(belum ada)"}
 
 Aturan topik:
 1. Prioritaskan keyword dari GSC keyword gaps jika ada — itu bukti orang sudah mencari topik tersebut.
-2. JANGAN pilih judul generik dengan kata "optimalkan", "maksimalkan", "tingkatkan", "tips", "cara mudah", "panduan lengkap". Pilih judul spesifik yang menjawab pertanyaan nyata.
-3. Bisa radius dari barbershop. Contoh: "Cara Hitung Kebutuhan Staf Barbershop per Shift" lebih spesifik dari "Optimalkan Staf Barbershop".
-4. Pertimbangkan tambahkan sinyal SEO untuk varian ejaan: "kapaster" sebagai alternatif pencarian dari "kapster".
-5. Layak artikel MENDALAM (3000+ kata) dengan contoh dan data konkret.
-6. Natural mengarah ke CTA Kapster.
+2. PILIH topik yang BISA dijelaskan dengan SAINS/FAKTA ILMIAH. Contoh: "Mengapa Rambut Beruban", "Pengaruh Stres pada Kesehatan Rambut", "Cara Kerja Sampo Anti-Ketombe", "Hubungan Nutrisi dan Pertumbuhan Rambut".
+3. JANGAN pilih judul generik dengan kata "optimalkan", "maksimalkan", "tingkatkan", "tips", "cara mudah", "panduan lengkap", "hitung", "efisiensi". Pilih judul spesifik yang menjelaskan FENOMENA ILMIAH.
+4. Bisa radius dari barbershop, tapi pendekatan ilmiah. Contoh: "Biologi di Balik Rambut Kering" lebih baik dari "Cara Mengatasi Rambut Kering".
+5. Pertimbangkan tambahkan sinyal SEO untuk varian ejaan: "kapaster" sebagai alternatif pencarian dari "kapster".
+6. Layak artikel MENDALAM (3000+ kata) dengan referensi ilmiah dan data konkret.
+7. Pastikan ada celah untuk bridging ke barbershop di akhir artikel.
 
 Beri output JSON SAJA (tanpa markdown formatting):
 {"topic": "nama topik singkat", "title": "judul artikel max 60 karakter (spesifik, bukan generik)", "reasoning": "mengapa topik ini dipilih (kaitkan ke SEO dan data GSC)", "seo_keywords": ["kw1", "kw2", "kw3", "kapaster"]}`;
@@ -361,7 +394,16 @@ Beri output JSON SAJA (tanpa markdown formatting):
     return null;
   }
 
-  // 1e: MCP web search
+  // 1e: OpenAlex scientific literature search
+  let scientificRefs: ScientificRef[] = [];
+  try {
+    scientificRefs = await searchOpenAlex(topicData.topic);
+    console.log(`[blog-gen] OpenAlex: ${scientificRefs.length} scientific papers found`);
+  } catch (err) {
+    console.warn("[blog-gen] OpenAlex search failed:", err);
+  }
+
+  // 1f: MCP web search
   let webResearchData = "";
   const searchResults = await callMCPTool("web_search", {
     query: `${topicData.topic} ${topicData.seo_keywords?.filter(Boolean).slice(0, 2).join(" ")} Indonesia 2026`,
@@ -381,11 +423,18 @@ Beri output JSON SAJA (tanpa markdown formatting):
   }
 
   // 1f: Save to content_plans
+  const refsSummary = scientificRefs.length > 0
+    ? scientificRefs.map((r, i) => `[${i + 1}] ${r.title} (${r.year}) — ${r.journal}`).join("\n")
+    : "Tidak ada";
   const brief = `Topik: ${topicData.topic}
 Judul: ${topicData.title}
 Keywords: ${(topicData.seo_keywords || []).join(", ")}
 GSC: ${gscData ? "Ada" : "Tidak ada"}
 Trend: ${trendData ? "Ada" : "Tidak ada"}
+OpenAlex Refs: ${scientificRefs.length} papers
+
+Scientific References:
+${refsSummary}
 
 Web Research:
 ${webResearchData || "(Tidak ada)"}
@@ -406,7 +455,7 @@ Alasan: ${topicData.reasoning}`;
   await recordMetric(supabase, "plans_created", 1, { source: gscData ? "gsc" : "trend" });
   await recordMetric(supabase, "research_success", 1, {});
 
-  return { topicData, webResearchData, planId: plan.id, brief };
+  return { topicData, webResearchData, scientificRefs, planId: plan.id, brief };
 }
 
 async function fetchGSCKeywordGaps(): Promise<string> {
@@ -447,6 +496,39 @@ async function fetchGSCKeywordGaps(): Promise<string> {
   return gaps.length ? gaps.join("\n") : "Tidak ada keyword gap signifikan";
 }
 
+async function searchOpenAlex(query: string): Promise<ScientificRef[]> {
+  const searchQueries = [
+    `${query} hair biology`,
+    `${query} dermatology`,
+    `${query} science`,
+  ];
+
+  for (const sq of searchQueries) {
+    try {
+      const url = `https://api.openalex.org/works?search=${encodeURIComponent(sq)}&filter=is_oa:true&sort=cited_by_count:desc&per_page=5`;
+      const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+      if (!res.ok) continue;
+
+      const data = await res.json();
+      if (!data.results?.length) continue;
+
+      return data.results.slice(0, 4).map((r: any) => ({
+        title: r.title || r.display_name || "",
+        doi: r.doi || "",
+        authors: (r.authorships || []).map((a: any) => a.author?.display_name || "").filter(Boolean),
+        year: r.publication_year || 0,
+        journal: r.primary_location?.source?.display_name || "Unknown Journal",
+        citedBy: r.cited_by_count || 0,
+      }));
+    } catch (err) {
+      console.warn(`[blog-gen] OpenAlex query "${sq}" failed:`, err);
+      continue;
+    }
+  }
+
+  return [];
+}
+
 async function runTrendPulse(): Promise<string> {
   return new Promise((resolve, reject) => {
     const child = spawn(TREND_PULSE_PATH, [
@@ -474,10 +556,10 @@ async function reviewBlogContent(html: string, title: string): Promise<{ score: 
   const prompt = `Kamu adalah QA reviewer konten blog. Review artikel berikut dan beri score 1-5.
 
 KRITERIA PENILAIAN:
-1. Konten depth (2 points): Apakah artikel benar-benar menjawab judul "${title}" dengan contoh nyata, data, atau studi kasus? Atau cuma saran generik?
-2. Struktur konten (1 point): Minimal 3 <h2> substantive. Apakah alur logis dan informatif?
-3. No fake claims (1 point): Apakah ada klaim tanpa data atau testimoni palsu?
-4. Tone natural (1 point): Apakah mengalir kayak majalah? Atau kaku kayak buku teks?
+1. Konten ilmiah (2 points): Apakah artikel didasarkan pada sains/fakta ilmiah dengan referensi [1], [2], dst? Atau cuma opini penulis?
+2. Struktur konten (1 point): Minimal 3 <h2> substantive. Apakah ada <h2>Referensi</h2> di akhir?
+3. Scientific accuracy (1 point): Apakah klaim ilmiah akurat dan sesuai dengan referensi yang dikutip?
+4. 90/10 ratio (1 point): Apakah ~90% konten adalah penjelasan ilmiah, dan hanya ~10% bridging ke barbershop + CTA?
 
 DATA: Artikel memiliki ${h2Count} sub-bab (<h2>).
 
