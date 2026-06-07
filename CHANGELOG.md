@@ -1,3 +1,10 @@
+# [1.32.0](https://github.com/ferdifir/kapster/compare/v1.31.1...v1.32.0) (2026-06-07)
+
+
+### Features
+
+* **blog:** openalex scientific references + science content format ([a692507](https://github.com/ferdifir/kapster/commit/a692507b2083a7e416841ff6f9323d9ca2559b0c))
+
 ## [1.31.1](https://github.com/ferdifir/kapster/compare/v1.31.0...v1.31.1) (2026-06-07)
 
 
