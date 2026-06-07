@@ -68,7 +68,7 @@ async function main() {
 
   const refsInstruction = hasRefs
     ? `REFERENSI ILMIAH (gunakan jika relevan, jangan paksakan):\n${refsText}\n\nJika referensi tidak relevan dengan topik, tulis berdasarkan pengetahuan sains lo sendiri. Referensi tetap dicantumkan di daftar pustaka.\n`
-    : "";
+    : "TIDAK ADA referensi ilmiah. JANGAN gunakan format [1][2][3] atau kutipan palsu. Tulis narasi sains berdasarkan pengetahuan lo saja.\n";
 
   const contentPrompt = `Kamu adalah penulis sains populer untuk blog kapster.my.id.
 
@@ -140,7 +140,7 @@ METADATA (baris terakhir):
 
   if (qaResult.score < 4) {
     console.log(`[blog-gen] QA score ${qaResult.score}/5, regenerating with fix notes...`);
-    const fixedPrompt = contentPrompt + `\n\nQA REVIEW NOTES (WAJIB PERBAIKI):\n${qaResult.notes}\n\nINGAT: 90% artikel harus konten ilmiah dengan referensi [1], [2], dst. Hanya 10% untuk bridging dan CTA.`;
+    const fixedPrompt = contentPrompt + `\n\nQA REVIEW NOTES (WAJIB PERBAIKI):\n${qaResult.notes}\n\nINGAT: Format WAJIB HTML (<h2>, <p>, dll), JANGAN markdown. JANGAN gunakan [1][2][3] palsu.`;
     const fixedResponse = await callLLM(fixedPrompt, 0.8, 8192);
     const fixedMetaMatch = fixedResponse.match(/---+\s*METADATA\s*\n({[\s\S]*})/i);
     if (fixedMetaMatch) {
@@ -164,10 +164,11 @@ METADATA (baris terakhir):
       const preview = lastPara ? `Akhir artikel:\n...${lastPara[0].slice(0, 200)}\n\nLANJUTKAN DARI SINI. WAJIB: tambah 1000+ KATA BARU:` : "Tulis konten baru 1000+ kata. WAJIB:";
       const continuePrompt = `Kamu penulis sains populer. INI WAJIB: tulis MINIMAL 1000+ KATA BARU, jangan ulang.
 
-GAYA: Naratif kayak The Conversation. BUKAN textbook. Jangan "pertama, kedua, ketiga".
-- <h2> sub-bab baru → narasi ilmiah dengan sitasi [n]
-- Minimal 2 <h2> baru
-- JANGAN markdown, JANGAN <h1>
+GAYA: Naratif kayak The Conversation. BUKAN textbook.
+WAJIB format HTML: <h2> judul </h2> <p> isi </p> — JANGAN markdown (# atau ##)
+- Minimal 2 <h2> baru dengan narasi sains
+- JANGAN markdown, JANGAN <h1>, JANGAN ##
+- JANGAN gunakan [1][2][3] atau sitasi apapun
 - 90% narasi sains, 10% bridging ke barbershop
 
 ${preview}`;
