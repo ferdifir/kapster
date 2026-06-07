@@ -43,10 +43,10 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            set -e
             cd /var/www/kapster
-            git pull
-            npm ci --no-optional
-            npm install --no-save lightningcss-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu
+            git stash push -- package-lock.json 2>/dev/null; git pull
+            npm ci
+            npm install lightningcss-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu 2>/dev/null || true
             rm -rf .next
-            npm run build
-            pm2 restart kapster --update-env
+            npm run build && pm2 restart kapster --update-env && pm2 save
