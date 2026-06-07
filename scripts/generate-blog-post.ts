@@ -61,45 +61,49 @@ async function main() {
       ).join("\n")
     : "(Tidak ada referensi ilmiah dari OpenAlex)";
 
-  const contentPrompt = `Kamu adalah penulis sains populer untuk blog kapster.my.id — platform manajemen antrian digital untuk barbershop Indonesia.
+  const contentPrompt = `Kamu adalah penulis sains populer untuk blog kapster.my.id.
 
 Judul: "${topicData.title}"
 
-REFERENSI ILMIAH (WAJIB gunakan sebagai dasar artikel):
+REFERENSI ILMIAH (WAJIB gunakan):
 ${refsText}
 
-[WAJIB] Artikel HARUS MINIMAL 3000 KATA. Target 5000+ kata.
+[WAJIB] 3000+ KATA. Gaya ARTIKEL POPULER macam The Conversation atau National Geographic — naratif, bukan textbook.
 
-FORMAT KONTEN (WAJIB):
-- 90% artikel: Konten ilmiah populer berdasarkan referensi di atas. Jelaskan fenomena/teori/temuan dari artikel ilmiah dengan bahasa yang mudah dipahami. Gunakan kutipan dari referensi dengan format [1], [2], dst.
-- 10% sisanya: Jembatan (bridging) dari konten ilmiah ke konteks barbershop, lalu kalimat CTA untuk Kapster.
+FORMAT KONTEN:
+- 90%: Konten sains populer — jelaskan fenomena dengan narasi, bukan daftar
+- 10%: Bridging ke barbershop + CTA Kapster
 
-STRUKTUR:
-1. Pembuka (1-2 paragraf) — hook dengan fenomena ilmiah yang menarik
-2. Isi (90% artikel) — jelaskan sains di balik topik, gunakan referensi [1], [2], [3], dst. Minimal 5 sub-bab <h2>
-3. Bridging (1-2 paragraf) — kaitkan temuan ilmiah dengan dunia barbershop
-4. CTA Kapster
+STRUKTUR WAJIB:
+1. PEMBUKA: Mulai dengan hook — pertanyaan, fakta mengejutkan, atau cerita pendek. Jangan "Rambut adalah..."
+2. ISI: Narasi yang mengalir. Setiap <h2> adalah bab dalam cerita, bukan kategori textbook
+3. BRIDGING: Hubungkan ke barbershop secara KONKRET. Contoh: "Buat barber, memahami siklus rambut ini penting karena..."
+4. CTA: Baris terakhir sebelum referensi
 
-GAYA: Seperti artikel National Geographic atau The Conversation — ilmiah, akurat, tapi tetap engaging. Bukan tutorial atau tips & tricks.
+LARANGAN:
+- JANGAN gaya "pertama... kedua... ketiga..."
+- JANGAN ulang judul di pembuka
+- JANGAN kutip referensi dengan <sup>[1]</sup> — pakai narasi: "Menurut studi di [1]" atau "Penelitian menunjukkan [1]"
+- JANGAN pake referensi yang sama buat klaim berbeda — setiap klaim butuh referensi unik
+- JANGAN <h1>
 
-ATURAN FORMAT:
-- HTML: h2, h3, p, strong, em, ul, ol, li, blockquote
-- JANGAN markdown. JANGAN <h1>
-- Gunakan <strong> untuk istilah ilmiah penting
-- Cantumkan referensi dengan format <sup>[1]</sup> <sup>[2]</sup> di dalam teks
+ATURAN HTML:
+h2, h3, p, strong, em, ul, ol, li, blockquote.
+Minimal 1 blockquote untuk kutipan dari referensi.
+<strong> untuk istilah ilmiah penting.
 
-DAFTAR REFERENSI di akhir artikel (sebelum metadata):
+DAFTAR REFERENSI:
 <h2>Referensi</h2>
 <ol>
 ${scientificRefs.map((r, i) => `<li>${r.authors.slice(0, 3).join(", ")}${r.authors.length > 3 ? " et al." : ""} (${r.year}). ${r.title}. <em>${r.journal}</em>. DOI: ${r.doi}</li>`).join("\n")}
 </ol>
 
-CTA di akhir (setelah bridging, sebelum referensi):
-<p>Kalau kamu ingin fokus mengembangkan bisnis barbershop tanpa pusing urus antrian, coba deh pakai Kapster. Sistem antrian digital yang bikin pelanggan puas dan operasional makin rapi. Cuma Rp10.000/bulan. Mulai gratis di ${SITE_URL}!</p>
+BRIDGING + CTA (satu paragraf, di antara isi artikel dan referensi):
+<p>[Bridging konkret ke barbershop]. Kalau kamu ingin fokus mengembangkan bisnis barbershop tanpa pusing urus antrian, coba deh pakai Kapster. Sistem antrian digital yang bikin pelanggan puas dan operasional makin rapi. Cuma Rp10.000/bulan. Mulai gratis di ${SITE_URL}!</p>
 
-SETELAH artikel (di baris terakhir, SETELAH referensi), sertakan metadata:
+METADATA (baris terakhir):
 ---METADATA
-{"excerpt": "ringkasan artikel 150-200 karakter (bukan judul ulang)", "meta_description": "meta description 150-160 karakter untuk SEO", "slug": "url-slug-pendek-dan-relevan", "keywords": ["kw1","kw2","kw3","kw4","kw5","kapaster"], "topics": ["topik1"], "seo_score": 85}`;
+{"excerpt": "ringkasan 150-200 karakter", "meta_description": "meta description 150-160 karakter", "slug": "url-slug", "keywords": ["kw1","kw2","kw3","kw4","kw5","kapaster"], "topics": ["topik1"], "seo_score": 85}`;
 
   const fullResponse = await callLLM(contentPrompt, 0.8, 8192);
 
@@ -159,14 +163,13 @@ SETELAH artikel (di baris terakhir, SETELAH referensi), sertakan metadata:
       if (newCount >= 3000) break;
       const lastPara = contentHtml.match(/<p>[^<]*<\/p>\s*$/);
       const preview = lastPara ? `Akhir artikel:\n...${lastPara[0].slice(0, 200)}\n\nLANJUTKAN DARI SINI. WAJIB: tambah 1000+ KATA BARU:` : "Tulis konten baru 1000+ kata. WAJIB:";
-      const continuePrompt = `Kamu penulis sains populer. INI WAJIB: tulis MINIMAL 1000+ KATA BARU tentang konten ilmiah, jangan ulang.
+      const continuePrompt = `Kamu penulis sains populer. INI WAJIB: tulis MINIMAL 1000+ KATA BARU, jangan ulang.
 
-STRUKTUR:
-- <h2> judul ilmiah → <p> penjelasan dengan referensi [n] → detail
-- Minimal 2 <h2> baru dengan konten ilmiah
-- Pakai <sup>[n]</sup> untuk sitasi
+GAYA: Naratif kayak The Conversation. BUKAN textbook. Jangan "pertama, kedua, ketiga".
+- <h2> sub-bab baru → narasi ilmiah dengan sitasi [n]
+- Minimal 2 <h2> baru
 - JANGAN markdown, JANGAN <h1>
-- 90% konten ilmiah, sisanya bridging ke barbershop
+- 90% narasi sains, 10% bridging ke barbershop
 
 ${preview}`;
       const moreContent = await callLLM(continuePrompt, 0.8, 8192);
@@ -498,9 +501,10 @@ async function fetchGSCKeywordGaps(): Promise<string> {
 
 async function searchOpenAlex(query: string): Promise<ScientificRef[]> {
   const searchQueries = [
-    `${query} hair biology`,
-    `${query} dermatology`,
-    `${query} science`,
+    query,
+    `${query} hair growth biology`,
+    `${query} dermatology trichology`,
+    `hair science research`,
   ];
 
   for (const sq of searchQueries) {
@@ -556,10 +560,10 @@ async function reviewBlogContent(html: string, title: string): Promise<{ score: 
   const prompt = `Kamu adalah QA reviewer konten blog. Review artikel berikut dan beri score 1-5.
 
 KRITERIA PENILAIAN:
-1. Konten ilmiah (2 points): Apakah artikel didasarkan pada sains/fakta ilmiah dengan referensi [1], [2], dst? Atau cuma opini penulis?
-2. Struktur konten (1 point): Minimal 3 <h2> substantive. Apakah ada <h2>Referensi</h2> di akhir?
-3. Scientific accuracy (1 point): Apakah klaim ilmiah akurat dan sesuai dengan referensi yang dikutip?
-4. 90/10 ratio (1 point): Apakah ~90% konten adalah penjelasan ilmiah, dan hanya ~10% bridging ke barbershop + CTA?
+1. Gaya naratif (2 points): Apakah seperti artikel The Conversation/NatGeo — naratif, engaging, bukan textbook "pertama...kedua...ketiga"? Apakah ada hook di awal?
+2. Referensi relevan (1 point): Apakah referensi [1][2][3][4] digunakan secara unik dan tidak dipaksakan? Setiap klaim butuh ref berbeda.
+3. Bridging natural (1 point): Apakah bridging ke barbershop KONKRET, bukan cuma "penting dipahami"?
+4. 90/10 ratio (1 point): Apakah ~90% konten sains, ~10% bridging + CTA?
 
 DATA: Artikel memiliki ${h2Count} sub-bab (<h2>).
 
