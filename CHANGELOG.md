@@ -1,3 +1,10 @@
+## [1.32.5](https://github.com/ferdifir/kapster/compare/v1.32.4...v1.32.5) (2026-06-07)
+
+
+### Bug Fixes
+
+* **blog:** strict extension prompt - stay on topic, HTML only ([7b33118](https://github.com/ferdifir/kapster/commit/7b331184e560af74631b2cdbd36cbc0d8f173c53))
+
 ## [1.32.4](https://github.com/ferdifir/kapster/compare/v1.32.3...v1.32.4) (2026-06-07)
 
 
