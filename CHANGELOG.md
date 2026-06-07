@@ -1,3 +1,10 @@
+## [1.32.3](https://github.com/ferdifir/kapster/compare/v1.32.2...v1.32.3) (2026-06-07)
+
+
+### Bug Fixes
+
+* **blog:** filter OpenAlex relevansi + optional refs + narrative-only style ([936845b](https://github.com/ferdifir/kapster/commit/936845bbdf078602f9612c39e9658d6a66a9673c))
+
 ## [1.32.2](https://github.com/ferdifir/kapster/compare/v1.32.1...v1.32.2) (2026-06-07)
 
 
