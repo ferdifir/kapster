@@ -45,8 +45,8 @@ jobs:
           script: |
             set -e
             cd /var/www/kapster
-            git stash push -- package-lock.json 2>/dev/null; git pull
-            npm ci
-            npm install lightningcss-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu 2>/dev/null || true
+            git checkout -- package.json package-lock.json 2>/dev/null
+            git pull
+            npm ci --ignore-scripts
             rm -rf .next
             npm run build && pm2 restart kapster --update-env && pm2 save
