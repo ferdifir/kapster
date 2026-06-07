@@ -1,3 +1,10 @@
+# [1.31.0](https://github.com/ferdifir/kapster/compare/v1.30.1...v1.31.0) (2026-06-07)
+
+
+### Features
+
+* **admin:** add AI Agents activity page ([caa1a24](https://github.com/ferdifir/kapster/commit/caa1a249c535106956cf429761c469fe61033f73))
+
 ## [1.30.1](https://github.com/ferdifir/kapster/compare/v1.30.0...v1.30.1) (2026-06-07)
 
 
