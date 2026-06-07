@@ -19,7 +19,7 @@ export interface SubAgentRecord {
 const REGISTRY_KEY = "sub_agent_registry";
 
 export async function register(config: SubAgentConfig): Promise<string> {
-  const agent = new Agent(config.parentAgentId);
+  const agent = new Agent("coo");
   const existing = (await agent.getMemory(REGISTRY_KEY)) as SubAgentRecord[] ?? [];
 
   const id = `sub-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -43,7 +43,7 @@ export async function register(config: SubAgentConfig): Promise<string> {
 }
 
 export async function list(parentAgentId?: string): Promise<SubAgentRecord[]> {
-  const agent = new Agent(parentAgentId ?? "coo");
+  const agent = new Agent("coo");
   const all = (await agent.getMemory(REGISTRY_KEY)) as SubAgentRecord[] ?? [];
 
   if (parentAgentId) {
