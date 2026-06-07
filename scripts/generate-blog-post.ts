@@ -162,14 +162,16 @@ METADATA (baris terakhir):
       if (newCount >= 3000) break;
       const lastPara = contentHtml.match(/<p>[^<]*<\/p>\s*$/);
       const preview = lastPara ? `Akhir artikel:\n...${lastPara[0].slice(0, 200)}\n\nLANJUTKAN DARI SINI. WAJIB: tambah 1000+ KATA BARU:` : "Tulis konten baru 1000+ kata. WAJIB:";
-      const continuePrompt = `Kamu penulis sains populer. INI WAJIB: tulis MINIMAL 1000+ KATA BARU, jangan ulang.
+      const continuePrompt = `Kamu penulis sains populer untuk blog kapster.my.id. Topik: "${topicData.title}"
 
-GAYA: Naratif kayak The Conversation. BUKAN textbook.
-WAJIB format HTML: <h2> judul </h2> <p> isi </p> — JANGAN markdown (# atau ##)
-- Minimal 2 <h2> baru dengan narasi sains
-- JANGAN markdown, JANGAN <h1>, JANGAN ##
-- JANGAN gunakan [1][2][3] atau sitasi apapun
-- 90% narasi sains, 10% bridging ke barbershop
+INI WAJIB: tulis MINIMAL 1000+ KATA BARU tentang SAINS di balik topik "${topicData.title}", jangan ulang dan jangan ganti topik.
+
+GAYA: Naratif kayak The Conversation. JANGAN bahas teori antrian, Kapster, atau sistem queue.
+
+WAJIB: Format HTML — <h2>Judul</h2> <p>Paragraf</p>
+JANGAN: markdown, JANGAN ## atau #, JANGAN [1][2][3]
+- Minimal 2 <h2> baru dengan konten sains
+- 100% konten sains (bridging dan CTA sudah ada di artikel utama)
 
 ${preview}`;
       const moreContent = await callLLM(continuePrompt, 0.8, 8192);
