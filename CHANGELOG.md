@@ -29,7 +29,6 @@
 * **agents:** telegram integration - agent commands and inline callback handling ([0b3d8ef](https://github.com/ferdifir/kapster/commit/0b3d8ef47ebbb318bd83de98dc5a902755c78dba))
 * per-barbershop WA template customization ([cc8136f](https://github.com/ferdifir/kapster/commit/cc8136ff2bcc7d9d5e6d848f1724e7f98a6afdf1))
 * per-barbershop WA template customization ([f788243](https://github.com/ferdifir/kapster/commit/f78824369bc6e2fc46feb9dfd07a2c9602e6d952))
-
 ## [1.27.2](https://github.com/ferdifir/kapster/compare/v1.27.1...v1.27.2) (2026-06-05)
 
 

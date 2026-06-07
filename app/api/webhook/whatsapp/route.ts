@@ -3,7 +3,6 @@ import { SYSTEM_WUZAPI_TOKEN } from "@/lib/wuzapi";
 import { handleGroupInfo, handleMessage } from "@/lib/whatsapp-bot";
 import { handleDemoRequest, isPrivateMessage } from "@/lib/demo";
 import { logError } from "@/lib/error-logger";
-import { insertAgentEvent } from "@/lib/events";
 
 function parseBody(
   body: Record<string, unknown>
@@ -79,17 +78,6 @@ export async function POST(req: NextRequest) {
       handleMessage(event).catch((err) => {
         logError("webhook_whatsapp_message", err);
       });
-    }
-
-    if (event.text) {
-      insertAgentEvent("wa_message", "whatsapp", {
-        text: String(event.text),
-        from: event.sender,
-        fromName: event.senderName,
-        group: event.groupJid,
-        timestamp: new Date().toISOString(),
-        isGroup: !!event.groupJid,
-      }, 3);
     }
   } else {
     console.log(`[Webhook] Unknown event type: ${type}`);

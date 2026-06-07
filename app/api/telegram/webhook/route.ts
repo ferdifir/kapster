@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { updateBlogPostStatus } from "@/lib/blog";
-import { answerTelegramCallback, editTelegramMessage, sendTelegramMessage, parseCallbackData } from "@/lib/telegram";
+import { answerTelegramCallback, editTelegramMessage, sendTelegramMessage } from "@/lib/telegram";
 import { revalidatePath } from "next/cache";
 import { spawn } from "child_process";
 import path from "path";
@@ -66,97 +66,6 @@ export async function POST(request: NextRequest) {
             await answerTelegramCallback(callbackId, "❌ Gagal update status.");
           }
         }
-      }
-
-      // --- Plan step approval callback ---
-      const parsed = parseCallbackData(data || "");
-      if (parsed.action === "plan_approve" || parsed.action === "plan_reject") {
-        const stepId = parsed.payload.step_id;
-        const planId = parsed.payload.plan_id;
-        const supabase = createAdminClient();
-        const anyDB = supabase as unknown as { from: (t: string) => { update: (v: Record<string, unknown>) => { eq: (c: string, v: string) => Promise<{ error: { message: string } | null }> }; insert: (v: Record<string, unknown>) => Promise<{ error: { message: string } | null }>; select: (c?: string) => { eq: (c: string, v: string) => Promise<{ data: Record<string, unknown> | null; error: { message: string } | null }> } } };
-
-        await anyDB.from("agent_plan_steps").update({
-          status: parsed.action === "plan_approve" ? "approved" : "skipped",
-          approved_by: body.callback_query.from?.username || "unknown",
-          approved_at: new Date().toISOString(),
-        }).eq("id", stepId);
-
-        const { data: plan } = await anyDB.from("agent_plans").select("agent_role").eq("id", planId);
-
-        await anyDB.from("agent_events").insert({
-          event_type: "telegram_feedback",
-          source: "telegram",
-          payload: {
-            action: parsed.action,
-            step_id: stepId,
-            plan_id: planId,
-            user: body.callback_query.from?.username || body.callback_query.from?.id?.toString(),
-          },
-          priority: 1,
-          target_agent: plan?.agent_role || null,
-          notes: `Plan step ${parsed.action === "plan_approve" ? "approved" : "skipped"} by ${body.callback_query.from?.username || "unknown"}`,
-        } as Record<string, unknown>);
-
-        const feedbackText = parsed.action === "plan_approve" ? "✅ Step disetujui, agent akan mengeksekusi" : "⏭️ Step dilewati";
-        await answerTelegramCallback(callbackId, feedbackText);
-        if (message?.message_id) {
-          await editTelegramMessage(message.chat.id, message.message_id, `${feedbackText} — Step ID: ${stepId.slice(0, 8)}`);
-        }
-        return NextResponse.json({ ok: true });
-      }
-
-      if (parsed.action === "agent_approve" || parsed.action === "agent_reject" || parsed.action === "ferdi_done") {
-        const eventId = parsed.payload.event_id;
-        const supabase = createAdminClient();
-        const agentEvents = supabase as unknown as { from: (t: string) => { insert: (v: Record<string, unknown>) => Promise<unknown> } };
-
-        await agentEvents.from("agent_events").insert({
-          event_type: "telegram_feedback",
-          source: "telegram",
-          payload: {
-            callback_data: data,
-            action: parsed.action,
-            event_id: eventId,
-            user: body.callback_query.from?.username || body.callback_query.from?.id?.toString(),
-          },
-          priority: 1,
-          notes: `Telegram callback from ${body.callback_query.from?.username || "unknown"}: ${parsed.action}`,
-        } as Record<string, unknown>);
-
-        const feedbackText = parsed.action === "agent_approve" ? "✅ Disetujui" : parsed.action === "agent_reject" ? "❌ Ditolak" : "✅ Diterima";
-        await answerTelegramCallback(callbackId, feedbackText);
-        if (message?.message_id) {
-          await editTelegramMessage(message.chat.id, message.message_id, `${feedbackText} — Feedback diteruskan ke agent.`);
-        }
-
-        return NextResponse.json({ ok: true });
-      }
-    }
-
-    // --- NEW: Agent command handler ---
-    if (body.message?.text) {
-      const text = body.message.text;
-      const isAgentCmd = text.startsWith("@hacker") || text.startsWith("@hipster") || text.startsWith("@hustler");
-
-      if (isAgentCmd) {
-        const supabase = createAdminClient();
-        const agentEvents = supabase as unknown as { from: (t: string) => { insert: (v: Record<string, unknown>) => Promise<unknown> } };
-
-        await agentEvents.from("agent_events").insert({
-          event_type: "telegram_cmd",
-          source: "telegram",
-          payload: {
-            text,
-            from: body.message.from?.username || body.message.from?.id?.toString(),
-            chat_id: body.message.chat.id,
-          },
-          priority: 2,
-        } as Record<string, unknown>);
-
-        await sendTelegramMessage("📨 Perintah diterima, diteruskan ke agent...");
-
-        return NextResponse.json({ ok: true });
       }
     }
 

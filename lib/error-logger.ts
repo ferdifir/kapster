@@ -1,5 +1,4 @@
 import { sendTelegramNotification } from "./telegram";
-import { insertAgentEvent } from "./events";
 
 function formatError(err: unknown): string {
   if (err instanceof Error) {
@@ -32,14 +31,5 @@ export async function logError(context: string, error: unknown, metadata?: Recor
     }
   }
 
-  sendTelegramNotification(parts.join("\n")).catch(() => {});
-
-  const errObj = error instanceof Error ? error : new Error(String(error));
-  insertAgentEvent("system_error", "system", {
-    error: errObj.message,
-    stack: errObj.stack,
-    context,
-  }, 1, "hacker").catch(() => {});
+  sendTelegramNotification(parts.join("\n"));
 }
-
-
