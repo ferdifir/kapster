@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { updateBarbershopSettings, updateBookingMaxDays } from "@/app/dashboard/settings/actions";
+import QrCodeWithFrame from "./QrCodeWithFrame";
 
 type Barbershop = {
   id: string;
@@ -171,6 +172,18 @@ export default function InformasiTab({ barbershop }: { barbershop: Barbershop })
             <p className="text-dark-600 text-xs mt-1">Digunakan untuk notifikasi WhatsApp ke pelanggan</p>
           </div>
         </div>
+      </div>
+
+      {/* QR Code */}
+      <div className="bg-dark-800/50 border border-dark-700/30 rounded-2xl p-6 space-y-4">
+        <h2 className="font-semibold text-white">QR Code Antrian</h2>
+        <p className="text-dark-400 text-xs">
+          Scan QR code ini untuk langsung masuk ke halaman antrian publik.
+        </p>
+        <QrCodeWithFrame
+          url={`${process.env.NEXT_PUBLIC_BASE_URL || "https://kapster.my.id"}/q/${barbershop.slug}`}
+          name={barbershop.name}
+        />
       </div>
 
       {/* Booking Max Days */}

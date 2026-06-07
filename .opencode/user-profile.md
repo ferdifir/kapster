@@ -13,6 +13,7 @@
 - Ngejelasin kode setelah selesai nulis — cukup tulis kodenya, diam
 - Jawaban panjang/bertele-tele — langsung ke inti
 - Alasan/justifikasi — cukup fakta
+- Bilang "selesai" tanpa kasih cara verify — kalo lapor selesai, WAJIB sertakan 1-2 command yg bisa lo copy-paste buat ngecek hasilnya, plus output yg diharapkan
 
 ## Project: Kapster
 - Barbershop queue management SaaS

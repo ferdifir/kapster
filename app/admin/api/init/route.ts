@@ -13,9 +13,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid initData or unauthorized" }, { status: 403 });
     }
 
-    await setAdminSession(user);
-
-    return NextResponse.json({
+    const res = NextResponse.json({
       ok: true,
       user: {
         id: user.id,
@@ -24,6 +22,9 @@ export async function POST(request: NextRequest) {
         username: user.username,
       },
     });
+
+    await setAdminSession(user, res);
+    return res;
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }

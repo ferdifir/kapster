@@ -1,5 +1,6 @@
 import { createHmac } from "crypto";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 const ADMIN_IDS = (process.env.ADMIN_TELEGRAM_IDS || "").split(",").map((s) => s.trim());
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
@@ -51,12 +52,14 @@ export async function verifyAdminSession(): Promise<AdminUser | null> {
   }
 }
 
-export async function setAdminSession(user: AdminUser) {
-  const cookieStore = await cookies();
-  cookieStore.set("admin_session", Buffer.from(JSON.stringify(user)).toString("base64"), {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24,
-  });
+export async function setAdminSession(user: AdminUser, response?: NextResponse) {
+  const value = Buffer.from(JSON.stringify(user)).toString("base64");
+  const opts = { httpOnly: true, secure: true, sameSite: "lax" as const, maxAge: 60 * 60 * 24 };
+
+  if (response) {
+    response.cookies.set("admin_session", value, opts);
+  } else {
+    const cookieStore = await cookies();
+    cookieStore.set("admin_session", value, opts);
+  }
 }
