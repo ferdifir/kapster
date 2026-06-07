@@ -1,3 +1,10 @@
+## [1.31.1](https://github.com/ferdifir/kapster/compare/v1.31.0...v1.31.1) (2026-06-07)
+
+
+### Bug Fixes
+
+* **ci:** robust deploy script - handle local changes, native bins, conditional restart ([2ce6b11](https://github.com/ferdifir/kapster/commit/2ce6b11c608248d77dd6deceee20bbd6fd3ed85f))
+
 # [1.31.0](https://github.com/ferdifir/kapster/compare/v1.30.1...v1.31.0) (2026-06-07)
 
 
