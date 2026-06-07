@@ -1,3 +1,20 @@
+# [1.30.0](https://github.com/ferdifir/kapster/compare/v1.29.0...v1.30.0) (2026-06-07)
+
+
+### Bug Fixes
+
+* telegram mini app looping memverifikasi — cookie set di response object langsung ([1c93d8b](https://github.com/ferdifir/kapster/commit/1c93d8bf6e8f45859d5310196b01e25ddb66f8fd))
+
+
+### Features
+
+* **agents:** add COO agent with standup, scoring, escalation, and LLM integration ([3b1dd75](https://github.com/ferdifir/kapster/commit/3b1dd7569fb12cd106920e23242a134c2e51160e))
+* **agents:** add daily scheduler with cron, token budget, and checkpoint system ([f64249f](https://github.com/ferdifir/kapster/commit/f64249fd6a55424c7aaebb187a38d7dfb482c13a))
+* **agents:** add database schema, base agent class, and task CRUD API ([1a5749b](https://github.com/ferdifir/kapster/commit/1a5749b0da260f78588a75585a78f4d352d14b38))
+* **agents:** add Hacker agent with git, filesystem, PM2 tools and build safety gate ([908bee6](https://github.com/ferdifir/kapster/commit/908bee643cbfede6b21df08c1d24df45eee59e7f))
+* **agents:** add Hipster (frontend) and Hustler (business) agents ([955857b](https://github.com/ferdifir/kapster/commit/955857b8f5a407a642f9d61b7850fc5d2919d969))
+* **agents:** add sub-agent system and debate engine with approval queue ([51332c3](https://github.com/ferdifir/kapster/commit/51332c336a8054aee08439bf43e89ff899835f2d))
+
 # [1.29.0](https://github.com/ferdifir/kapster/compare/v1.28.0...v1.29.0) (2026-06-06)
 
 
