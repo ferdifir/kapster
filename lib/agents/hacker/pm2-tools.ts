@@ -17,12 +17,16 @@ export interface Pm2Status {
   restarts: number;
 }
 
+function isPm2NotFound(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return msg.includes("command not found") || msg.includes("not found") || msg.includes("ENOENT");
+}
+
 export async function getLogs(lines = 100): Promise<string> {
   try {
     return run(`pm2 logs kapster --lines ${lines} --nostream`);
-  } catch (error) {
-    logError("hacker/pm2-logs", error instanceof Error ? error : new Error(String(error)));
-    return "Could not fetch PM2 logs";
+  } catch {
+    return "PM2 not available";
   }
 }
 
@@ -39,8 +43,7 @@ export async function getStatus(): Promise<Pm2Status | string> {
       uptime: extractValue(lines, "uptime") ?? "unknown",
       restarts: extractValue(lines, "restarts") ?? 0,
     } as Pm2Status;
-  } catch (error) {
-    logError("hacker/pm2-status", error instanceof Error ? error : new Error(String(error)));
+  } catch {
     return "PM2 not available";
   }
 }
@@ -56,6 +59,9 @@ export async function restart(): Promise<void> {
     run(`pm2 restart kapster`);
     lastRestartTime = Date.now();
   } catch (error) {
+    if (isPm2NotFound(error)) {
+      throw new Error("PM2 not installed on this server");
+    }
     logError("hacker/pm2-restart", error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
