@@ -9,3 +9,5 @@ export { getDefaultBudget, getTokenRemaining, trackTokenUsage } from "./schedule
 export { saveCheckpoint, resumeFromCheckpoint } from "./memory/checkpoint";
 export type { Checkpoint } from "./memory/checkpoint";
 export { HackerAgent } from "./hacker/hacker-agent";
+export { HipsterAgent } from "./hipster/hipster-agent";
+export { HustlerAgent } from "./hustler/hustler-agent";
