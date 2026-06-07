@@ -1,3 +1,10 @@
+## [1.32.1](https://github.com/ferdifir/kapster/compare/v1.32.0...v1.32.1) (2026-06-07)
+
+
+### Bug Fixes
+
+* **ci:** native bins as optionalDependencies + reset local changes before deploy ([86e0445](https://github.com/ferdifir/kapster/commit/86e044585fac0aeb0a996ee1acdf2047c726028b))
+
 # [1.32.0](https://github.com/ferdifir/kapster/compare/v1.31.1...v1.32.0) (2026-06-07)
 
 
