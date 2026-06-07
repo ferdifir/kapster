@@ -1,3 +1,10 @@
+## [1.32.2](https://github.com/ferdifir/kapster/compare/v1.32.1...v1.32.2) (2026-06-07)
+
+
+### Bug Fixes
+
+* **blog:** narrative science style, no sup tags, concrete bridging ([e9cbb0e](https://github.com/ferdifir/kapster/commit/e9cbb0ec402121082e91b324b98d36e81ea538bd))
+
 ## [1.32.1](https://github.com/ferdifir/kapster/compare/v1.32.0...v1.32.1) (2026-06-07)
 
 
