@@ -14,7 +14,7 @@ export interface Task {
   sub_agent_id: string | null;
   title: string;
   description: string | null;
-  status: "pending" | "in_progress" | "completed" | "failed" | "checkpoint" | "blocked";
+  status: "pending" | "in_progress" | "completed" | "failed" | "checkpoint" | "blocked" | "cancelled";
   score: number | null;
   auto_executed: boolean;
   escalation: { reason: string; what_i_need: string; requested_at: string } | null;
