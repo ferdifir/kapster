@@ -1,3 +1,10 @@
+## [1.32.4](https://github.com/ferdifir/kapster/compare/v1.32.3...v1.32.4) (2026-06-07)
+
+
+### Bug Fixes
+
+* **blog:** no fake refs, enforce HTML in extension, no markdown ([d5e2dbd](https://github.com/ferdifir/kapster/commit/d5e2dbd30aaf551016b9f4c808811e65e4fafaf5))
+
 ## [1.32.3](https://github.com/ferdifir/kapster/compare/v1.32.2...v1.32.3) (2026-06-07)
 
 
