@@ -55,51 +55,50 @@ async function main() {
   // Phase 2: Content Generation + SEO Metadata (merged)
   console.log("[blog-gen] Phase 2: Generating article...");
 
-  const refsText = scientificRefs.length > 0
+  const hasRefs = scientificRefs.length > 0 && scientificRefs.length >= 2;
+  const refsText = hasRefs
     ? scientificRefs.map((r, i) =>
         `[${i + 1}] "${r.title}" — ${r.authors.slice(0, 3).join(", ")}${r.authors.length > 3 ? " et al." : ""} (${r.year}), ${r.journal}. DOI: ${r.doi}`
       ).join("\n")
-    : "(Tidak ada referensi ilmiah dari OpenAlex)";
+    : "";
+
+  const refsListHtml = hasRefs
+    ? `\n<h2>Referensi</h2>\n<ol>\n${scientificRefs.map((r, i) => `<li>${r.authors.slice(0, 3).join(", ")}${r.authors.length > 3 ? " et al." : ""} (${r.year}). ${r.title}. <em>${r.journal}</em>. DOI: ${r.doi}</li>`).join("\n")}\n</ol>`
+    : "";
+
+  const refsInstruction = hasRefs
+    ? `REFERENSI ILMIAH (gunakan jika relevan, jangan paksakan):\n${refsText}\n\nJika referensi tidak relevan dengan topik, tulis berdasarkan pengetahuan sains lo sendiri. Referensi tetap dicantumkan di daftar pustaka.\n`
+    : "";
 
   const contentPrompt = `Kamu adalah penulis sains populer untuk blog kapster.my.id.
 
 Judul: "${topicData.title}"
 
-REFERENSI ILMIAH (WAJIB gunakan):
-${refsText}
+${refsInstruction}[WAJIB] 3000+ KATA. Gaya ARTIKEL The Conversation / National Geographic — naratif kayak lagi cerita, BUKAN textbook.
 
-[WAJIB] 3000+ KATA. Gaya ARTIKEL POPULER macam The Conversation atau National Geographic — naratif, bukan textbook.
+FORMAT:
+- 90%: Narasi sains populer — jelaskan fenomena, bukan daftar.
+- 10%: Bridging ke barbershop + CTA Kapster.
 
-FORMAT KONTEN:
-- 90%: Konten sains populer — jelaskan fenomena dengan narasi, bukan daftar
-- 10%: Bridging ke barbershop + CTA Kapster
-
-STRUKTUR WAJIB:
-1. PEMBUKA: Mulai dengan hook — pertanyaan, fakta mengejutkan, atau cerita pendek. Jangan "Rambut adalah..."
-2. ISI: Narasi yang mengalir. Setiap <h2> adalah bab dalam cerita, bukan kategori textbook
-3. BRIDGING: Hubungkan ke barbershop secara KONKRET. Contoh: "Buat barber, memahami siklus rambut ini penting karena..."
-4. CTA: Baris terakhir sebelum referensi
+STRUKTUR:
+1. PEMBUKA: Hook — pertanyaan atau fakta mengejutkan. Jangan mulai dengan definisi.
+2. ISI: Narasi yang mengalir. Tiap <h2> bab dalam cerita.
+3. BRIDGING: Hubungkan ke barbershop secara KONKRET. Contoh: "Buat barber, memahami ini penting karena..."
+4. CTA: Satu kalimat sebelum referensi.
 
 LARANGAN:
-- JANGAN gaya "pertama... kedua... ketiga..."
+- JANGAN "pertama... kedua... ketiga..."
 - JANGAN ulang judul di pembuka
-- JANGAN kutip referensi dengan <sup>[1]</sup> — pakai narasi: "Menurut studi di [1]" atau "Penelitian menunjukkan [1]"
-- JANGAN pake referensi yang sama buat klaim berbeda — setiap klaim butuh referensi unik
+- JANGAN format kutipan <sup> — pakai "Menurut studi [1]" atau "Penelitian [2] menemukan"
 - JANGAN <h1>
+- JANGAN sisipkan referensi di teks kalo gak relevan. Cukup tulis narasi sains berdasarkan pengetahuan lo.
 
-ATURAN HTML:
-h2, h3, p, strong, em, ul, ol, li, blockquote.
-Minimal 1 blockquote untuk kutipan dari referensi.
-<strong> untuk istilah ilmiah penting.
+HTML: h2, h3, p, strong, em, ul, ol, li, blockquote. Minimal 1 blockquote untuk kutipan menarik.
 
-DAFTAR REFERENSI:
-<h2>Referensi</h2>
-<ol>
-${scientificRefs.map((r, i) => `<li>${r.authors.slice(0, 3).join(", ")}${r.authors.length > 3 ? " et al." : ""} (${r.year}). ${r.title}. <em>${r.journal}</em>. DOI: ${r.doi}</li>`).join("\n")}
-</ol>
+${refsListHtml}
 
-BRIDGING + CTA (satu paragraf, di antara isi artikel dan referensi):
-<p>[Bridging konkret ke barbershop]. Kalau kamu ingin fokus mengembangkan bisnis barbershop tanpa pusing urus antrian, coba deh pakai Kapster. Sistem antrian digital yang bikin pelanggan puas dan operasional makin rapi. Cuma Rp10.000/bulan. Mulai gratis di ${SITE_URL}!</p>
+BRIDGING + CTA:
+<p>[Bridging konkret]. Kalau kamu ingin fokus mengembangkan bisnis barbershop tanpa pusing urus antrian, coba deh pakai Kapster. Sistem antrian digital yang bikin pelanggan puas dan operasional makin rapi. Cuma Rp10.000/bulan. Mulai gratis di ${SITE_URL}!</p>
 
 METADATA (baris terakhir):
 ---METADATA
@@ -500,37 +499,52 @@ async function fetchGSCKeywordGaps(): Promise<string> {
 }
 
 async function searchOpenAlex(query: string): Promise<ScientificRef[]> {
+  const seen = new Set<string>();
+  const allRefs: ScientificRef[] = [];
+
+  // English search for better coverage
   const searchQueries = [
-    query,
-    `${query} hair growth biology`,
-    `${query} dermatology trichology`,
-    `hair science research`,
+    `${query} science`,
+    `hair biology physiology`,
+    `hair growth dermatology study`,
   ];
 
   for (const sq of searchQueries) {
+    if (allRefs.length >= 4) break;
     try {
-      const url = `https://api.openalex.org/works?search=${encodeURIComponent(sq)}&filter=is_oa:true&sort=cited_by_count:desc&per_page=5`;
+      const url = `https://api.openalex.org/works?search=${encodeURIComponent(sq)}&filter=is_oa:true&sort=cited_by_count:desc&per_page=10`;
       const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
       if (!res.ok) continue;
 
       const data = await res.json();
       if (!data.results?.length) continue;
 
-      return data.results.slice(0, 4).map((r: any) => ({
-        title: r.title || r.display_name || "",
-        doi: r.doi || "",
-        authors: (r.authorships || []).map((a: any) => a.author?.display_name || "").filter(Boolean),
-        year: r.publication_year || 0,
-        journal: r.primary_location?.source?.display_name || "Unknown Journal",
-        citedBy: r.cited_by_count || 0,
-      }));
+      for (const r of data.results) {
+        if (allRefs.length >= 4) break;
+        const title = (r.title || r.display_name || "").toLowerCase();
+        const doi = r.doi || "";
+        if (!doi || seen.has(doi)) continue;
+
+        // Filter relevansi: judul harus mengandung kata terkait rambut/kulit/biologi
+        const relevant = /hair|scalp|dermatolog|tricholog|follicle|melanin|keratin|skincare|cosmetic|beauty|aging|grey|gray|white hair|rambut|kulit|uban|penuaan|rambutan/i.test(title);
+        if (!relevant) continue;
+
+        seen.add(doi);
+        allRefs.push({
+          title: r.title || r.display_name || "",
+          doi,
+          authors: (r.authorships || []).map((a: any) => a.author?.display_name || "").filter(Boolean),
+          year: r.publication_year || 0,
+          journal: r.primary_location?.source?.display_name || "Unknown Journal",
+          citedBy: r.cited_by_count || 0,
+        });
+      }
     } catch (err) {
       console.warn(`[blog-gen] OpenAlex query "${sq}" failed:`, err);
-      continue;
     }
   }
 
-  return [];
+  return allRefs;
 }
 
 async function runTrendPulse(): Promise<string> {
@@ -560,10 +574,10 @@ async function reviewBlogContent(html: string, title: string): Promise<{ score: 
   const prompt = `Kamu adalah QA reviewer konten blog. Review artikel berikut dan beri score 1-5.
 
 KRITERIA PENILAIAN:
-1. Gaya naratif (2 points): Apakah seperti artikel The Conversation/NatGeo — naratif, engaging, bukan textbook "pertama...kedua...ketiga"? Apakah ada hook di awal?
-2. Referensi relevan (1 point): Apakah referensi [1][2][3][4] digunakan secara unik dan tidak dipaksakan? Setiap klaim butuh ref berbeda.
-3. Bridging natural (1 point): Apakah bridging ke barbershop KONKRET, bukan cuma "penting dipahami"?
-4. 90/10 ratio (1 point): Apakah ~90% konten sains, ~10% bridging + CTA?
+1. Gaya naratif (2 points): Apakah seperti The Conversation/NatGeo? Ada hook? Bukan textbook "pertama...kedua..."?
+2. Konten sains akurat (1 point): Apakah penjelasan fenomena ilmiahnya benar secara fakta?
+3. Bridging natural (1 point): Apakah bridging ke barbershop KONKRET dan spesifik (bukan "penting dipahami")?
+4. Tidak memaksa referensi (1 point): Jika ada referensi, gunakan dengan wajar. Tidak perlu dipaksakan. Lebih baik tanpa ref daripada ref palsu.
 
 DATA: Artikel memiliki ${h2Count} sub-bab (<h2>).
 
